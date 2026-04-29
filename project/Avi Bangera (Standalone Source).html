@@ -1,0 +1,1190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Avi Bangera</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<template id="__bundler_thumbnail" data-bg-color="#0b0a09">
+  <svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+    <rect width="1200" height="800" fill="#0b0a09"/>
+    <text x="600" y="440" text-anchor="middle" font-family="monospace" font-size="220" font-weight="700" fill="#d4a574" letter-spacing="-8">AB</text>
+    <text x="600" y="515" text-anchor="middle" font-family="monospace" font-size="26" letter-spacing="16" fill="#63b8aa">AVI · BANGERA</text>
+    <line x1="480" y1="555" x2="720" y2="555" stroke="#d4a574" stroke-width="1.5"/>
+  </svg>
+</template>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0b0a09;
+    --bg2: #111009;
+    --fg: #f0ede6;
+    --fg-dim: #8a8070;
+    --amber: oklch(68% 0.18 52);
+    --amber-glow: oklch(68% 0.18 52 / 0.15);
+    --teal: oklch(68% 0.14 200);
+    --red: oklch(58% 0.18 25);
+    --grain-opacity: 0.035;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: 'Space Grotesk', sans-serif;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* ── CURSOR ── */
+  #cursor {
+    width: 12px; height: 12px;
+    background: var(--amber);
+    border-radius: 50%;
+    position: fixed;
+    top: 0; left: 0;
+    pointer-events: none;
+    z-index: 9999;
+    mix-blend-mode: difference;
+    transition: transform 0.15s ease, width 0.2s ease, height 0.2s ease;
+    transform: translate(-50%, -50%);
+  }
+  #cursor.big { width: 48px; height: 48px; opacity: 0.4; }
+
+  /* ── GRAIN ── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    opacity: var(--grain-opacity);
+    pointer-events: none;
+    z-index: 1000;
+    animation: grain 0.5s steps(1) infinite;
+  }
+  @keyframes grain {
+    0%,100% { transform: translate(0,0); }
+    10% { transform: translate(-2%,-3%); }
+    20% { transform: translate(2%,1%); }
+    30% { transform: translate(-1%,3%); }
+    40% { transform: translate(3%,-1%); }
+    50% { transform: translate(-2%,2%); }
+    60% { transform: translate(1%,-2%); }
+    70% { transform: translate(-3%,1%); }
+    80% { transform: translate(2%,3%); }
+    90% { transform: translate(-1%,-1%); }
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 28px 48px;
+    display: flex; align-items: center; justify-content: space-between;
+    background: linear-gradient(to bottom, var(--bg) 0%, transparent 100%);
+  }
+  .nav-logo {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    letter-spacing: 0.2em;
+    color: var(--amber);
+    text-transform: uppercase;
+  }
+  .nav-links { display: flex; gap: 36px; align-items: center; }
+  .nav-links a {
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--fg-dim);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--fg); }
+
+  /* ── AUDIO BTN ── */
+  #audio-btn {
+    display: flex; align-items: center; gap: 8px;
+    background: none; border: 1px solid var(--fg-dim);
+    color: var(--fg-dim);
+    font-family: 'Space Mono', monospace;
+    font-size: 11px; letter-spacing: 0.1em;
+    padding: 6px 14px; border-radius: 100px;
+    cursor: none; transition: all 0.2s;
+  }
+  #audio-btn:hover { border-color: var(--amber); color: var(--amber); }
+  #audio-btn.playing { border-color: var(--amber); color: var(--amber); }
+  .audio-dot {
+    width: 6px; height: 6px;
+    background: currentColor;
+    border-radius: 50%;
+  }
+  #audio-btn.playing .audio-dot { animation: pulse-dot 1.2s ease infinite; }
+  @keyframes pulse-dot {
+    0%,100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.6); }
+  }
+
+  /* ── HERO ── */
+  #hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    justify-content: flex-end;
+    padding: 80px 48px 80px;
+    position: relative; overflow: hidden;
+  }
+  .hero-bg-text {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: clamp(120px, 18vw, 280px);
+    font-weight: 700;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(240,237,230,0.04);
+    white-space: nowrap;
+    pointer-events: none;
+    user-select: none;
+    letter-spacing: -0.04em;
+  }
+  .hero-eyebrow {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--amber);
+    margin-bottom: 24px;
+    opacity: 0; transform: translateY(16px);
+    animation: fadeup 0.8s 0.2s ease forwards;
+  }
+  .hero-name {
+    font-size: clamp(52px, 8vw, 120px);
+    font-weight: 700;
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    margin-bottom: 32px;
+    overflow: hidden;
+  }
+  .hero-name-line {
+    display: block;
+    opacity: 0; transform: translateY(60px);
+    animation: slideup 0.9s cubic-bezier(0.16,1,0.3,1) forwards;
+  }
+  .hero-name-line:nth-child(1) { animation-delay: 0.35s; }
+  .hero-name-line:nth-child(2) { animation-delay: 0.5s; color: var(--amber); }
+  @keyframes slideup {
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeup {
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .hero-tagline {
+    font-size: clamp(14px, 1.6vw, 18px);
+    color: var(--fg-dim);
+    max-width: 480px;
+    line-height: 1.6;
+    opacity: 0; transform: translateY(16px);
+    animation: fadeup 0.8s 0.75s ease forwards;
+  }
+  .hero-tagline em { color: var(--fg); font-style: normal; }
+  .hero-scroll {
+    position: absolute; bottom: 36px; right: 48px;
+    display: flex; align-items: center; gap: 12px;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--fg-dim);
+    opacity: 0; animation: fadeup 0.8s 1.2s ease forwards;
+  }
+  .hero-scroll-line {
+    width: 40px; height: 1px;
+    background: var(--fg-dim);
+    animation: scroll-line 2s ease infinite;
+  }
+  @keyframes scroll-line {
+    0%,100% { transform: scaleX(1); transform-origin: left; }
+    50% { transform: scaleX(0.3); transform-origin: left; }
+  }
+
+  /* ── SECTIONS ── */
+  section { padding: 120px 48px; }
+  .section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px; letter-spacing: 0.25em;
+    text-transform: uppercase; color: var(--amber);
+    margin-bottom: 64px;
+    display: flex; align-items: center; gap: 16px;
+  }
+  .section-label::after {
+    content: ''; flex: 1; height: 1px;
+    background: linear-gradient(to right, rgba(240,237,230,0.1), transparent);
+  }
+
+  /* ── ABOUT ── */
+  #about { background: var(--bg2); }
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px; align-items: start;
+    max-width: 1200px;
+  }
+  .about-headline {
+    font-size: clamp(36px, 4vw, 56px);
+    font-weight: 700; line-height: 1.1;
+    letter-spacing: -0.025em;
+  }
+  .about-headline span { color: var(--amber); }
+  .about-body {
+    color: var(--fg-dim); font-size: 17px; line-height: 1.75;
+  }
+  .about-body p + p { margin-top: 20px; }
+  .about-body strong { color: var(--fg); font-weight: 500; }
+  .about-tags {
+    display: flex; flex-wrap: wrap; gap: 10px; margin-top: 32px;
+  }
+  .tag {
+    padding: 6px 16px;
+    border: 1px solid rgba(240,237,230,0.12);
+    border-radius: 100px;
+    font-size: 12px; letter-spacing: 0.06em;
+    color: var(--fg-dim);
+    transition: all 0.2s;
+    cursor: none;
+  }
+  .tag:hover { border-color: var(--amber); color: var(--amber); }
+
+  /* ── NOW ── */
+  #now { background: var(--bg); }
+  .now-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    max-width: 1200px;
+  }
+  .now-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 16px;
+    padding: 32px 28px;
+    position: relative; overflow: hidden;
+    cursor: none;
+    transition: transform 0.3s cubic-bezier(0.16,1,0.3,1),
+                border-color 0.3s,
+                background 0.3s;
+  }
+  .now-card:hover {
+    transform: translateY(-8px);
+    border-color: rgba(255,255,255,0.14);
+    background: rgba(255,255,255,0.055);
+  }
+  .now-card::before {
+    content: '';
+    position: absolute; bottom: 0; left: 0; right: 0;
+    height: 120px;
+    background: linear-gradient(to top, var(--card-accent, var(--amber-glow)), transparent);
+    opacity: 0; transition: opacity 0.3s;
+    pointer-events: none;
+  }
+  .now-card:hover::before { opacity: 1; }
+  .now-card[data-type="game"] { --card-accent: oklch(68% 0.18 52 / 0.12); }
+  .now-card[data-type="watch"] { --card-accent: oklch(68% 0.14 200 / 0.12); }
+  .now-card[data-type="read"] { --card-accent: oklch(68% 0.14 160 / 0.12); }
+  .now-card[data-type="learn"] { --card-accent: oklch(58% 0.18 25 / 0.12); }
+
+  .now-type {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px; letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .now-type-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--dot-color, var(--amber));
+    animation: pulse-dot 2s ease infinite;
+  }
+  .now-card[data-type="game"] .now-type-dot { --dot-color: var(--amber); color: var(--amber); }
+  .now-card[data-type="watch"] .now-type-dot { --dot-color: var(--teal); color: var(--teal); }
+  .now-card[data-type="read"] .now-type-dot { --dot-color: oklch(68% 0.14 160); color: oklch(68% 0.14 160); }
+  .now-card[data-type="learn"] .now-type-dot { --dot-color: var(--red); color: var(--red); }
+  .now-card[data-type="game"] .now-type { color: var(--amber); }
+  .now-card[data-type="watch"] .now-type { color: var(--teal); }
+  .now-card[data-type="read"] .now-type { color: oklch(68% 0.14 160); }
+  .now-card[data-type="learn"] .now-type { color: var(--red); }
+
+  .now-emoji {
+    font-size: 48px; margin-bottom: 20px;
+    display: block;
+    transition: transform 0.3s;
+  }
+  .now-card:hover .now-emoji { transform: scale(1.1) rotate(-5deg); }
+  .now-title {
+    font-size: 20px; font-weight: 600;
+    line-height: 1.2; margin-bottom: 10px;
+  }
+  .now-sub {
+    font-size: 13px; color: var(--fg-dim); line-height: 1.5;
+  }
+  .now-progress {
+    margin-top: 20px;
+    height: 2px; background: rgba(255,255,255,0.08); border-radius: 2px;
+    overflow: hidden;
+  }
+  .now-progress-fill {
+    height: 100%; border-radius: 2px;
+    background: var(--dot-color, var(--amber));
+    transform-origin: left;
+    animation: progress-in 1.2s 0.5s cubic-bezier(0.16,1,0.3,1) both;
+  }
+  @keyframes progress-in {
+    from { transform: scaleX(0); }
+    to { transform: scaleX(1); }
+  }
+
+  /* ── INTERESTS ── */
+  #interests { background: var(--bg2); }
+  .interests-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    max-width: 1200px;
+  }
+  .interest-item {
+    padding: 40px 36px;
+    border: 1px solid rgba(255,255,255,0.05);
+    cursor: none;
+    transition: background 0.3s;
+    position: relative; overflow: hidden;
+  }
+  .interest-item:hover { background: rgba(255,255,255,0.03); }
+  .interest-item:hover .interest-number { opacity: 1; transform: translateX(0); }
+  .interest-icon { font-size: 32px; margin-bottom: 16px; display: block; }
+  .interest-name {
+    font-size: 20px; font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .interest-desc { font-size: 14px; color: var(--fg-dim); line-height: 1.6; }
+  .interest-number {
+    position: absolute; top: 20px; right: 24px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px; color: var(--amber);
+    opacity: 0; transform: translateX(8px);
+    transition: all 0.3s;
+  }
+
+  /* ── TRAVELS ── */
+  #travels { background: var(--bg); }
+  .travels-list { max-width: 800px; }
+  .travel-item {
+    display: flex; align-items: baseline; gap: 24px;
+    padding: 28px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    cursor: none;
+    transition: padding-left 0.3s;
+  }
+  .travel-item:hover { padding-left: 12px; }
+  .travel-year {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px; color: var(--amber); letter-spacing: 0.1em;
+    min-width: 60px;
+  }
+  .travel-name { font-size: 22px; font-weight: 600; flex: 1; }
+  .travel-note { font-size: 13px; color: var(--fg-dim); }
+  .travel-arrow {
+    font-size: 18px; color: var(--fg-dim);
+    transition: transform 0.3s, color 0.3s;
+  }
+  .travel-item:hover .travel-arrow { transform: translateX(4px); color: var(--amber); }
+
+  /* ── PROJECTS ── */
+  #projects { background: var(--bg); position: relative; }
+  .projects-intro {
+    font-size: 16px; color: var(--fg-dim); max-width: 540px;
+    line-height: 1.6; margin-bottom: 56px;
+  }
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  .project-card {
+    background: var(--bg);
+    padding: 36px 32px;
+    cursor: none;
+    transition: background 0.3s;
+    position: relative;
+    display: flex; flex-direction: column;
+    min-height: 200px;
+  }
+  .project-card:hover { background: rgba(255,255,255,0.025); }
+  .project-card:hover .project-arrow { transform: translate(4px, -4px); color: var(--amber); }
+  .project-card:hover .project-icon { transform: scale(1.08) rotate(-3deg); }
+  .project-meta {
+    display: flex; align-items: center; gap: 12px;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--fg-dim);
+    margin-bottom: 24px;
+  }
+  .project-id { color: var(--amber); }
+  .project-status {
+    padding: 3px 8px;
+    border: 1px solid rgba(255,255,255,0.1);
+    font-size: 9px;
+  }
+  .project-status.shipped { color: var(--teal); border-color: rgba(99,184,170,0.3); }
+  .project-status.building { color: var(--amber); border-color: rgba(212,165,116,0.3); }
+  .project-status.thinking { color: var(--fg-dim); }
+  .project-icon {
+    font-size: 36px;
+    margin-bottom: 18px;
+    display: inline-block;
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transform-origin: bottom left;
+  }
+  .project-name {
+    font-size: 22px; font-weight: 600;
+    margin-bottom: 10px;
+    letter-spacing: -0.01em;
+  }
+  .project-desc {
+    font-size: 13.5px; color: var(--fg-dim); line-height: 1.65;
+    flex: 1;
+  }
+  .project-tags {
+    display: flex; flex-wrap: wrap; gap: 6px;
+    margin-top: 20px;
+  }
+  .project-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px; letter-spacing: 0.05em;
+    padding: 4px 9px;
+    border: 1px solid rgba(255,255,255,0.08);
+    color: var(--fg-dim);
+    border-radius: 2px;
+  }
+  .project-arrow {
+    position: absolute; top: 32px; right: 32px;
+    font-size: 16px; color: var(--fg-dim);
+    transition: transform 0.3s, color 0.3s;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    padding: 60px 48px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .footer-name {
+    font-size: 13px; color: var(--fg-dim);
+    font-family: 'Space Mono', monospace;
+  }
+  .footer-contact {
+    display: flex; gap: 28px;
+  }
+  .footer-contact a {
+    font-size: 12px; color: var(--fg-dim);
+    text-decoration: none; letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .footer-contact a:hover { color: var(--amber); }
+  .footer-mufc {
+    font-size: 13px; color: var(--fg-dim);
+    display: flex; align-items: center; gap: 6px;
+  }
+  .mufc-red { color: var(--red); }
+
+  /* ── REVEAL ANIMATIONS ── */
+  .reveal {
+    opacity: 0; transform: translateY(32px);
+    transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.16,1,0.3,1);
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.2s; }
+  .reveal-delay-3 { transition-delay: 0.3s; }
+  .reveal-delay-4 { transition-delay: 0.4s; }
+
+  /* ── MARQUEE ── */
+  .marquee-wrap {
+    overflow: hidden;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    padding: 18px 0;
+    background: rgba(255,255,255,0.015);
+  }
+  .marquee-track {
+    display: flex; gap: 64px;
+    width: max-content;
+    animation: marquee 28s linear infinite;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--fg-dim);
+  }
+  .marquee-track span { white-space: nowrap; }
+  .marquee-track .sep { color: var(--amber); }
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  /* ── STAT PILLS ── */
+  .stats-row {
+    display: flex; gap: 20px; flex-wrap: wrap; margin-top: 48px;
+  }
+  .stat-pill {
+    display: flex; flex-direction: column;
+    padding: 20px 28px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 12px;
+    min-width: 120px;
+  }
+  .stat-value {
+    font-size: 28px; font-weight: 700;
+    color: var(--amber); line-height: 1;
+    margin-bottom: 6px;
+  }
+  .stat-label {
+    font-size: 11px; color: var(--fg-dim);
+    letter-spacing: 0.08em; text-transform: uppercase;
+    font-family: 'Space Mono', monospace;
+  }
+
+  /* ── DONE LIST ── */
+  .done-list { list-style: none; padding: 0; }
+  .done-list li {
+    display: flex; align-items: baseline; justify-content: space-between;
+    gap: 12px;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    font-size: 13px;
+    color: var(--fg-dim);
+    transition: color 0.2s, padding-left 0.2s;
+    cursor: none;
+  }
+  .done-list li:hover {
+    color: var(--fg);
+    padding-left: 6px;
+  }
+  .done-title { line-height: 1.4; }
+  .done-rating {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--fg-dim);
+    opacity: 0.6;
+    flex-shrink: 0;
+  }
+  .done-rating.done-top { color: var(--amber); opacity: 1; font-weight: 700; }
+
+  @media (max-width: 900px) {
+    #now .now-grid { grid-template-columns: 1fr 1fr !important; }
+    #now > div[style*="grid-template-columns"] { grid-template-columns: 1fr !important; }
+  }
+  @media (max-width: 900px) {
+    nav { padding: 24px; }
+    section { padding: 80px 24px; }
+    #hero { padding: 80px 24px 64px; }
+    .about-grid { grid-template-columns: 1fr; gap: 40px; }
+    .now-grid { grid-template-columns: 1fr 1fr; }
+    .interests-grid { grid-template-columns: 1fr 1fr; }
+    .projects-grid { grid-template-columns: 1fr; }
+    footer { flex-direction: column; gap: 24px; text-align: center; }
+    .footer-contact { justify-content: center; }
+  }
+  @media (max-width: 540px) {
+    .now-grid { grid-template-columns: 1fr; }
+    .interests-grid { grid-template-columns: 1fr; }
+    .nav-links { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div id="cursor"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">AVI.DEV</div>
+  <div class="nav-links">
+    <a href="#about">About</a>
+    <a href="#now">Now</a>
+    <a href="#interests">Interests</a>
+    <a href="#projects">Projects</a>
+    <a href="#travels">Places</a>
+    <button id="audio-btn">
+      <span class="audio-dot"></span>
+      <span id="audio-label">Ambient</span>
+    </button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg-text">BANGERA</div>
+  <div class="hero-eyebrow">↳ Product Manager · Mumbai, India</div>
+  <h1 class="hero-name">
+    <span class="hero-name-line">Hi, I'm</span>
+    <span class="hero-name-line">Avinash.</span>
+  </h1>
+  <p class="hero-tagline">
+    Engineer turned <em>Product Manager</em>. Amateur writer. Obsessive gamer. Perpetual learner. I live on Notion, trade on Zerodha, and bleed <em style="color:var(--red)">Manchester United red</em>.
+  </p>
+  <div class="hero-scroll">
+    <div class="hero-scroll-line"></div>
+    Scroll
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <span>Product Manager</span><span class="sep">✦</span>
+    <span>Video Games</span><span class="sep">✦</span>
+    <span>Astrophysics</span><span class="sep">✦</span>
+    <span>Manchester United</span><span class="sep">✦</span>
+    <span>Crypto</span><span class="sep">✦</span>
+    <span>Cooking</span><span class="sep">✦</span>
+    <span>Japanese</span><span class="sep">✦</span>
+    <span>Notion Nerd</span><span class="sep">✦</span>
+    <span>PC Building</span><span class="sep">✦</span>
+    <span>Zerodha Trader</span><span class="sep">✦</span>
+    <span>AI Side Projects</span><span class="sep">✦</span>
+    <span>Amateur Writer</span><span class="sep">✦</span>
+    <!-- duplicate for seamless loop -->
+    <span>Product Manager</span><span class="sep">✦</span>
+    <span>Video Games</span><span class="sep">✦</span>
+    <span>Astrophysics</span><span class="sep">✦</span>
+    <span>Manchester United</span><span class="sep">✦</span>
+    <span>Crypto</span><span class="sep">✦</span>
+    <span>Cooking</span><span class="sep">✦</span>
+    <span>Japanese</span><span class="sep">✦</span>
+    <span>Notion Nerd</span><span class="sep">✦</span>
+    <span>PC Building</span><span class="sep">✦</span>
+    <span>Zerodha Trader</span><span class="sep">✦</span>
+    <span>AI Side Projects</span><span class="sep">✦</span>
+    <span>Amateur Writer</span><span class="sep">✦</span>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="section-label reveal">001 — About Me</div>
+  <div class="about-grid">
+    <div class="reveal reveal-delay-1">
+      <h2 class="about-headline">
+        Engineer by degree,<br><span>PM</span> by<br>passion.
+      </h2>
+      <div class="stats-row">
+        <div class="stat-pill">
+          <div class="stat-value">∞</div>
+          <div class="stat-label">Side Quests</div>
+        </div>
+        <div class="stat-pill">
+          <div class="stat-value">118</div>
+          <div class="stat-label">Days in 2026</div>
+        </div>
+        <div class="stat-pill">
+          <div class="stat-value">MUFC</div>
+          <div class="stat-label">Football Club</div>
+        </div>
+      </div>
+    </div>
+    <div class="reveal reveal-delay-2">
+      <div class="about-body">
+        <p>
+          I'm <strong>Avinash Bangera</strong> — most people call me <strong>Avi</strong>. I started out as an Electronics & Telecom engineer before realising I cared more about <strong>why</strong> products are built than how they're wired together.
+        </p>
+        <p>
+          Now I'm a Product Manager who moonlights as a writer, a tinkerer of AI side-projects, and someone who genuinely spends time thinking about <strong>astrophysics</strong> for fun. I plan my life in Notion with the same obsessive energy I bring to a Souls game boss fight.
+        </p>
+        <p>
+          I live in <strong>Mumbai</strong> with Pam, who humours my 2am game sessions and annual Game Awards tradition.
+        </p>
+      </div>
+      <div class="about-tags">
+        <span class="tag">EC Engineer → PM</span>
+        <span class="tag">Notion Evangelist</span>
+        <span class="tag">Zerodha Trader</span>
+        <span class="tag">Souls-like fan</span>
+        <span class="tag">Amateur Writer</span>
+        <span class="tag">AI Tinkerer</span>
+        <span class="tag">Korean Food convert</span>
+        <span class="tag">Duolingo Japanese</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- NOW -->
+<section id="now">
+  <div class="section-label reveal">002 — Right Now</div>
+  <p class="reveal" style="color:var(--fg-dim); font-size:16px; margin-bottom:48px; max-width:480px; line-height:1.6;">
+    What I'm currently obsessing over. Updated April 2026.
+  </p>
+  <div class="now-grid">
+
+    <div class="now-card reveal reveal-delay-1" data-type="game">
+      <div class="now-type"><span class="now-type-dot"></span>Playing</div>
+      <span class="now-emoji">⚔️</span>
+      <div class="now-title">Sekiro: Shadows Die Twice</div>
+      <div class="now-sub">FromSoftware's masterpiece. Started Mar 9. Every boss is a lesson in patience. Already rated 10/10.</div>
+      <div class="now-progress">
+        <div class="now-progress-fill" style="width:55%"></div>
+      </div>
+    </div>
+
+    <div class="now-card reveal reveal-delay-2" data-type="watch">
+      <div class="now-type"><span class="now-type-dot"></span>Watching</div>
+      <span class="now-emoji">📺</span>
+      <div class="now-title">From: Season 4 <span style="color:var(--fg-dim); font-size:13px; font-weight:400;">+ Rooster</span></div>
+      <div class="now-sub">From S4 on Prime (since Apr 26). Rooster on JioHotstar (since Mar 13). Two parallel watches.</div>
+      <div class="now-progress">
+        <div class="now-progress-fill" style="width:40%"></div>
+      </div>
+    </div>
+
+    <div class="now-card reveal reveal-delay-3" data-type="read">
+      <div class="now-type"><span class="now-type-dot"></span>Reading</div>
+      <span class="now-emoji">📖</span>
+      <div class="now-title">The Vatican Secret</div>
+      <div class="now-sub">David Leadbeater. Started Apr 18. Cracking through pages between Sekiro deaths.</div>
+      <div class="now-progress">
+        <div class="now-progress-fill" style="width:30%"></div>
+      </div>
+    </div>
+
+    <div class="now-card reveal reveal-delay-4" data-type="learn">
+      <div class="now-type"><span class="now-type-dot"></span>Learning</div>
+      <span class="now-emoji">🇯🇵</span>
+      <div class="now-title">Japanese</div>
+      <div class="now-sub">Daily Duolingo. Slowly. The kind of side quest with no end screen.</div>
+      <div class="now-progress">
+        <div class="now-progress-fill" style="width:20%"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Recently Completed - smaller, denser -->
+  <div style="margin-top:64px; max-width:1200px;">
+    <div class="reveal" style="font-family:'Space Mono',monospace; font-size:11px; letter-spacing:0.2em; text-transform:uppercase; color:var(--fg-dim); margin-bottom:20px; display:flex; align-items:center; gap:14px;">
+      <span>Recently Completed</span>
+      <span style="flex:1; height:1px; background:linear-gradient(to right, rgba(240,237,230,0.08), transparent);"></span>
+    </div>
+
+    <div class="reveal" style="display:grid; grid-template-columns: repeat(3, 1fr); gap:36px;">
+
+      <div>
+        <div style="font-size:10px; letter-spacing:0.2em; text-transform:uppercase; color:var(--teal); margin-bottom:12px; font-family:'Space Mono',monospace;">📺 Watched</div>
+        <ul class="done-list">
+          <li><span class="done-title">Sambhavam Adhyayam Onnu</span><span class="done-rating">8.5</span></li>
+          <li><span class="done-title">The Perfect Neighbour</span><span class="done-rating">7.5</span></li>
+          <li><span class="done-title">One Battle After Another</span><span class="done-rating done-top">10</span></li>
+          <li><span class="done-title">The Attacks of 26/11</span><span class="done-rating">6</span></li>
+          <li><span class="done-title">In the Blink of an Eye</span><span class="done-rating">8</span></li>
+          <li><span class="done-title">Accused</span><span class="done-rating">7</span></li>
+          <li><span class="done-title">Agatha Christie's Seven Dials</span><span class="done-rating">7</span></li>
+        </ul>
+      </div>
+
+      <div>
+        <div style="font-size:10px; letter-spacing:0.2em; text-transform:uppercase; color:oklch(68% 0.14 160); margin-bottom:12px; font-family:'Space Mono',monospace;">📚 Read</div>
+        <ul class="done-list">
+          <li><span class="done-title">The Atlas Six</span><span class="done-rating">2</span></li>
+          <li><span class="done-title">What You Are Looking for Is in the Library</span><span class="done-rating done-top">9.5</span></li>
+          <li><span class="done-title">Calcutta: Two Years in the City</span><span class="done-rating done-top">9.5</span></li>
+          <li><span class="done-title">Wrong Place Wrong Time</span><span class="done-rating">8.5</span></li>
+          <li><span class="done-title">The Vegetarian</span><span class="done-rating">9</span></li>
+          <li><span class="done-title">Snow Crash</span><span class="done-rating">5</span></li>
+          <li><span class="done-title">The Passengers on the Hankyu Line</span><span class="done-rating done-top">9.5</span></li>
+        </ul>
+      </div>
+
+      <div>
+        <div style="font-size:10px; letter-spacing:0.2em; text-transform:uppercase; color:var(--amber); margin-bottom:12px; font-family:'Space Mono',monospace;">🎮 Played</div>
+        <ul class="done-list">
+          <li><span class="done-title">HITMAN World of Assassination</span><span class="done-rating">8</span></li>
+          <li><span class="done-title">The Alters</span><span class="done-rating">4</span></li>
+          <li><span class="done-title">The First Berserker: Khazan</span><span class="done-rating done-top">9</span></li>
+          <li><span class="done-title">Path of Exile</span><span class="done-rating">3</span></li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- INTERESTS -->
+<section id="interests">
+  <div class="section-label reveal">003 — Interests</div>
+  <div class="interests-grid">
+
+    <div class="interest-item reveal reveal-delay-1">
+      <span class="interest-number">01</span>
+      <span class="interest-icon">🎮</span>
+      <div class="interest-name">Video Games</div>
+      <div class="interest-desc">Souls-likes, open worlds, and anything with a good story. Sekiro, Hades II, Balatro — genre doesn't matter as long as it's great.</div>
+    </div>
+
+    <div class="interest-item reveal reveal-delay-2">
+      <span class="interest-number">02</span>
+      <span class="interest-icon">🔭</span>
+      <div class="interest-name">Astrophysics</div>
+      <div class="interest-desc">Black holes, dark matter, the Fermi paradox. The universe is absurdly large and I find that deeply comforting.</div>
+    </div>
+
+    <div class="interest-item reveal reveal-delay-3">
+      <span class="interest-number">03</span>
+      <span class="interest-icon">🤖</span>
+      <div class="interest-name">AI & Tech</div>
+      <div class="interest-desc">I build silly side-projects with LLMs and MCPs. Notion + OpenAI integrations, personal AI agents, content tools. Tinkering is my love language.</div>
+    </div>
+
+    <div class="interest-item reveal reveal-delay-1">
+      <span class="interest-number">04</span>
+      <span class="interest-icon">📈</span>
+      <div class="interest-name">Markets & Crypto</div>
+      <div class="interest-desc">Active on Zerodha — options trading, equity. Keep an eye on crypto with the same chaotic energy as a Bigg Boss episode.</div>
+    </div>
+
+    <div class="interest-item reveal reveal-delay-2">
+      <span class="interest-number">05</span>
+      <span class="interest-icon">🍳</span>
+      <div class="interest-name">Cooking</div>
+      <div class="interest-desc">Nothing beats cooking something from scratch. Korean recipes have been dominating my kitchen since the Seoul trip.</div>
+    </div>
+
+    <div class="interest-item reveal reveal-delay-3">
+      <span class="interest-number">06</span>
+      <span class="interest-icon">✍️</span>
+      <div class="interest-name">Writing</div>
+      <div class="interest-desc">I journal every day and write threads online. I think in sentences. My Notion has more words in it than most novels.</div>
+    </div>
+
+    <div class="interest-item reveal reveal-delay-1">
+      <span class="interest-number">07</span>
+      <span class="interest-icon">🖥️</span>
+      <div class="interest-name">PC Building</div>
+      <div class="interest-desc">I recommend phones to friends like it's my actual job. Custom PCs, specs sheets, teardowns — pure joy in component form.</div>
+    </div>
+
+    <div class="interest-item reveal reveal-delay-2">
+      <span class="interest-number">08</span>
+      <span class="interest-icon">🌍</span>
+      <div class="interest-name">Geopolitics</div>
+      <div class="interest-desc">The world is a complicated place and I like understanding why. From trade wars to diplomacy — always have an opinion.</div>
+    </div>
+
+    <div class="interest-item reveal reveal-delay-3">
+      <span class="interest-number">09</span>
+      <span class="interest-icon">⚽</span>
+      <div class="interest-name">Manchester United</div>
+      <div class="interest-desc">A Manchester United fan in 2026. It builds character. Irrational loyalty is its own form of meditation.</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="section-label reveal">004 — Projects</div>
+  <p class="projects-intro reveal">
+    Side-quests I keep returning to. Built between Sekiro deaths and afternoon chai. Some shipped, some still in my head.
+  </p>
+  <div class="projects-grid">
+
+    <a href="https://aidawn.netlify.app/" target="_blank" rel="noopener" class="project-card reveal reveal-delay-1" style="text-decoration:none; color:inherit;">
+      <div class="project-meta">
+        <span class="project-id">P-01</span>
+        <span class="project-status shipped">Shipped</span>
+      </div>
+      <span class="project-icon">🌅</span>
+      <div class="project-name">DawnAI</div>
+      <div class="project-desc">A landing page for an AI morning-routine product. Copy, design, deploy — end to end. Reclaim your mornings, transform your life.</div>
+      <div class="project-tags">
+        <span class="project-tag">landing</span>
+        <span class="project-tag">netlify</span>
+        <span class="project-tag">copywriting</span>
+      </div>
+      <span class="project-arrow">↗</span>
+    </a>
+
+    <div class="project-card reveal reveal-delay-2">
+      <div class="project-meta">
+        <span class="project-id">P-02</span>
+        <span class="project-status shipped">Running</span>
+      </div>
+      <span class="project-icon">🤯</span>
+      <div class="project-name">Notion Daily Quote</div>
+      <div class="project-desc">A GitHub Action runs a Python script at 1AM, feeds my consumed media into the OpenAI API, and writes a fresh insight onto my Notion home page every morning. ~$5/month. NotionAI without the price tag.</div>
+      <div class="project-tags">
+        <span class="project-tag">openai</span>
+        <span class="project-tag">notion-mcp</span>
+        <span class="project-tag">python</span>
+        <span class="project-tag">github-actions</span>
+      </div>
+      <span class="project-arrow">→</span>
+    </div>
+
+    <div class="project-card reveal reveal-delay-3">
+      <div class="project-meta">
+        <span class="project-id">P-03</span>
+        <span class="project-status building">Building</span>
+      </div>
+      <span class="project-icon">🙋‍♀️</span>
+      <div class="project-name">Personal AI Agent</div>
+      <div class="project-desc">A Discord bot wired to my Calendar, Gmail, and Notion Life OS. Posts a morning briefing, daily review, weekly + monthly recaps. Semantic memory, event triggers, energy-aware scope. My own assistant for ~$5/month.</div>
+      <div class="project-tags">
+        <span class="project-tag">discord.py</span>
+        <span class="project-tag">fastapi</span>
+        <span class="project-tag">embeddings</span>
+        <span class="project-tag">aws-ec2</span>
+      </div>
+      <span class="project-arrow">→</span>
+    </div>
+
+    <div class="project-card reveal reveal-delay-1">
+      <div class="project-meta">
+        <span class="project-id">P-04</span>
+        <span class="project-status shipped">Shipped</span>
+      </div>
+      <span class="project-icon">🍱</span>
+      <div class="project-name">Avi's Food Snap</div>
+      <div class="project-desc">A Hugging Face space that takes a photo of your plate and tells you what's on it. Made because I was curious how good vision models had gotten. Answer: pretty good.</div>
+      <div class="project-tags">
+        <span class="project-tag">huggingface</span>
+        <span class="project-tag">vision</span>
+        <span class="project-tag">gradio</span>
+      </div>
+      <span class="project-arrow">→</span>
+    </div>
+
+    <div class="project-card reveal reveal-delay-2">
+      <div class="project-meta">
+        <span class="project-id">P-05</span>
+        <span class="project-status building">Building</span>
+      </div>
+      <span class="project-icon">📲</span>
+      <div class="project-name">Content Calendar Engine</div>
+      <div class="project-desc">A long, opinionated prompt that reads my Notion, Gmail, calendar, X feed, and Substack — then ships a 7-day content calendar in my actual voice. 14 tweets, 14 threads, 14 IG posts. No generic AI slop.</div>
+      <div class="project-tags">
+        <span class="project-tag">prompt-eng</span>
+        <span class="project-tag">notion-api</span>
+        <span class="project-tag">voice-mimic</span>
+      </div>
+      <span class="project-arrow">→</span>
+    </div>
+
+    <div class="project-card reveal reveal-delay-3">
+      <div class="project-meta">
+        <span class="project-id">P-06</span>
+        <span class="project-status thinking">Researching</span>
+      </div>
+      <span class="project-icon">🫰</span>
+      <div class="project-name">Avi's FnO Researcher</div>
+      <div class="project-desc">An LLM-powered F&amp;O research assistant for NSE/BSE. Strict live-price verification, contract spec validation, capital-aware lot sizing. Educational scenarios only — no tips, no hype.</div>
+      <div class="project-tags">
+        <span class="project-tag">trading</span>
+        <span class="project-tag">prompt-eng</span>
+        <span class="project-tag">fno</span>
+      </div>
+      <span class="project-arrow">→</span>
+    </div>
+
+    <a href="https://avinashb.substack.com" target="_blank" rel="noopener" class="project-card reveal reveal-delay-1" style="text-decoration:none; color:inherit;">
+      <div class="project-meta">
+        <span class="project-id">P-07</span>
+        <span class="project-status shipped">Live</span>
+      </div>
+      <span class="project-icon">📝</span>
+      <div class="project-name">Substack: Mini-PCs &amp; AI</div>
+      <div class="project-desc">Long-form essays on where computing is heading. The Time of Mini-PCs, custom chatbots, Apple's AI scramble, gaming reviews, personal finance. Published when something genuinely won't leave my head.</div>
+      <div class="project-tags">
+        <span class="project-tag">substack</span>
+        <span class="project-tag">essays</span>
+      </div>
+      <span class="project-arrow">↗</span>
+    </a>
+
+    <div class="project-card reveal reveal-delay-2">
+      <div class="project-meta">
+        <span class="project-id">P-08</span>
+        <span class="project-status thinking">Tinkering</span>
+      </div>
+      <span class="project-icon">🖊️</span>
+      <div class="project-name">Journal Website</div>
+      <div class="project-desc">A small AI-generated app that turns my daily journal entries into a navigable site. Currently a Google AI Studio prototype. Trying to balance structure and stream-of-thought.</div>
+      <div class="project-tags">
+        <span class="project-tag">ai-studio</span>
+        <span class="project-tag">prototype</span>
+      </div>
+      <span class="project-arrow">→</span>
+    </div>
+
+  </div>
+</section>
+
+<!-- TRAVELS -->
+<section id="travels">
+  <div class="section-label reveal">005 — Places</div>
+  <div class="travels-list">
+    <div class="travel-item reveal reveal-delay-1">
+      <div class="travel-year">2026</div>
+      <div class="travel-name">Kolkata</div>
+      <div class="travel-note">Tagore's house, pool swim, met Ritayan. Fed something deep.</div>
+      <div class="travel-arrow">→</div>
+    </div>
+    <div class="travel-item reveal reveal-delay-2">
+      <div class="travel-year">2026</div>
+      <div class="travel-name">South Korea ✦</div>
+      <div class="travel-note">Vlog in progress. 15% edited. Photos uploaded. Will finish soon.</div>
+      <div class="travel-arrow">→</div>
+    </div>
+    <div class="travel-item reveal reveal-delay-3">
+      <div class="travel-year">2025</div>
+      <div class="travel-name">Vietnam</div>
+      <div class="travel-note">8-day adventure. Built a full itinerary from scratch.</div>
+      <div class="travel-arrow">→</div>
+    </div>
+    <div class="travel-item reveal reveal-delay-4">
+      <div class="travel-year">→</div>
+      <div class="travel-name" style="color:var(--fg-dim)">Next destination...</div>
+      <div class="travel-note">TBD. The world is big.</div>
+      <div class="travel-arrow" style="color:var(--amber)">✦</div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-name">© 2026 — AVINASH BANGERA</div>
+  <div class="footer-contact">
+    <a href="mailto:avi.bangera2@gmail.com">Email</a>
+    <a href="#">LinkedIn</a>
+    <a href="#">Twitter</a>
+  </div>
+  <div class="footer-mufc">
+    <span class="mufc-red">▮</span> Glory Glory Man United
+  </div>
+</footer>
+
+<script>
+// ── CURSOR ──
+const cursor = document.getElementById('cursor');
+let mx = 0, my = 0, cx = 0, cy = 0;
+document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+function animCursor() {
+  cx += (mx - cx) * 0.18;
+  cy += (my - cy) * 0.18;
+  cursor.style.left = cx + 'px';
+  cursor.style.top = cy + 'px';
+  requestAnimationFrame(animCursor);
+}
+animCursor();
+document.querySelectorAll('a, button, .now-card, .interest-item, .travel-item, .tag').forEach(el => {
+  el.addEventListener('mouseenter', () => cursor.classList.add('big'));
+  el.addEventListener('mouseleave', () => cursor.classList.remove('big'));
+});
+
+// ── SCROLL REVEAL ──
+const revealEls = document.querySelectorAll('.reveal');
+const revealObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+}, { threshold: 0.12 });
+revealEls.forEach(el => revealObs.observe(el));
+
+// ── AMBIENT AUDIO ──
+let audioCtx = null, isPlaying = false;
+let masterGain, drones = [], noiseNode;
+
+function buildAudio() {
+  if (audioCtx) return;
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  masterGain = audioCtx.createGain();
+  masterGain.gain.setValueAtTime(0, audioCtx.currentTime);
+  masterGain.connect(audioCtx.destination);
+
+  // Warm low drone
+  const freqs = [55, 82.5, 110, 165];
+  freqs.forEach((f, i) => {
+    const osc = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    const lfo = audioCtx.createOscillator();
+    const lfoGain = audioCtx.createGain();
+
+    osc.type = i % 2 === 0 ? 'sine' : 'triangle';
+    osc.frequency.value = f;
+    g.gain.value = i === 0 ? 0.3 : 0.08;
+
+    lfo.frequency.value = 0.1 + i * 0.07;
+    lfoGain.gain.value = 0.02;
+    lfo.connect(lfoGain);
+    lfoGain.connect(osc.frequency);
+    lfo.start();
+
+    osc.connect(g);
+    g.connect(masterGain);
+    osc.start();
+    drones.push(osc);
+  });
+
+  // Subtle noise pad
+  const bufSize = audioCtx.sampleRate * 4;
+  const buf = audioCtx.createBuffer(1, bufSize, audioCtx.sampleRate);
+  const data = buf.getChannelData(0);
+  for (let i = 0; i < bufSize; i++) data[i] = (Math.random() * 2 - 1) * 0.004;
+  noiseNode = audioCtx.createBufferSource();
+  noiseNode.buffer = buf;
+  noiseNode.loop = true;
+  const lpf = audioCtx.createBiquadFilter();
+  lpf.type = 'lowpass'; lpf.frequency.value = 300;
+  noiseNode.connect(lpf);
+  lpf.connect(masterGain);
+  noiseNode.start();
+}
+
+const audioBtn = document.getElementById('audio-btn');
+const audioLabel = document.getElementById('audio-label');
+
+audioBtn.addEventListener('click', () => {
+  buildAudio();
+  if (!isPlaying) {
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    masterGain.gain.cancelScheduledValues(audioCtx.currentTime);
+    masterGain.gain.linearRampToValueAtTime(0.55, audioCtx.currentTime + 2);
+    isPlaying = true;
+    audioBtn.classList.add('playing');
+    audioLabel.textContent = 'On';
+  } else {
+    masterGain.gain.cancelScheduledValues(audioCtx.currentTime);
+    masterGain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 1.5);
+    isPlaying = false;
+    audioBtn.classList.remove('playing');
+    audioLabel.textContent = 'Ambient';
+  }
+});
+
+// ── PARALLAX HERO BG TEXT ──
+const bgText = document.querySelector('.hero-bg-text');
+window.addEventListener('scroll', () => {
+  const y = window.scrollY;
+  if (bgText) bgText.style.transform = `translate(-50%, calc(-50% + ${y * 0.3}px))`;
+});
+
+// ── NOW CARD TILT ──
+document.querySelectorAll('.now-card').forEach(card => {
+  card.addEventListener('mousemove', e => {
+    const r = card.getBoundingClientRect();
+    const x = (e.clientX - r.left) / r.width - 0.5;
+    const y = (e.clientY - r.top) / r.height - 0.5;
+    card.style.transform = `translateY(-8px) rotateX(${-y * 8}deg) rotateY(${x * 8}deg)`;
+  });
+  card.addEventListener('mouseleave', () => {
+    card.style.transform = '';
+  });
+});
+</script>
+</body>
+</html>
