@@ -301,6 +301,14 @@ def main():
     print(f"  📺 TV/Movies in progress: {[page_title(p) for p in tv_ip]}")
     print(f"  📖 Books in progress:  {[page_title(p) for p in books_ip]}")
 
+    # Debug: print property names from first done item of each db
+    for label, pages in [("TV", tv_done), ("Books", books_done), ("Games", games_done)]:
+        if pages:
+            props = list(pages[0]["properties"].keys())
+            print(f"  🔑 {label} properties: {props}")
+            rating_prop = pages[0]["properties"].get("Rating") or pages[0]["properties"].get("Score")
+            print(f"  ⭐ {label} rating field sample: {rating_prop}")
+
     updated_at = datetime.now(IST).strftime("%-d %b %Y, %-I:%M %p IST")
 
     now_html = build_now_section(
