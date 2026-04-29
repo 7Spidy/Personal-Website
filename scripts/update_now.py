@@ -24,15 +24,10 @@ from datetime import datetime, timezone, timedelta
 
 NOTION_TOKEN = os.environ["NOTION_TOKEN"]
 
-# Database IDs from Notion Media Consumption page (Life OS 2026)
-DB_MOVIES_TV = "29e03aacefd181d1ae30000b3e743bca"
-DB_BOOKS     = "29e03aacefd181368136a106000bcfefb91d"
-DB_GAMES     = "29e03aacefd181e2a93a000b0a20e68b"
-
-# Cleaned UUIDs (Notion API format: 8-4-4-4-12)
-DB_MOVIES_TV = "29e03aac-efd1-81d1-ae30-000b3e743bca"
-DB_BOOKS     = "29e03aac-efd1-8136-a106-000bcfefb91d"
-DB_GAMES     = "29e03aac-efd1-81e2-a93a-000b0a20e68b"
+# Database IDs (Notion API format: 8-4-4-4-12)
+DB_MOVIES_TV = "29e03aac-efd1-80c7-b8f0-c7cce7f1dc78"
+DB_BOOKS     = "29e03aac-efd1-80c4-8d53-ed7a09f88eff"
+DB_GAMES     = "29e03aac-efd1-806f-99b8-dafa421215d5"
 
 HTML_FILE = "index.html"
 NOW_START = "<!-- NOW-SECTION-START -->"
