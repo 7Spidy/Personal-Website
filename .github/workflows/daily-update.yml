@@ -1,0 +1,43 @@
+name: 🌙 Daily Site Update (1 AM IST)
+
+on:
+  schedule:
+    # 1:00 AM IST = 19:30 UTC (previous day)
+    - cron: "30 19 * * *"
+
+  # Allow manual trigger from GitHub Actions tab
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-now-section:
+    runs-on: ubuntu-latest
+    name: Fetch Notion & patch Now section
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run update script
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+        run: python scripts/update_now.py
+
+      - name: Commit & push if changed
+        run: |
+          git config user.name  "AviBot"
+          git config user.email "avi.bangera2@gmail.com"
+          git add index.html
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "🌙 Auto-update Now section [$(date +'%d %b %Y, %I:%M %p IST' --date='TZ=\"Asia/Kolkata\" now')]"
+            git push
+          fi
