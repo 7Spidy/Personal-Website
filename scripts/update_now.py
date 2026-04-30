@@ -276,10 +276,21 @@ def patch_html(now_content: str) -> None:
             "Add these comment markers around the Now section content in index.html."
         )
 
+    import re as _re
+    days = (datetime.now(IST) - datetime(2026, 1, 1, tzinfo=IST)).days + 1
+    new_html = _re.sub(
+        r'(<div class="stat-value" id="days-in-2026">)\d+(</div>)',
+        rf'\g<1>{days}\2',
+        html
+    )
+
+    start_idx = new_html.find(NOW_START)
+    end_idx   = new_html.find(NOW_END)
+
     new_html = (
-        html[:start_idx + len(NOW_START)]
+        new_html[:start_idx + len(NOW_START)]
         + now_content
-        + "\n  " + html[end_idx:]
+        + "\n  " + new_html[end_idx:]
     )
 
     with open(HTML_FILE, "w", encoding="utf-8") as f:
