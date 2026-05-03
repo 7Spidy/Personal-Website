@@ -1,25 +1,38 @@
-# CODING AGENTS: READ THIS FIRST
+# avi.ai — Personal Website
 
-This is a **handoff bundle** from Claude Design (claude.ai/design).
+My corner of the internet. Dark, cinematic, and updated automatically so I don't have to.
 
-A user mocked up designs in HTML/CSS/JS using an AI design tool, then exported this bundle so a coding agent can implement the designs for real.
+## What's here
 
-## What you should do — IMPORTANT
+**`index.html`** — The whole site. One file. No frameworks, no build steps, no excuses.
 
-**Read the chat transcripts first.** There are 2 chat transcript(s) in `chats/`. The transcripts show the full back-and-forth between the user and the design assistant — they tell you **what the user actually wants** and **where they landed** after iterating. Don't skip them. The final HTML files are the output, but the chat is where the intent lives.
+**`scripts/update_now.py`** — Fetches my Notion databases every night and updates the *Right Now* section with whatever I'm currently playing, watching, and reading. Ratings included. Japanese learning card not included (I gave up).
 
-**Read `project/index.html` in full.** The user had this file open when they triggered the handoff, so it's almost certainly the primary design they want built. Read it top to bottom — don't skim. Then **follow its imports**: open every file it pulls in (shared components, CSS, scripts) so you understand how the pieces fit together before you start implementing.
+**`.github/workflows/daily-update.yml`** — GitHub Actions cron job that runs at 1 AM IST. While I sleep, the robots work.
 
-**If anything is ambiguous, ask the user to confirm before you start implementing.** It's much cheaper to clarify scope up front than to build the wrong thing.
+## Stack
 
-## About the design files
+- Pure HTML/CSS/JS
+- Notion API for the live media section
+- GitHub Actions for the nightly update
+- Vercel for hosting
+- Claude for building all of this
 
-The design medium is **HTML/CSS/JS** — these are prototypes, not production code. Your job is to **recreate them pixel-perfectly** in whatever technology makes sense for the target codebase (React, Vue, native, whatever fits). Match the visual output; don't copy the prototype's internal structure unless it happens to fit.
+## Sections
 
-**Don't render these files in a browser or take screenshots unless the user asks you to.** Everything you need — dimensions, colors, layout rules — is spelled out in the source. Read the HTML and CSS directly; a screenshot won't tell you anything they don't.
+- **About** — who I am, in case you forgot
+- **Right Now** — auto-updated daily from Notion
+- **Interests** — things I care about more than I should
+- **Projects** — side quests, some shipped, some still in my head
+- **Writing** — Substack essays, published when something won't leave me alone
+- **Favorite AI** — Claude (obviously)
+- **Places** — where I've been, where I'm going
+- **Contact** — if you want to say hi
 
-## Bundle contents
+## Setup (if you're forking this)
 
-- `README.md` — this file
-- `chats/` — conversation transcripts (read these!)
-- `project/` — the `Personal Website` project files (HTML prototypes, assets, components)
+Add a `NOTION_TOKEN` secret to your GitHub repo and update the database IDs in `scripts/update_now.py` with your own Notion databases. Everything else just works.
+
+---
+
+*Built with Claude. Hosted on Vercel. Fuelled by chai and Sekiro deaths.*
