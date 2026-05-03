@@ -66,13 +66,48 @@ def get_in_progress(db_id: str) -> list:
         "sorts": [{"property": "Date", "direction": "descending"}],
     })
 
-def get_done(db_id: str, limit: int = 8) -> list:
+def get_done(db_id: str, n: int = 10, pool: int = 60) -> list:
+    """Fetch a large pool then pick n items weighted by rating + recency."""
+    import random
     pages = notion_query(db_id, {
         "filter": {"property": "Status", "status": {"equals": "Done"}},
         "sorts": [{"property": "Date", "direction": "descending"}],
-        "page_size": limit,
+        "page_size": pool,
     })
-    return pages[:limit]
+    pages = pages[:pool]
+    if len(pages) <= n:
+        return pages
+
+    total = len(pages)
+    weights = []
+    for i, page in enumerate(pages):
+        # Recency: index 0 is most recent → weight 1.0, oldest → near 0
+        recency = (total - i) / total
+
+        # Rating: scale 0–10 → 0–1, square it to strongly favour high scores
+        r = page_rating(page)
+        try:
+            rating = float(r) / 10.0 if r else 0.5
+        except ValueError:
+            rating = 0.5
+        rating_w = rating ** 2
+
+        # 40% recency, 60% rating — still random overall
+        weights.append(0.4 * recency + 0.6 * rating_w)
+
+    # Weighted sample without replacement
+    selected, pool_pages, pool_weights = [], list(pages), list(weights)
+    for _ in range(n):
+        total_w = sum(pool_weights)
+        r = random.random() * total_w
+        cumulative = 0.0
+        for j, w in enumerate(pool_weights):
+            cumulative += w
+            if r <= cumulative:
+                selected.append(pool_pages.pop(j))
+                pool_weights.pop(j)
+                break
+    return selected
 
 def page_title(page: dict) -> str:
     title_prop = page["properties"].get("Name") or page["properties"].get("title", {})
@@ -312,9 +347,9 @@ def main():
     tv_ip     = get_in_progress(DB_MOVIES_TV)
     books_ip  = get_in_progress(DB_BOOKS)
 
-    games_done = get_done(DB_GAMES, 5)
-    tv_done    = get_done(DB_MOVIES_TV, 7)
-    books_done = get_done(DB_BOOKS, 7)
+    games_done = get_done(DB_GAMES, 10)
+    tv_done    = get_done(DB_MOVIES_TV, 10)
+    books_done = get_done(DB_BOOKS, 10)
 
     print(f"  🎮 Games in progress:  {[page_title(p) for p in games_ip]}")
     print(f"  📺 TV/Movies in progress: {[page_title(p) for p in tv_ip]}")
