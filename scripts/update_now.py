@@ -199,13 +199,17 @@ def build_now_section(
                                 title, sub, 35))
         card_idx += 1
 
-    # ── LEARNING (static — Japanese always on) ──
-    cards.append(card_html("learn", delays[card_idx % 4], EMOJI_LEARN, "Learning",
-                            "Japanese",
-                            "Daily Duolingo. Slowly. The kind of side quest with no end screen.",
-                            20))
-
     cards_html = "\n".join(cards)
+
+    # ── DYNAMIC INTRO ICONS ──
+    active_icons = []
+    if games_ip:  active_icons.append("🎮 Playing")
+    if tv_ip:     active_icons.append("📺 Watching")
+    if books_ip:  active_icons.append("📖 Reading")
+    icons_str = " &nbsp;·&nbsp; ".join(active_icons)
+    intro_html = f'''  <p class="reveal" style="color:var(--fg-dim); font-size:16px; margin-bottom:48px; max-width:600px; line-height:1.6;">
+    What I&rsquo;m currently obsessing over. &nbsp;<span style="color:var(--amber); font-family:\'Space Mono\',monospace; font-size:12px; letter-spacing:0.1em;">{icons_str}</span>
+  </p>'''
 
     # ── RECENTLY COMPLETED ──
     def done_list_items(pages: list) -> str:
@@ -223,6 +227,7 @@ def build_now_section(
     games_done_html = done_list_items(games_done)
 
     return f"""
+{intro_html}
   <div class="now-grid">
 {cards_html}
   </div>

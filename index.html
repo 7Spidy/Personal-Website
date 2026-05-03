@@ -461,30 +461,6 @@
     transition: transform 0.3s, color 0.3s;
   }
 
-  /* ── FOOTER ── */
-  footer {
-    padding: 60px 48px;
-    border-top: 1px solid rgba(255,255,255,0.06);
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .footer-name {
-    font-size: 13px; color: var(--fg-dim);
-    font-family: 'Space Mono', monospace;
-  }
-  .footer-contact {
-    display: flex; gap: 28px;
-  }
-  .footer-contact a {
-    font-size: 12px; color: var(--fg-dim);
-    text-decoration: none; letter-spacing: 0.1em;
-    text-transform: uppercase;
-    transition: color 0.2s;
-  }
-  .footer-contact a:hover { color: var(--amber); }
-  .footer-mufc {
-    font-size: 13px; color: var(--fg-dim);
-    display: flex; align-items: center; gap: 6px;
-  }
   .mufc-red { color: var(--red); }
 
   /* ── REVEAL ANIMATIONS ── */
@@ -582,12 +558,87 @@
     .now-grid { grid-template-columns: 1fr 1fr; }
     .interests-grid { grid-template-columns: 1fr 1fr; }
     .projects-grid { grid-template-columns: 1fr; }
-    footer { flex-direction: column; gap: 24px; text-align: center; }
-    .footer-contact { justify-content: center; }
   }
   @media (max-width: 540px) {
     .now-grid { grid-template-columns: 1fr; }
     .interests-grid { grid-template-columns: 1fr; }
+
+  /* ── WRITING ── */
+  #writing { background: var(--bg2); }
+  .writing-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 2px; background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.06);
+    max-width: 1200px;
+  }
+  .writing-card {
+    background: var(--bg2); padding: 40px 36px;
+    cursor: none; transition: background 0.3s; position: relative;
+    display: flex; flex-direction: column;
+  }
+  .writing-card:hover { background: rgba(255,255,255,0.025); }
+  .writing-card-eyebrow {
+    font-family: 'Space Mono', monospace; font-size: 10px;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--amber); margin-bottom: 16px;
+  }
+  .writing-card-title { font-size: 24px; font-weight: 700; margin-bottom: 12px; letter-spacing: -0.02em; }
+  .writing-card-desc { font-size: 14px; color: var(--fg-dim); line-height: 1.7; flex: 1; }
+  .writing-posts { margin-top: 24px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 20px; }
+  .writing-post {
+    display: flex; align-items: baseline; gap: 10px;
+    padding: 9px 0; border-bottom: 1px solid rgba(255,255,255,0.04);
+    font-size: 13px; color: var(--fg-dim); text-decoration: none;
+    transition: color 0.2s, padding-left 0.2s; cursor: none;
+  }
+  .writing-post:hover { color: var(--fg); padding-left: 6px; }
+  .writing-post-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--amber); flex-shrink: 0; margin-top: 6px; }
+  .writing-arrow { position: absolute; top: 32px; right: 32px; font-size: 16px; color: var(--fg-dim); transition: transform 0.3s, color 0.3s; }
+  .writing-card:hover .writing-arrow { transform: translate(4px,-4px); color: var(--amber); }
+
+  /* ── AI SECTION ── */
+  #favorite-ai { background: var(--bg); }
+  .ai-card {
+    max-width: 1200px;
+    border: 1px solid rgba(255,255,255,0.08);
+    padding: 56px 48px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center;
+  }
+  .ai-logo { font-size: 72px; margin-bottom: 20px; display: block; }
+  .ai-headline { font-size: clamp(28px, 3vw, 42px); font-weight: 700; letter-spacing: -0.025em; line-height: 1.1; margin-bottom: 16px; }
+  .ai-headline span { color: var(--amber); }
+  .ai-body { font-size: 15px; color: var(--fg-dim); line-height: 1.75; }
+  .ai-body p + p { margin-top: 16px; }
+  .ai-body strong { color: var(--fg); font-weight: 500; }
+  .ai-stats { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 32px; }
+  .ai-stat { padding: 12px 20px; border: 1px solid rgba(255,255,255,0.07); font-size: 12px; color: var(--fg-dim); font-family: 'Space Mono', monospace; letter-spacing: 0.06em; text-transform: uppercase; }
+  .ai-stat strong { display: block; font-size: 20px; font-weight: 700; color: var(--amber); margin-bottom: 4px; letter-spacing: -0.02em; font-family: 'Space Grotesk', sans-serif; }
+
+  /* ── CONTACT ── */
+  #contact { background: var(--bg2); }
+  .contact-headline { font-size: clamp(40px, 6vw, 80px); font-weight: 700; letter-spacing: -0.03em; line-height: 0.95; margin-bottom: 56px; }
+  .contact-headline span { color: var(--amber); }
+  .contact-links { display: flex; flex-wrap: wrap; gap: 12px; max-width: 1200px; }
+  .contact-link {
+    display: flex; align-items: center; gap: 12px;
+    padding: 18px 32px; border: 1px solid rgba(255,255,255,0.1);
+    text-decoration: none; color: var(--fg-dim); font-size: 14px;
+    letter-spacing: 0.06em; transition: all 0.2s; cursor: none;
+  }
+  .contact-link:hover { border-color: var(--amber); color: var(--amber); }
+  .contact-link-icon { font-size: 20px; }
+  .contact-footer-bar {
+    margin-top: 80px; padding-top: 32px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 12px; color: var(--fg-dim); font-family: 'Space Mono', monospace;
+  }
+
+  @media (max-width: 900px) {
+    .writing-grid { grid-template-columns: 1fr; }
+    .ai-card { grid-template-columns: 1fr; gap: 32px; padding: 40px 28px; }
+    .contact-footer-bar { flex-direction: column; gap: 16px; text-align: center; }
+  }
     .nav-links { display: none; }
   }
 </style>
@@ -604,7 +655,9 @@
     <a href="#now">Now</a>
     <a href="#interests">Interests</a>
     <a href="#projects">Projects</a>
+    <a href="#writing">Writing</a>
     <a href="#travels">Places</a>
+    <a href="#contact">Contact</a>
     <button id="audio-btn">
       <span class="audio-dot"></span>
       <span id="audio-label">Ambient</span>
@@ -712,9 +765,6 @@
 <!-- NOW -->
 <section id="now">
   <div class="section-label reveal">002 — Right Now</div>
-  <p class="reveal" style="color:var(--fg-dim); font-size:16px; margin-bottom:48px; max-width:480px; line-height:1.6;">
-    What I'm currently obsessing over. Updated April 2026.
-  </p>
   <!-- NOW-SECTION-START -->
   <div class="now-grid">
 
@@ -748,15 +798,6 @@
       </div>
     </div>
 
-    <div class="now-card reveal reveal-delay-4" data-type="learn">
-      <div class="now-type"><span class="now-type-dot"></span>Learning</div>
-      <span class="now-emoji">🇯🇵</span>
-      <div class="now-title">Japanese</div>
-      <div class="now-sub">Daily Duolingo. Slowly. The kind of side quest with no end screen.</div>
-      <div class="now-progress">
-        <div class="now-progress-fill" style="width:20%"></div>
-      </div>
-    </div>
   </div>
 
   <!-- Recently Completed - smaller, denser -->
@@ -1021,9 +1062,74 @@
   </div>
 </section>
 
+<!-- WRITING -->
+<section id="writing">
+  <div class="section-label reveal">005 — Writing</div>
+  <div class="writing-grid">
+
+    <a href="https://avinashb.substack.com/" target="_blank" rel="noopener" class="writing-card reveal reveal-delay-1" style="text-decoration:none; color:inherit;">
+      <div class="writing-card-eyebrow">Newsletter · Essays</div>
+      <div class="writing-card-title">Substack: Mini-PCs &amp; AI</div>
+      <div class="writing-card-desc">
+        Long-form essays on where computing is heading. I write when something genuinely won't leave my head — published pieces on the rise of mini-PCs, Apple's AI scramble, building personal chatbots, and the intersection of technology and daily life.
+      </div>
+      <div class="writing-posts">
+        <a href="https://avinashb.substack.com/" target="_blank" rel="noopener" class="writing-post"><span class="writing-post-dot"></span>The Time of Mini-PCs</a>
+        <a href="https://avinashb.substack.com/" target="_blank" rel="noopener" class="writing-post"><span class="writing-post-dot"></span>Building Your Own AI Chatbot</a>
+        <a href="https://avinashb.substack.com/" target="_blank" rel="noopener" class="writing-post"><span class="writing-post-dot"></span>Apple's AI Scramble</a>
+        <a href="https://avinashb.substack.com/" target="_blank" rel="noopener" class="writing-post"><span class="writing-post-dot"></span>Personal Finance in the Age of AI</a>
+      </div>
+      <span class="writing-arrow">↗</span>
+    </a>
+
+    <div class="writing-card reveal reveal-delay-2">
+      <div class="writing-card-eyebrow">Daily Practice · Journal</div>
+      <div class="writing-card-title">The Journal</div>
+      <div class="writing-card-desc">
+        I've journaled every single day for years. It's how I process the world — unsanitised, stream-of-thought, honest. My Notion has more words in it than most novels. I'm slowly building a tool to make it navigable.
+      </div>
+      <div class="writing-posts">
+        <span class="writing-post" style="cursor:default;"><span class="writing-post-dot"></span>Daily entries since 2023</span>
+        <span class="writing-post" style="cursor:default;"><span class="writing-post-dot"></span>Ideas, observations, reviews</span>
+        <span class="writing-post" style="cursor:default;"><span class="writing-post-dot"></span>Journal Website — in progress</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- FAVORITE AI -->
+<section id="favorite-ai">
+  <div class="section-label reveal">006 — Favorite AI</div>
+  <div class="ai-card reveal">
+    <div>
+      <span class="ai-logo">🤖</span>
+      <h2 class="ai-headline">My AI of<br>choice? <span>Claude.</span></h2>
+    </div>
+    <div>
+      <div class="ai-body">
+        <p>
+          I've tried them all. <strong>Claude by Anthropic</strong> is the one I keep coming back to. It thinks carefully, writes with nuance, and doesn't hallucinate its way through complex questions. It's the AI I trust when the output actually matters.
+        </p>
+        <p>
+          I use Claude daily — for brainstorming product strategy, debugging Python scripts, drafting essays, building this very website, and wiring up my personal AI agent. It's the closest thing I've found to a genuinely thoughtful collaborator.
+        </p>
+        <p>
+          Anthropic's focus on <strong>AI safety</strong> and building AI that is helpful, harmless, and honest aligns with how I think technology should be built. Good values in the model, good values in the company.
+        </p>
+      </div>
+      <div class="ai-stats">
+        <div class="ai-stat"><strong>Daily</strong>Use frequency</div>
+        <div class="ai-stat"><strong>#1</strong>Preferred LLM</div>
+        <div class="ai-stat"><strong>Claude</strong>by Anthropic</div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- TRAVELS -->
 <section id="travels">
-  <div class="section-label reveal">005 — Places</div>
+  <div class="section-label reveal">007 — Places</div>
   <div class="travels-list">
     <div class="travel-item reveal reveal-delay-1">
       <div class="travel-year">2026</div>
@@ -1052,18 +1158,32 @@
   </div>
 </section>
 
-<!-- FOOTER -->
-<footer>
-  <div class="footer-name">© 2026 — AVINASH BANGERA</div>
-  <div class="footer-contact">
-    <a href="mailto:avi.bangera2@gmail.com">Email</a>
-    <a href="#">LinkedIn</a>
-    <a href="#">Twitter</a>
+<!-- CONTACT -->
+<section id="contact">
+  <h1 class="contact-headline reveal">Let's<br><span>Connect.</span></h1>
+  <div class="contact-links reveal">
+    <a href="mailto:avi.bangera2@gmail.com" class="contact-link">
+      <span class="contact-link-icon">✉️</span>
+      <span>avi.bangera2@gmail.com</span>
+    </a>
+    <a href="https://www.linkedin.com/in/avinashbangera/" target="_blank" rel="noopener" class="contact-link">
+      <span class="contact-link-icon">💼</span>
+      <span>LinkedIn</span>
+    </a>
+    <a href="https://x.com/avi21b" target="_blank" rel="noopener" class="contact-link">
+      <span class="contact-link-icon">𝕏</span>
+      <span>Twitter / X</span>
+    </a>
+    <a href="https://avinashb.substack.com/" target="_blank" rel="noopener" class="contact-link">
+      <span class="contact-link-icon">📰</span>
+      <span>Substack</span>
+    </a>
   </div>
-  <div class="footer-mufc">
-    <span class="mufc-red">▮</span> Glory Glory Man United
+  <div class="contact-footer-bar reveal">
+    <span>© 2026 — AVINASH BANGERA</span>
+    <span><span style="color:var(--red)">▮</span> Glory Glory Man United</span>
   </div>
-</footer>
+</section>
 
 <script>
 // ── CURSOR ──
