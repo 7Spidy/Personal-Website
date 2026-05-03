@@ -558,10 +558,15 @@
     .now-grid { grid-template-columns: 1fr 1fr; }
     .interests-grid { grid-template-columns: 1fr 1fr; }
     .projects-grid { grid-template-columns: 1fr; }
+    .writing-grid { grid-template-columns: 1fr; }
+    .ai-card { grid-template-columns: 1fr; gap: 32px; padding: 40px 28px; }
+    .contact-footer-bar { flex-direction: column; gap: 16px; text-align: center; }
   }
   @media (max-width: 540px) {
     .now-grid { grid-template-columns: 1fr; }
     .interests-grid { grid-template-columns: 1fr; }
+    .nav-links { display: none; }
+  }
 
   /* ── WRITING ── */
   #writing { background: var(--bg2); }
@@ -634,13 +639,20 @@
     font-size: 12px; color: var(--fg-dim); font-family: 'Space Mono', monospace;
   }
 
-  @media (max-width: 900px) {
-    .writing-grid { grid-template-columns: 1fr; }
-    .ai-card { grid-template-columns: 1fr; gap: 32px; padding: 40px 28px; }
-    .contact-footer-bar { flex-direction: column; gap: 16px; text-align: center; }
+  /* ── HERO SOCIALS ── */
+  .hero-socials {
+    display: flex; gap: 20px; margin-top: 40px;
+    opacity: 0; animation: fadeup 0.8s 1s ease forwards;
   }
-    .nav-links { display: none; }
+  .hero-social-link {
+    font-family: 'Space Mono', monospace; font-size: 10px;
+    letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--fg-dim); text-decoration: none;
+    display: flex; align-items: center; gap: 6px;
+    transition: color 0.2s;
   }
+  .hero-social-link:hover { color: var(--amber); }
+  .hero-social-dot { width: 4px; height: 4px; border-radius: 50%; background: currentColor; }
 </style>
 </head>
 <body>
@@ -676,6 +688,12 @@
   <p class="hero-tagline">
     Engineer turned <em>Product Manager</em>. Amateur writer. Obsessive gamer. Perpetual learner. I live on Notion, trade on Zerodha, and bleed <em style="color:var(--red)">Manchester United red</em>.
   </p>
+  <div class="hero-socials">
+    <a href="https://avinashb.substack.com/" target="_blank" rel="noopener" class="hero-social-link"><span class="hero-social-dot"></span>Substack</a>
+    <a href="https://x.com/avi21b" target="_blank" rel="noopener" class="hero-social-link"><span class="hero-social-dot"></span>Twitter</a>
+    <a href="https://www.linkedin.com/in/avinashbangera/" target="_blank" rel="noopener" class="hero-social-link"><span class="hero-social-dot"></span>LinkedIn</a>
+    <a href="mailto:avi.bangera2@gmail.com" class="hero-social-link"><span class="hero-social-dot"></span>Email</a>
+  </div>
   <div class="hero-scroll">
     <div class="hero-scroll-line"></div>
     Scroll
