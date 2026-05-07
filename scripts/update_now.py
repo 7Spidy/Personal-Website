@@ -242,9 +242,12 @@ def build_now_section(
     if tv_ip:     active_icons.append("📺 Watching")
     if books_ip:  active_icons.append("📖 Reading")
     icons_str = " &nbsp;·&nbsp; ".join(active_icons)
-    intro_html = f'''  <p class="reveal" style="color:var(--fg-dim); font-size:16px; margin-bottom:48px; max-width:600px; line-height:1.6;">
-    What I&rsquo;m currently obsessing over. &nbsp;<span style="color:var(--amber); font-family:\'Space Mono\',monospace; font-size:12px; letter-spacing:0.1em;">{icons_str}</span>
-  </p>'''
+    intro_html = f'''  <div class="reveal" style="margin-bottom:48px;">
+    <p style="color:var(--fg-dim); font-size:16px; max-width:480px; line-height:1.6; margin-bottom:14px;">
+      What I&rsquo;m currently obsessing over.
+    </p>
+    <div style="color:var(--amber); font-family:\'Space Mono\',monospace; font-size:12px; letter-spacing:0.1em; white-space:nowrap;">{icons_str}</div>
+  </div>'''
 
     # ── RECENTLY COMPLETED ──
     def done_list_items(pages: list) -> str:
