@@ -25,19 +25,25 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Run update script
+      - name: Update homepage Now section
         env:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
         run: python scripts/update_now.py
+
+      - name: Build media library page
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          TMDB_TOKEN: ${{ secrets.TMDB_TOKEN }}
+        run: python scripts/build_library.py
 
       - name: Commit & push if changed
         run: |
           git config user.name  "AviBot"
           git config user.email "avi.bangera2@gmail.com"
-          git add index.html
+          git add index.html now.html assets/covers
           if git diff --cached --quiet; then
             echo "No changes to commit."
           else
-            git commit -m "🌙 Auto-update Now section [$(date +'%d %b %Y, %I:%M %p IST' --date='TZ=\"Asia/Kolkata\" now')]"
+            git commit -m "🌙 Auto-update site [$(date +'%d %b %Y, %I:%M %p IST' --date='TZ=\"Asia/Kolkata\" now')]"
             git push
           fi

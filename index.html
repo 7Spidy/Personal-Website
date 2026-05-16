@@ -568,6 +568,24 @@
     .nav-links { display: none; }
   }
 
+  /* ── LIBRARY CTA ── */
+  .library-cta {
+    display: inline-flex; align-items: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 13px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--fg); text-decoration: none;
+    padding: 16px 32px;
+    border: 1px solid rgba(240,237,230,0.2);
+    border-radius: 100px;
+    transition: all 0.25s cubic-bezier(0.16,1,0.3,1);
+    cursor: none;
+  }
+  .library-cta:hover {
+    border-color: var(--amber); color: var(--amber);
+    letter-spacing: 0.24em;
+    background: var(--amber-glow);
+  }
+
   /* ── WRITING ── */
   #writing { background: var(--bg2); }
   .writing-grid {
@@ -669,6 +687,7 @@
     <a href="#projects">Projects</a>
     <a href="#writing">Writing</a>
     <a href="#travels">Places</a>
+    <a href="/now">Library</a>
     <a href="#contact">Contact</a>
     <button id="audio-btn">
       <span class="audio-dot"></span>

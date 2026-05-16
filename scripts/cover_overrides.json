@@ -1,0 +1,3 @@
+{
+  "_comment": "Manual cover fixes. Map an exact Notion title to a direct image URL. Example: \"The Office (UK)\": \"https://example.com/poster.jpg\". Remove this _comment key freely; the loader ignores keys starting with underscore."
+}
