@@ -148,6 +148,19 @@ def page_field(page: dict, name: str):
     return ""
 
 
+def page_cover(page: dict) -> str:
+    """Return the cover image URL set on a Notion page, or '' if none."""
+    cover = page.get("cover")
+    if not cover:
+        return ""
+    t = cover.get("type")
+    if t == "external":
+        return cover.get("external", {}).get("url", "")
+    if t == "file":
+        return cover.get("file", {}).get("url", "")
+    return ""
+
+
 def fmt_date(iso: str, fmt: str = "%-d %b") -> str:
     if not iso:
         return ""

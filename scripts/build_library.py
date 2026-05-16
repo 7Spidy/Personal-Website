@@ -3,23 +3,18 @@
 build_library.py
 ----------------
 Builds the dedicated media library page (now.html) from Notion data,
-enriched with real cover art (TMDB / OpenLibrary / Steam). Covers are
+using cover images set directly on each Notion page. Covers are
 cached to assets/covers/ so nightly runs stay fast and idempotent.
 
 Usage:
-    NOTION_TOKEN=... [TMDB_TOKEN=...] python scripts/build_library.py
-
-TMDB_TOKEN is optional. Without it, movies/TV fall back to a typographic
-card; books and games still get real art.
+    NOTION_TOKEN=... python scripts/build_library.py
 """
 
-import os
 import re
 import json
 import html
 import hashlib
 import pathlib
-import urllib.parse
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
@@ -28,14 +23,13 @@ from notion_lib import (
     DB_MOVIES_TV, DB_BOOKS, DB_GAMES, IST,
     get_in_progress, get_done_all,
     page_title, page_rating, page_start_date, page_end_date,
-    page_type, page_field, fmt_date, days_since,
+    page_type, page_field, page_cover, fmt_date, days_since,
 )
 
 ROOT       = pathlib.Path(__file__).resolve().parent.parent
 OUT_FILE   = ROOT / "now.html"
 COVERS_DIR = ROOT / "assets" / "covers"
 OVERRIDES  = pathlib.Path(__file__).resolve().parent / "cover_overrides.json"
-TMDB_TOKEN = os.environ.get("TMDB_TOKEN", "").strip()
 YEAR       = datetime.now(IST).year
 
 CAT_META = {
@@ -72,51 +66,6 @@ def load_overrides() -> dict:
         return {}
 
 
-def tmdb_poster(title: str) -> str:
-    if not TMDB_TOKEN:
-        return ""
-    q = urllib.parse.quote(title)
-    url = f"https://api.themoviedb.org/3/search/multi?query={q}&include_adult=false"
-    data = _get_json(url, {"Authorization": f"Bearer {TMDB_TOKEN}",
-                           "accept": "application/json"})
-    for res in data.get("results", []):
-        p = res.get("poster_path")
-        if p:
-            return f"https://image.tmdb.org/t/p/w342{p}"
-    return ""
-
-
-def openlibrary_cover(title: str) -> str:
-    q = urllib.parse.quote(title)
-    data = _get_json(
-        f"https://openlibrary.org/search.json?title={q}&limit=1&fields=cover_i")
-    docs = data.get("docs", [])
-    if docs and docs[0].get("cover_i"):
-        return f"https://covers.openlibrary.org/b/id/{docs[0]['cover_i']}-M.jpg"
-    return ""
-
-
-def steam_cover(title: str) -> str:
-    q = urllib.parse.quote(title)
-    data = _get_json(
-        f"https://store.steampowered.com/api/storesearch/?term={q}&cc=us&l=en")
-    items = data.get("items", [])
-    if not items:
-        return ""
-    appid = items[0].get("id")
-    if appid:
-        vertical = (f"https://cdn.cloudflare.steamstatic.com/steam/apps/"
-                    f"{appid}/library_600x900.jpg")
-        try:
-            urllib.request.urlopen(
-                urllib.request.Request(vertical, method="HEAD"), timeout=8)
-            return vertical
-        except Exception:
-            return (f"https://cdn.cloudflare.steamstatic.com/steam/apps/"
-                    f"{appid}/header.jpg")
-    return items[0].get("tiny_image", "")
-
-
 def resolve_cover(item: dict, overrides: dict) -> str:
     """Return a site-absolute cover path, downloading+caching once. '' on miss."""
     title = item["title"]
@@ -132,17 +81,10 @@ def resolve_cover(item: dict, overrides: dict) -> str:
     if dest.exists() and dest.stat().st_size > 0:
         return rel
 
-    src = overrides.get(title, "")
-    if not src:
-        if cat == "tv":
-            src = tmdb_poster(title)
-        elif cat == "books":
-            src = openlibrary_cover(title)
-        elif cat == "games":
-            src = steam_cover(title)
+    src = overrides.get(title, "") or item.get("notion_cover_url", "")
 
     if not src:
-        print(f"  ⚠️  no cover: [{cat}] {title}")
+        print(f"  ⚠️  no cover set in Notion: [{cat}] {title}")
         return ""
 
     try:
@@ -185,6 +127,7 @@ def shape(page: dict, cat: str) -> dict:
         "hours": page_field(page, "Hours Played") if cat == "games" else None,
         "days": page_field(page, "Days Spent"),
         "year": yr,
+        "notion_cover_url": page_cover(page),
         "cover": "",
     }
 
