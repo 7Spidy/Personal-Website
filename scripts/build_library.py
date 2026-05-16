@@ -476,10 +476,9 @@ body{background:var(--bg);color:var(--fg);font-family:'Space Grotesk',sans-serif
 overflow-x:hidden;cursor:none}
 a{color:inherit}
 #cursor{width:12px;height:12px;background:var(--amber);border-radius:50%;
-position:fixed;top:0;left:0;pointer-events:none;z-index:9999;
-transition:transform .15s ease,width .2s,height .2s,opacity .2s;
-transform:translate(-50%,-50%)}
-#cursor.big{width:40px;height:40px;opacity:.35;background:var(--amber)}
+position:fixed;top:0;left:0;pointer-events:none;z-index:10000;opacity:1;
+transition:width .2s,height .2s,opacity .2s;will-change:transform}
+#cursor.big{width:36px;height:36px;opacity:.4}
 body::before{content:'';position:fixed;inset:0;z-index:1000;pointer-events:none;
 opacity:.035;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 animation:grain .5s steps(1) infinite}
@@ -631,7 +630,7 @@ PAGE_JS = """
 const cur=document.getElementById('cursor');let mx=0,my=0,cx=0,cy=0;
 addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
 (function loop(){cx+=(mx-cx)*.18;cy+=(my-cy)*.18;
-cur.style.left=cx+'px';cur.style.top=cy+'px';requestAnimationFrame(loop)})();
+cur.style.transform=`translate(calc(${Math.round(cx)}px - 50%),calc(${Math.round(cy)}px - 50%))`;requestAnimationFrame(loop)})();
 document.querySelectorAll('a,button,.lib-card,.hero-card,.filter-group label')
 .forEach(el=>{el.addEventListener('mouseenter',()=>cur.classList.add('big'));
 el.addEventListener('mouseleave',()=>cur.classList.remove('big'))});

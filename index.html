@@ -40,11 +40,12 @@
     position: fixed;
     top: 0; left: 0;
     pointer-events: none;
-    z-index: 9999;
-    transition: transform 0.15s ease, width 0.2s ease, height 0.2s ease, opacity 0.2s ease;
-    transform: translate(-50%, -50%);
+    z-index: 10000;
+    opacity: 1;
+    transition: width 0.2s ease, height 0.2s ease, opacity 0.2s ease;
+    will-change: transform;
   }
-  #cursor.big { width: 40px; height: 40px; opacity: 0.35; background: var(--amber); }
+  #cursor.big { width: 36px; height: 36px; opacity: 0.4; }
 
   /* ── GRAIN ── */
   body::before {
@@ -1249,14 +1250,12 @@
 const cursor = document.getElementById('cursor');
 let mx = 0, my = 0, cx = 0, cy = 0;
 document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
-function animCursor() {
+(function tick() {
   cx += (mx - cx) * 0.18;
   cy += (my - cy) * 0.18;
-  cursor.style.left = cx + 'px';
-  cursor.style.top = cy + 'px';
-  requestAnimationFrame(animCursor);
-}
-animCursor();
+  cursor.style.transform = `translate(calc(${Math.round(cx)}px - 50%), calc(${Math.round(cy)}px - 50%))`;
+  requestAnimationFrame(tick);
+})();
 document.querySelectorAll('a, button, .now-card, .interest-item, .travel-item, .tag').forEach(el => {
   el.addEventListener('mouseenter', () => cursor.classList.add('big'));
   el.addEventListener('mouseleave', () => cursor.classList.remove('big'));
