@@ -402,7 +402,6 @@ def build_page(in_prog: list, done: list) -> str:
 <style>{css}</style>
 </head>
 <body>
-<div id="cursor"></div>
 
 <nav>
   <a href="/" class="nav-logo">&larr; AVI.AI</a>
@@ -473,12 +472,8 @@ PAGE_CSS = """
 --teal:oklch(68% 0.14 200);--green:oklch(68% 0.14 160);--red:oklch(58% 0.18 25)}
 html{scroll-behavior:smooth}
 body{background:var(--bg);color:var(--fg);font-family:'Space Grotesk',sans-serif;
-overflow-x:hidden;cursor:none}
+overflow-x:hidden}
 a{color:inherit}
-#cursor{width:12px;height:12px;background:var(--amber);border-radius:50%;
-position:fixed;top:0;left:0;pointer-events:none;z-index:10000;opacity:1;
-transition:width .2s,height .2s,opacity .2s;will-change:transform}
-#cursor.big{width:36px;height:36px;opacity:.4}
 body::before{content:'';position:fixed;inset:0;z-index:1000;pointer-events:none;
 opacity:.035;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 animation:grain .5s steps(1) infinite}
@@ -494,7 +489,7 @@ color:var(--amber);text-decoration:none;text-transform:uppercase}
 color:var(--fg-dim);text-transform:uppercase}
 #audio-btn{display:flex;align-items:center;gap:8px;background:none;
 border:1px solid var(--fg-dim);color:var(--fg-dim);font-family:'Space Mono',monospace;
-font-size:11px;letter-spacing:.1em;padding:6px 14px;border-radius:100px;cursor:none}
+font-size:11px;letter-spacing:.1em;padding:6px 14px;border-radius:100px}
 #audio-btn:hover,#audio-btn.playing{border-color:var(--amber);color:var(--amber)}
 .audio-dot{width:6px;height:6px;background:currentColor;border-radius:50%}
 #audio-btn.playing .audio-dot{animation:pulse 1.2s ease infinite}
@@ -512,7 +507,7 @@ line-height:1.6;margin-bottom:52px}
 gap:18px;max-width:1240px}
 .hero-card{position:relative;min-height:360px;border-radius:18px;overflow:hidden;
 border:1px solid rgba(255,255,255,.08);background:var(--bg2);
-display:flex;align-items:flex-end;text-decoration:none;cursor:none;
+display:flex;align-items:flex-end;text-decoration:none;
 transition:transform .4s cubic-bezier(.16,1,.3,1),border-color .3s}
 .hero-card:hover{transform:translateY(-8px);border-color:rgba(255,255,255,.2)}
 .hero-cover{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
@@ -533,7 +528,7 @@ letter-spacing:.16em;text-transform:uppercase}
 .scroll-cue{margin-top:46px;display:inline-flex;align-items:center;gap:10px;
 font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.2em;
 text-transform:uppercase;color:var(--fg-dim);text-decoration:none;width:max-content;
-cursor:none;transition:color .25s}
+transition:color .25s}
 .scroll-cue:hover{color:var(--amber)}
 .scroll-cue .arrow{display:inline-block;animation:bob 1.6s ease-in-out infinite}
 @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(5px)}}
@@ -568,7 +563,7 @@ align-items:center;margin-bottom:36px}
 .filter-group label{display:inline-block;font-family:'Space Mono',monospace;
 font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--fg-dim);
 padding:9px 18px;border:1px solid rgba(255,255,255,.1);border-radius:100px;
-margin-right:8px;cursor:none;transition:all .2s}
+margin-right:8px;transition:all .2s}
 .filter-group label:hover{color:var(--fg);border-color:rgba(255,255,255,.25)}
 #f-all:checked~label[for=f-all],#f-tv:checked~label[for=f-tv],
 #f-books:checked~label[for=f-books],#f-games:checked~label[for=f-games]{
@@ -576,11 +571,11 @@ color:var(--bg);background:var(--amber);border-color:var(--amber)}
 .sort-btn{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.12em;
 text-transform:uppercase;color:var(--fg-dim);background:none;
 border:1px solid rgba(255,255,255,.1);border-radius:100px;padding:9px 18px;
-margin-left:8px;cursor:none;transition:all .2s}
+margin-left:8px;transition:all .2s}
 .sort-btn:hover{color:var(--fg)}
 .sort-btn.active{color:var(--amber);border-color:var(--amber)}
 .card-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:22px}
-.lib-card{display:flex;flex-direction:column;gap:10px;cursor:none}
+.lib-card{display:flex;flex-direction:column;gap:10px}
 .cov{position:relative;aspect-ratio:2/3;border-radius:12px;overflow:hidden;
 border:1px solid rgba(255,255,255,.07);background:var(--bg2);
 transition:transform .35s cubic-bezier(.16,1,.3,1),box-shadow .35s}
@@ -627,13 +622,6 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
 """
 
 PAGE_JS = """
-const cur=document.getElementById('cursor');let mx=0,my=0,cx=0,cy=0;
-addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
-(function loop(){cx+=(mx-cx)*.18;cy+=(my-cy)*.18;
-cur.style.transform=`translate(calc(${Math.round(cx)}px - 50%),calc(${Math.round(cy)}px - 50%))`;requestAnimationFrame(loop)})();
-document.querySelectorAll('a,button,.lib-card,.hero-card,.filter-group label')
-.forEach(el=>{el.addEventListener('mouseenter',()=>cur.classList.add('big'));
-el.addEventListener('mouseleave',()=>cur.classList.remove('big'))});
 const io=new IntersectionObserver(es=>es.forEach(e=>{
 if(e.isIntersecting)e.target.classList.add('vis')}),{threshold:.1});
 document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
@@ -645,7 +633,7 @@ const dec=(el.dataset.count.indexOf('.')>-1);let s=0,st=performance.now();
 (function tick(n){let p=Math.min((n-st)/900,1);
 let v=t*(1-Math.pow(1-p,3));
 el.textContent=dec?v.toFixed(1):Math.round(v);
-if(p<1)requestAnimationFrame(tick)})(st)},{threshold:.6});
+if(p<1)requestAnimationFrame(tick)})(st)}),{threshold:.6});
 document.querySelectorAll('.stat-num[data-count]').forEach(el=>cio.observe(el));
 const grid=document.getElementById('all-grid');
 document.querySelectorAll('.sort-btn').forEach(b=>b.addEventListener('click',()=>{

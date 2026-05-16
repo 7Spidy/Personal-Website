@@ -29,23 +29,8 @@
     color: var(--fg);
     font-family: 'Space Grotesk', sans-serif;
     overflow-x: hidden;
-    cursor: none;
   }
 
-  /* ── CURSOR ── */
-  #cursor {
-    width: 12px; height: 12px;
-    background: var(--amber);
-    border-radius: 50%;
-    position: fixed;
-    top: 0; left: 0;
-    pointer-events: none;
-    z-index: 10000;
-    opacity: 1;
-    transition: width 0.2s ease, height 0.2s ease, opacity 0.2s ease;
-    will-change: transform;
-  }
-  #cursor.big { width: 36px; height: 36px; opacity: 0.4; }
 
   /* ── GRAIN ── */
   body::before {
@@ -104,7 +89,7 @@
     font-family: 'Space Mono', monospace;
     font-size: 11px; letter-spacing: 0.1em;
     padding: 6px 14px; border-radius: 100px;
-    cursor: none; transition: all 0.2s;
+    transition: all 0.2s;
   }
   #audio-btn:hover { border-color: var(--amber); color: var(--amber); }
   #audio-btn.playing { border-color: var(--amber); color: var(--amber); }
@@ -239,7 +224,6 @@
     font-size: 12px; letter-spacing: 0.06em;
     color: var(--fg-dim);
     transition: all 0.2s;
-    cursor: none;
   }
   .tag:hover { border-color: var(--amber); color: var(--amber); }
 
@@ -257,7 +241,6 @@
     border-radius: 16px;
     padding: 32px 28px;
     position: relative; overflow: hidden;
-    cursor: none;
     transition: transform 0.3s cubic-bezier(0.16,1,0.3,1),
                 border-color 0.3s,
                 background 0.3s;
@@ -342,7 +325,6 @@
   .interest-item {
     padding: 40px 36px;
     border: 1px solid rgba(255,255,255,0.05);
-    cursor: none;
     transition: background 0.3s;
     position: relative; overflow: hidden;
   }
@@ -369,7 +351,6 @@
     display: flex; align-items: baseline; gap: 24px;
     padding: 28px 0;
     border-bottom: 1px solid rgba(255,255,255,0.06);
-    cursor: none;
     transition: padding-left 0.3s;
   }
   .travel-item:hover { padding-left: 12px; }
@@ -402,7 +383,6 @@
   .project-card {
     background: var(--bg);
     padding: 36px 32px;
-    cursor: none;
     transition: background 0.3s;
     position: relative;
     display: flex; flex-direction: column;
@@ -530,7 +510,6 @@
     font-size: 13px;
     color: var(--fg-dim);
     transition: color 0.2s, padding-left 0.2s;
-    cursor: none;
   }
   .done-list li:hover {
     color: var(--fg);
@@ -578,7 +557,6 @@
     border: 1px solid rgba(240,237,230,0.2);
     border-radius: 100px;
     transition: all 0.25s cubic-bezier(0.16,1,0.3,1);
-    cursor: none;
   }
   .library-cta:hover {
     border-color: var(--amber); color: var(--amber);
@@ -596,7 +574,7 @@
   }
   .writing-card {
     background: var(--bg2); padding: 40px 36px;
-    cursor: none; transition: background 0.3s; position: relative;
+    transition: background 0.3s; position: relative;
     display: flex; flex-direction: column;
   }
   .writing-card:hover { background: rgba(255,255,255,0.025); }
@@ -612,7 +590,7 @@
     display: flex; align-items: baseline; gap: 10px;
     padding: 9px 0; border-bottom: 1px solid rgba(255,255,255,0.04);
     font-size: 13px; color: var(--fg-dim); text-decoration: none;
-    transition: color 0.2s, padding-left 0.2s; cursor: none;
+    transition: color 0.2s, padding-left 0.2s;
   }
   .writing-post:hover { color: var(--fg); padding-left: 6px; }
   .writing-post-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--amber); flex-shrink: 0; margin-top: 6px; }
@@ -646,7 +624,7 @@
     display: flex; align-items: center; gap: 12px;
     padding: 18px 32px; border: 1px solid rgba(255,255,255,0.1);
     text-decoration: none; color: var(--fg-dim); font-size: 14px;
-    letter-spacing: 0.06em; transition: all 0.2s; cursor: none;
+    letter-spacing: 0.06em; transition: all 0.2s;
   }
   .contact-link:hover { border-color: var(--amber); color: var(--amber); }
   .contact-link-icon { font-size: 20px; }
@@ -674,8 +652,6 @@
 </style>
 </head>
 <body>
-
-<div id="cursor"></div>
 
 <!-- NAV -->
 <nav>
@@ -1246,20 +1222,6 @@
 </section>
 
 <script>
-// ── CURSOR ──
-const cursor = document.getElementById('cursor');
-let mx = 0, my = 0, cx = 0, cy = 0;
-document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
-(function tick() {
-  cx += (mx - cx) * 0.18;
-  cy += (my - cy) * 0.18;
-  cursor.style.transform = `translate(calc(${Math.round(cx)}px - 50%), calc(${Math.round(cy)}px - 50%))`;
-  requestAnimationFrame(tick);
-})();
-document.querySelectorAll('a, button, .now-card, .interest-item, .travel-item, .tag').forEach(el => {
-  el.addEventListener('mouseenter', () => cursor.classList.add('big'));
-  el.addEventListener('mouseleave', () => cursor.classList.remove('big'));
-});
 
 // ── SCROLL REVEAL ──
 const revealEls = document.querySelectorAll('.reveal');
