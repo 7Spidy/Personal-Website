@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Library — Avi AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0b0a09;--bg2:#111009;--fg:#f0ede6;--fg-dim:#8a8070;
+--amber:oklch(68% 0.18 52);--amber-glow:oklch(68% 0.18 52 / 0.15);
+--teal:oklch(68% 0.14 200);--green:oklch(68% 0.14 160);--red:oklch(58% 0.18 25)}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--fg);font-family:'Space Grotesk',sans-serif;
+overflow-x:hidden;cursor:none}
+a{color:inherit}
+#cursor{width:12px;height:12px;background:var(--amber);border-radius:50%;
+position:fixed;top:0;left:0;pointer-events:none;z-index:9999;
+mix-blend-mode:difference;transition:transform .15s ease,width .2s,height .2s;
+transform:translate(-50%,-50%)}
+#cursor.big{width:46px;height:46px;opacity:.4}
+body::before{content:'';position:fixed;inset:0;z-index:1000;pointer-events:none;
+opacity:.035;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+animation:grain .5s steps(1) infinite}
+@keyframes grain{0%,100%{transform:translate(0,0)}20%{transform:translate(2%,1%)}
+40%{transform:translate(3%,-1%)}60%{transform:translate(1%,-2%)}
+80%{transform:translate(2%,3%)}}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:24px 48px;
+display:flex;align-items:center;justify-content:space-between;
+background:linear-gradient(to bottom,var(--bg),transparent)}
+.nav-logo{font-family:'Space Mono',monospace;font-size:13px;letter-spacing:.2em;
+color:var(--amber);text-decoration:none;text-transform:uppercase}
+.nav-mid{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.3em;
+color:var(--fg-dim);text-transform:uppercase}
+#audio-btn{display:flex;align-items:center;gap:8px;background:none;
+border:1px solid var(--fg-dim);color:var(--fg-dim);font-family:'Space Mono',monospace;
+font-size:11px;letter-spacing:.1em;padding:6px 14px;border-radius:100px;cursor:none}
+#audio-btn:hover,#audio-btn.playing{border-color:var(--amber);color:var(--amber)}
+.audio-dot{width:6px;height:6px;background:currentColor;border-radius:50%}
+#audio-btn.playing .audio-dot{animation:pulse 1.2s ease infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.6)}}
+.lib-hero{min-height:92vh;display:flex;flex-direction:column;justify-content:center;
+padding:140px 48px 80px;position:relative}
+.lib-hero-eyebrow{font-family:'Space Mono',monospace;font-size:12px;
+letter-spacing:.2em;text-transform:uppercase;color:var(--amber);margin-bottom:24px}
+.lib-hero-title{font-size:clamp(56px,11vw,150px);font-weight:700;line-height:.9;
+letter-spacing:-.04em;margin-bottom:28px}
+.lib-hero-title span{color:var(--amber)}
+.lib-hero-sub{font-size:clamp(15px,1.6vw,18px);color:var(--fg-dim);max-width:540px;
+line-height:1.6;margin-bottom:56px}
+.hero-row{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;max-width:1100px}
+.hero-card{position:relative;min-height:340px;border-radius:18px;overflow:hidden;
+border:1px solid rgba(255,255,255,.08);background-size:cover;background-position:center;
+display:flex;align-items:flex-end;text-decoration:none;cursor:none;
+transition:transform .4s cubic-bezier(.16,1,.3,1),border-color .3s}
+.hero-card:hover{transform:translateY(-8px);border-color:rgba(255,255,255,.2)}
+.hero-fb{position:absolute;inset:0;display:flex;align-items:center;
+justify-content:center;font-size:80px;opacity:.25}
+.hero-card-body{position:relative;padding:28px;display:flex;flex-direction:column;gap:8px}
+.hero-card-kicker{font-family:'Space Mono',monospace;font-size:11px;
+letter-spacing:.16em;text-transform:uppercase}
+.hero-card-title{font-size:24px;font-weight:700;line-height:1.15;letter-spacing:-.02em}
+.hero-card-meta{font-family:'Space Mono',monospace;font-size:12px;color:var(--fg-dim)}
+.lib-sec{padding:90px 48px;max-width:1400px;margin:0 auto}
+.sec-head{display:flex;align-items:baseline;gap:18px;margin-bottom:48px;
+border-bottom:1px solid rgba(255,255,255,.07);padding-bottom:20px}
+.sec-num{font-family:'Space Mono',monospace;font-size:13px;color:var(--amber);
+letter-spacing:.2em}
+.sec-head h2{font-size:clamp(28px,4vw,46px);font-weight:700;letter-spacing:-.025em}
+.sec-note{margin-left:auto;font-family:'Space Mono',monospace;font-size:11px;
+letter-spacing:.16em;text-transform:uppercase;color:var(--fg-dim)}
+.stat-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin-bottom:24px}
+.stat-tile{padding:32px 22px;border:1px solid rgba(255,255,255,.07);
+border-radius:14px;background:rgba(255,255,255,.02)}
+.stat-num{font-size:clamp(28px,3.4vw,46px);font-weight:700;line-height:1;
+letter-spacing:-.03em;margin-bottom:10px}
+.stat-lab{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.14em;
+text-transform:uppercase;color:var(--fg-dim)}
+.winners{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.winner{display:flex;gap:18px;padding:20px;border:1px solid rgba(255,255,255,.07);
+border-radius:14px;background:rgba(255,255,255,.02)}
+.winner-cov{width:78px;height:110px;border-radius:8px;overflow:hidden;flex-shrink:0}
+.winner-cov img,.winner-cov .cov-fallback{width:100%;height:100%;object-fit:cover}
+.winner-info{display:flex;flex-direction:column;justify-content:center;gap:8px}
+.winner-kicker{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.14em;
+text-transform:uppercase}
+.winner-title{font-size:18px;font-weight:600;line-height:1.2}
+.winner-rating{font-family:'Space Mono',monospace;font-size:13px;color:var(--amber)}
+.lib-controls{display:flex;flex-wrap:wrap;gap:20px;justify-content:space-between;
+align-items:center;margin-bottom:36px}
+.filter-group input{position:absolute;opacity:0;pointer-events:none}
+.filter-group label{display:inline-block;font-family:'Space Mono',monospace;
+font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--fg-dim);
+padding:9px 18px;border:1px solid rgba(255,255,255,.1);border-radius:100px;
+margin-right:8px;cursor:none;transition:all .2s}
+.filter-group label:hover{color:var(--fg);border-color:rgba(255,255,255,.25)}
+#f-all:checked~label[for=f-all],#f-tv:checked~label[for=f-tv],
+#f-books:checked~label[for=f-books],#f-games:checked~label[for=f-games]{
+color:var(--bg);background:var(--amber);border-color:var(--amber)}
+.sort-btn{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.12em;
+text-transform:uppercase;color:var(--fg-dim);background:none;
+border:1px solid rgba(255,255,255,.1);border-radius:100px;padding:9px 18px;
+margin-left:8px;cursor:none;transition:all .2s}
+.sort-btn:hover{color:var(--fg)}
+.sort-btn.active{color:var(--amber);border-color:var(--amber)}
+.card-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:22px}
+.lib-card{display:flex;flex-direction:column;gap:10px;cursor:none}
+.cov{position:relative;aspect-ratio:2/3;border-radius:12px;overflow:hidden;
+border:1px solid rgba(255,255,255,.07);background:var(--bg2);
+transition:transform .35s cubic-bezier(.16,1,.3,1),box-shadow .35s}
+.lib-card:hover .cov{transform:scale(1.035);
+box-shadow:0 18px 40px -16px rgba(0,0,0,.8),0 0 0 1px var(--amber-glow)}
+.cov-img{width:100%;height:100%;object-fit:cover;display:block}
+.cov-fallback{width:100%;height:100%;display:flex;flex-direction:column;
+align-items:center;justify-content:center;gap:14px;padding:18px;text-align:center;
+background:linear-gradient(160deg,rgba(255,255,255,.06),rgba(255,255,255,.01))}
+.cov-fallback[data-cat=tv]{background:linear-gradient(160deg,oklch(68% 0.14 200 / .22),rgba(255,255,255,.01))}
+.cov-fallback[data-cat=books]{background:linear-gradient(160deg,oklch(68% 0.14 160 / .22),rgba(255,255,255,.01))}
+.cov-fallback[data-cat=games]{background:linear-gradient(160deg,oklch(68% 0.18 52 / .22),rgba(255,255,255,.01))}
+.cov-fb-emoji{font-size:42px}
+.cov-fb-title{font-size:15px;font-weight:600;line-height:1.3}
+.cov-rating{position:absolute;top:10px;right:10px;font-family:'Space Mono',monospace;
+font-size:12px;font-weight:700;padding:5px 9px;border-radius:8px;
+background:rgba(11,10,9,.78);color:var(--fg-dim);backdrop-filter:blur(4px)}
+.cov-rating.top{color:var(--bg);background:var(--amber)}
+.cov-tag{position:absolute;bottom:10px;left:10px;font-family:'Space Mono',monospace;
+font-size:9px;letter-spacing:.12em;text-transform:uppercase;padding:5px 9px;
+border-radius:7px;background:rgba(11,10,9,.78);backdrop-filter:blur(4px)}
+.lib-card-title{font-size:14px;font-weight:600;line-height:1.3}
+.lib-card-sub{font-family:'Space Mono',monospace;font-size:11px;color:var(--fg-dim)}
+.empty{color:var(--fg-dim);font-size:16px}
+.lib-foot{padding:50px 48px;border-top:1px solid rgba(255,255,255,.06);
+display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;
+font-family:'Space Mono',monospace;font-size:12px;color:var(--fg-dim)}
+.lib-foot a{text-decoration:none}.lib-foot a:hover{color:var(--amber)}
+.reveal{opacity:0;transform:translateY(30px);
+transition:opacity .8s ease,transform .8s cubic-bezier(.16,1,.3,1)}
+.reveal.vis{opacity:1;transform:translateY(0)}
+body:has(#f-tv:checked) .lib-card:not([data-cat=tv]),
+body:has(#f-books:checked) .lib-card:not([data-cat=books]),
+body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
+@media(max-width:1100px){.stat-grid{grid-template-columns:repeat(3,1fr)}
+.card-grid{grid-template-columns:repeat(3,1fr)}
+.winners,.hero-row{grid-template-columns:1fr}}
+@media(max-width:760px){nav{padding:20px 22px}.lib-hero{padding:120px 22px 60px}
+.lib-sec{padding:64px 22px}.card-grid{grid-template-columns:repeat(2,1fr)}
+.stat-grid{grid-template-columns:repeat(2,1fr)}.nav-mid{display:none}}
+@media(max-width:460px){.card-grid{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none}
+*{animation:none!important}}
+</style>
+</head>
+<body>
+<div id="cursor"></div>
+
+<nav>
+  <a href="/" class="nav-logo">&larr; AVI.AI</a>
+  <div class="nav-mid">THE LIBRARY</div>
+  <button id="audio-btn"><span class="audio-dot"></span><span id="audio-label">Ambient</span></button>
+</nav>
+
+<header class="lib-hero">
+  <div class="lib-hero-eyebrow">Media Consumption · Live from Notion</div>
+  <h1 class="lib-hero-title">The<br><span>Library.</span></h1>
+  <p class="lib-hero-sub">Right now: 1 game, a show, a book. Everything I watch, read, and play —
+     auto-synced every night.</p>
+  <div class="hero-row">
+
+      <a class="hero-card" data-cat="games" style="background:linear-gradient(160deg,rgba(255,255,255,0.05),rgba(255,255,255,0.01));">
+        <span class="hero-fb">🎮</span>
+        <div class="hero-card-body">
+          <span class="hero-card-kicker" style="color:var(--amber)">
+            🎮 Playing</span>
+          <span class="hero-card-title">Death Stranding 2</span>
+          <span class="hero-card-meta">Day 57</span>
+        </div>
+      </a>
+
+      <a class="hero-card" data-cat="tv" style="background:linear-gradient(160deg,rgba(255,255,255,0.05),rgba(255,255,255,0.01));">
+        <span class="hero-fb">📺</span>
+        <div class="hero-card-body">
+          <span class="hero-card-kicker" style="color:var(--teal)">
+            📺 Watching</span>
+          <span class="hero-card-title">From: Season 4</span>
+          <span class="hero-card-meta">Day 20</span>
+        </div>
+      </a>
+
+      <a class="hero-card" data-cat="books" style="background-image:linear-gradient(180deg,rgba(11,10,9,0.15),rgba(11,10,9,0.92)),url(/assets/covers/books/underground-c0bf6d.jpg);">
+        
+        <div class="hero-card-body">
+          <span class="hero-card-kicker" style="color:var(--green)">
+            📚 Reading</span>
+          <span class="hero-card-title">Underground</span>
+          <span class="hero-card-meta">Day 3</span>
+        </div>
+      </a>
+  </div>
+</header>
+
+<section class="lib-sec reveal">
+  <div class="sec-head"><span class="sec-num">01</span>
+    <h2>2026 So Far</h2>
+    <span class="sec-note">a year in media</span>
+  </div>
+  <div class="stat-grid"><div class="stat-tile"><div class="stat-num" data-count="35" style="color:var(--teal)">35</div><div class="stat-lab">Movies &amp; TV</div></div><div class="stat-tile"><div class="stat-num" data-count="7" style="color:var(--green)">7</div><div class="stat-lab">Books</div></div><div class="stat-tile"><div class="stat-num" data-count="12" style="color:var(--amber)">12</div><div class="stat-lab">Games</div></div><div class="stat-tile"><div class="stat-num" data-count="202" style="color:var(--amber)">202</div><div class="stat-lab">Hours Gamed</div></div><div class="stat-tile"><div class="stat-num" data-count="6.9" style="color:var(--fg)">6.9</div><div class="stat-lab">Avg Rating</div></div><div class="stat-tile"><div class="stat-num" style="color:var(--teal)">Netflix</div><div class="stat-lab">Top Streaming</div></div></div>
+  <div class="winners">
+      <div class="winner">
+        <div class="winner-cov"><div class="cov-fallback" data-cat="tv"><span class="cov-fb-emoji">📺</span><span class="cov-fb-title">One Battle After Another</span></div></div>
+        <div class="winner-info">
+          <span class="winner-kicker" style="color:var(--teal)">Best Watch of 2026</span>
+          <span class="winner-title">One Battle After Another</span>
+          <span class="winner-rating">★ 10</span>
+        </div>
+      </div>
+      <div class="winner">
+        <div class="winner-cov"><img class="cov-img" loading="lazy" src="/assets/covers/books/the-girl-in-the-glass-case-cc5f42.jpg" alt="The Girl in the Glass Case"></div>
+        <div class="winner-info">
+          <span class="winner-kicker" style="color:var(--green)">Best Read of 2026</span>
+          <span class="winner-title">The Girl in the Glass Case</span>
+          <span class="winner-rating">★ 9.5</span>
+        </div>
+      </div>
+      <div class="winner">
+        <div class="winner-cov"><img class="cov-img" loading="lazy" src="/assets/covers/games/sekiro-9cc593.jpg" alt="Sekiro"></div>
+        <div class="winner-info">
+          <span class="winner-kicker" style="color:var(--amber)">Best Game of 2026</span>
+          <span class="winner-title">Sekiro</span>
+          <span class="winner-rating">★ 10</span>
+        </div>
+      </div></div>
+</section>
+
+  <section class="lib-sec reveal">
+    <div class="sec-head"><span class="sec-num">02</span>
+      <h2>This Month</h2>
+      <span class="sec-note">May 2026 · 4 finished</span>
+    </div>
+    <div class="card-grid">
+    <article class="lib-card" data-cat="games"
+             data-rating="4.0"
+             data-date="2026-05-09">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/games/wuchang-fallen-feathers-2708de.jpg" alt="Wuchang: Fallen Feathers">
+        <span class="cov-rating">4</span>
+        <span class="cov-tag" style="color:var(--amber)">🎮 Played</span>
+      </div>
+      <div class="lib-card-title">Wuchang: Fallen Feathers</div>
+      <div class="lib-card-sub">Steam · 9 May 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="8.0"
+             data-date="2026-05-08">
+      <div class="cov">
+        <div class="cov-fallback" data-cat="tv"><span class="cov-fb-emoji">📺</span><span class="cov-fb-title">The Devil Wears Prada 2</span></div>
+        <span class="cov-rating">8</span>
+        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
+      </div>
+      <div class="lib-card-title">The Devil Wears Prada 2</div>
+      <div class="lib-card-sub">INOX · 8 May 2026</div>
+    </article>
+    <article class="lib-card" data-cat="games"
+             data-rating="4.0"
+             data-date="2026-05-02">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/games/nocturnal-9cebd8.jpg" alt="Nocturnal">
+        <span class="cov-rating">4</span>
+        <span class="cov-tag" style="color:var(--amber)">🎮 Played</span>
+      </div>
+      <div class="lib-card-title">Nocturnal</div>
+      <div class="lib-card-sub">Steam · 2 May 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="9.0"
+             data-date="2026-05-02">
+      <div class="cov">
+        <div class="cov-fallback" data-cat="tv"><span class="cov-fb-emoji">📺</span><span class="cov-fb-title">Fleabag</span></div>
+        <span class="cov-rating top">9</span>
+        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
+      </div>
+      <div class="lib-card-title">Fleabag</div>
+      <div class="lib-card-sub">Prime · 2 May 2026</div>
+    </article></div>
+  </section>
+<section class="lib-sec reveal">
+  <div class="sec-head"><span class="sec-num">03</span>
+    <h2>All Time</h2>
+    <span class="sec-note">73 logged</span>
+  </div>
+  <div class="lib-controls">
+    <div class="filter-group">
+      <input type="radio" name="catf" id="f-all" checked>
+      <label for="f-all">All</label>
+      <input type="radio" name="catf" id="f-tv">
+      <label for="f-tv">📺 Watched</label>
+      <input type="radio" name="catf" id="f-books">
+      <label for="f-books">📚 Read</label>
+      <input type="radio" name="catf" id="f-games">
+      <label for="f-games">🎮 Played</label>
+    </div>
+    <div class="sort-group">
+      <button class="sort-btn active" data-sort="date">Newest</button>
+      <button class="sort-btn" data-sort="rating">Top Rated</button>
+    </div>
+  </div>
+  <div class="card-grid" id="all-grid">
+    <article class="lib-card" data-cat="games"
+             data-rating="4.0"
+             data-date="2026-05-09">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/games/wuchang-fallen-feathers-2708de.jpg" alt="Wuchang: Fallen Feathers">
+        <span class="cov-rating">4</span>
+        <span class="cov-tag" style="color:var(--amber)">🎮 Played</span>
+      </div>
+      <div class="lib-card-title">Wuchang: Fallen Feathers</div>
+      <div class="lib-card-sub">Steam · 9 May 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="8.0"
+             data-date="2026-05-08">
+      <div class="cov">
+        <div class="cov-fallback" data-cat="tv"><span class="cov-fb-emoji">📺</span><span class="cov-fb-title">The Devil Wears Prada 2</span></div>
+        <span class="cov-rating">8</span>
+        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
+      </div>
+      <div class="lib-card-title">The Devil Wears Prada 2</div>
+      <div class="lib-card-sub">INOX · 8 May 2026</div>
+    </article>
+    <article class="lib-card" data-cat="games"
+             data-rating="4.0"
+             data-date="2026-05-02">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/games/nocturnal-9cebd8.jpg" alt="Nocturnal">
+        <span class="cov-rating">4</span>
+        <span class="cov-tag" style="color:var(--amber)">🎮 Played</span>
+      </div>
+      <div class="lib-card-title">Nocturnal</div>
+      <div class="lib-card-sub">Steam · 2 May 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="9.0"
+             data-date="2026-05-02">
+      <div class="cov">
+        <div class="cov-fallback" data-cat="tv"><span class="cov-fb-emoji">📺</span><span class="cov-fb-title">Fleabag</span></div>
+        <span class="cov-rating top">9</span>
+        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
+      </div>
+      <div class="lib-card-title">Fleabag</div>
+      <div class="lib-card-sub">Prime · 2 May 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="8.5"
+             data-date="2026-04-30">
+      <div class="cov">
+        <div class="cov-fallback" data-cat="tv"><span class="cov-fb-emoji">📺</span><span class="cov-fb-title">The Devil Wears Prada</span></div>
+        <span class="cov-rating">8.5</span>
+        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
+      </div>
+      <div class="lib-card-title">The Devil Wears Prada</div>
+      <div class="lib-card-sub">JioHotstar · 30 Apr 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="8.5"
+             data-date="2026-04-19">
+      <div class="cov">
+        <div class="cov-fallback" data-cat="tv"><span class="cov-fb-emoji">📺</span><span class="cov-fb-title">Sambhavam Adhyayam Onnu</span></div>
+        <span class="cov-rating">8.5</span>
+        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
+      </div>
+      <div class="lib-card-title">Sambhavam Adhyayam Onnu</div>
+      <div class="lib-card-sub">JioHotstar · 19 Apr 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="7.5"
+             data-date="2026-04-18">
+      <div class="cov">
+        <div class="cov-fallback" data-cat="tv"><span class="cov-fb-emoji">📺</span><span class="cov-fb-title">The Perfect Neighbour</span></div>
+        <span class="cov-rating">7.5</span>
+        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
+      </div>
+      <div class="lib-card-title">The Perfect Neighbour</div>
+      <div class="lib-card-sub">Netflix · 18 Apr 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="7.0"
+             data-date="2026-04-18">
+      <div class="cov">
+        <div class="cov-fallback" data-cat="tv"><span class="cov-fb-emoji">📺</span><span class="cov-fb-title">Toaster</span></div>
+        <span class="cov-rating">7</span>
+        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
+      </div>
+      <div class="lib-card-title">Toaster</div>
+      <div class="lib-card-sub">Netflix · 18 Apr 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="8.0"
+             data-date="2026-04-18">
+      <div class="cov">
+        <div class="cov-fallback" data-cat="tv"><span class="cov-fb-emoji">📺</span><span class="cov-fb-title">Roommates</span></div>
+        <span class="cov-rating">8</span>
+        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
+      </div>
+      <div class="lib-card-title">Roommates</div>
+      <div class="lib-card-sub">Netflix · 18 Apr 2026</div>
+    </article>
+    <article class="lib-card" data-cat="books"
+             data-rating="5.0"
+             data-date="2026-04-18">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/books/the-vatican-secret-fc2131.jpg" alt="The Vatican Secret">
+        <span class="cov-rating">5</span>
+        <span class="cov-tag" style="color:var(--green)">📚 Read</span>
+      </div>
+      <div class="lib-card-title">The Vatican Secret</div>
+      <div class="lib-card-sub">David Leadbeater · 18 Apr 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="8.5"
+             data-date="2026-04-14">
+      <div class="cov">
+        <div class="cov-fallback" data-cat="tv"><span class="cov-fb-emoji">📺</span><span class="cov-fb-title">Project Hail Mary</span></div>
+        <span class="cov-rating">8.5</span>
+        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
+      </div>
+      <div class="lib-card-title">Project Hail Mary</div>
+      <div class="lib-card-sub">IMAX · 14 Apr 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="1.0"
+             data-date="2026-04-12">
+      <div class="cov">
+        <div class="cov-fallback" data-cat="tv"><span class="cov-fb-emoji">📺</span><span class="cov-fb-title">Tu Yaa Main</span></div>
+        <span class="cov-rating">1</span>
+        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
+      </div>
+      <div class="lib-card-title">Tu Yaa Main</div>
+      <div class="lib-card-sub">Netflix · 12 Apr 2026</div>
+    </article>
+    <article class="lib-card" data-cat="books"
+             data-rating="2.0"
+             data-date="2026-04-05">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/books/the-atlas-six-d62dc5.jpg" alt="The Atlas Six">
+        <span class="cov-rating">2</span>
+        <span class="cov-tag" style="color:var(--green)">📚 Read</span>
+      </div>
+      <div class="lib-card-title">The Atlas Six</div>
+      <div class="lib-card-sub">Olivie Blake · 5 Apr 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="6.0"
+             data-date="2026-04-04">
+      <div class="cov">
+        <div class="cov-fallback" data-cat="tv"><span class="cov-fb-emoji">📺</span><span class="cov-fb-title">The Attacks of 26/11</span></div>
+        <span class="cov-rating">6</span>
+        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
+      </div>
+      <div class="lib-card-title">The Attacks of 26/11</div>
+      <div class="lib-card-sub">Prime · 4 Apr 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="6.0"
+             data-date="2026-03-23">
+      <div class="cov">
+        <div class="cov-fallback" data-cat="tv"><span class="cov-fb-emoji">📺</span><span class="cov-fb-title">Deadloch: Season 2</span></div>
+        <span class="cov-rating">6</span>
+        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
+      </div>
+      <div class="lib-card-title">Deadloch: Season 2</div>
+      <div class="lib-card-sub">Prime · 23 Mar 2026</div>
+    </article>
+    <article class="lib-card" data-cat="books"
+             data-rating="9.5"
+             data-date="2026-03-23">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/books/the-girl-in-the-glass-case-cc5f42.jpg" alt="The Girl in the Glass Case">
+        <span class="cov-rating top">9.5</span>
+        <span class="cov-tag" style="color:var(--green)">📚 Read</span>
+      </div>
+      <div class="lib-card-title">The Girl in the Glass Case</div>
+      <div class="lib-card-sub">Devashish Sardana · 23 Mar 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="5.0"
+             data-date="2026-03-22">
+      <div class="cov">
+        <div class="cov-fallback" data-cat="tv"><span class="cov-fb-emoji">📺</span><span class="cov-fb-title">Rahu Ketu</span></div>
+        <span class="cov-rating">5</span>
+        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
+      </div>
+      <div class="lib-card-title">Rahu Ketu</div>
+      <div class="lib-card-sub">Prime · 22 Mar 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="10.0"
+             data-date="2026-03-20">
+      <div class="cov">
+        <div class="cov-fallback" data-cat="tv"><span class="cov-fb-emoji">📺</span><span class="cov-fb-title">One Battle After Another</span></div>
+        <span class="cov-rating top">10</span>
+        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
+      </div>
+      <div class="lib-card-title">One Battle After Another</div>
+      <div class="lib-card-sub">JioHotstar · 20 Mar 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="10.0"
+             data-date="2026-03-14">
+      <div class="cov">
+        <div class="cov-fallback" data-cat="tv"><span class="cov-fb-emoji">📺</span><span class="cov-fb-title">Bugonia</span></div>
+        <span class="cov-rating top">10</span>
+        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
+      </div>
+      <div class="lib-card-title">Bugonia</div>
+      <div class="lib-card-sub">JioHotstar · 14 Mar 2026</div>
+    </article>
+    <article class="lib-card" data-cat="books"
+             data-rating="9.5"
+             data-date="2026-03-13">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/books/what-you-are-looking-for-is-in-the-library-2170b0.jpg" alt="What You Are Looking for Is in the Library">
+        <span class="cov-rating top">9.5</span>
+        <span class="cov-tag" style="color:var(--green)">📚 Read</span>
+      </div>
+      <div class="lib-card-title">What You Are Looking for Is in the Library</div>
+      <div class="lib-card-sub">Michiko Aoyama · 13 Mar 2026</div>
+    </article>
+    <article class="lib-card" data-cat="games"
+             data-rating="10.0"
+             data-date="2026-03-09">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/games/sekiro-9cc593.jpg" alt="Sekiro">
+        <span class="cov-rating top">10</span>
+        <span class="cov-tag" style="color:var(--amber)">🎮 Played</span>
+      </div>
+      <div class="lib-card-title">Sekiro</div>
+      <div class="lib-card-sub">Steam · 9 Mar 2026</div>
+    </article>
+    <article class="lib-card" data-cat="games"
+             data-rating="7.0"
+             data-date="2026-03-08">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/games/dota-2-b6fbba.jpg" alt="Dota 2">
+        <span class="cov-rating">7</span>
+        <span class="cov-tag" style="color:var(--amber)">🎮 Played</span>
+      </div>
+      <div class="lib-card-title">Dota 2</div>
+      <div class="lib-card-sub">Steam · 8 Mar 2026</div>
+    </article>
+    <article class="lib-card" data-cat="games"
+             data-rating="8.5"
+             data-date="2026-03-08">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/games/reanimal-5d1b41.jpg" alt="Reanimal">
+        <span class="cov-rating">8.5</span>
+        <span class="cov-tag" style="color:var(--amber)">🎮 Played</span>
+      </div>
+      <div class="lib-card-title">Reanimal</div>
+      <div class="lib-card-sub">Steam · 8 Mar 2026</div>
+    </article>
+    <article class="lib-card" data-cat="games"
+             data-rating="4.0"
+             data-date="2026-03-08">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/games/the-alters-8fe7ab.jpg" alt="The Alters">
+        <span class="cov-rating">4</span>
+        <span class="cov-tag" style="color:var(--amber)">🎮 Played</span>
+      </div>
+      <div class="lib-card-title">The Alters</div>
+      <div class="lib-card-sub">Steam · 8 Mar 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="7.0"
+             data-date="2026-03-05">
+      <div class="cov">
+        <div class="cov-fallback" data-cat="tv"><span class="cov-fb-emoji">📺</span><span class="cov-fb-title">Wonder Man</span></div>
+        <span class="cov-rating">7</span>
+        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
+      </div>
+      <div class="lib-card-title">Wonder Man</div>
+      <div class="lib-card-sub">JioHotstar · 5 Mar 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="8.5"
+             data-date="2026-03-03">
+      <div class="cov">
+        <div class="cov-fallback" data-cat="tv"><span class="cov-fb-emoji">📺</span><span class="cov-fb-title">Weapons</span></div>
+        <span class="cov-rating">8.5</span>
+        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
+      </div>
+      <div class="lib-card-title">Weapons</div>
+      <div class="lib-card-sub">JioHotstar · 3 Mar 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="8.0"
+             data-date="2026-03-03">
+      <div class="cov">
+        <div class="cov-fallback" data-cat="tv"><span class="cov-fb-emoji">📺</span><span class="cov-fb-title">In the Blink of an Eye</span></div>
+        <span class="cov-rating">8</span>
+        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
+      </div>
+      <div class="lib-card-title">In the Blink of an Eye</div>
+      <div class="lib-card-sub">Netflix · 3 Mar 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="4.0"
+             data-date="2026-03-03">
+      <div class="cov">
+        <div class="cov-fallback" data-cat="tv"><span class="cov-fb-emoji">📺</span><span class="cov-fb-title">Shutter</span></div>
+        <span class="cov-rating">4</span>
+        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
+      </div>
+      <div class="lib-card-title">Shutter</div>
+      <div class="lib-card-sub">Netflix · 3 Mar 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="8.0"
+             data-date="2026-03-02">
+      <div class="cov">
+        <div class="cov-fallback" data-cat="tv"><span class="cov-fb-emoji">📺</span><span class="cov-fb-title">The Woman in Cabin 10</span></div>
+        <span class="cov-rating">8</span>
+        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
+      </div>
+      <div class="lib-card-title">The Woman in Cabin 10</div>
+      <div class="lib-card-sub">Netflix · 2 Mar 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="7.0"
+             data-date="2026-03-02">
+      <div class="cov">
+        <div class="cov-fallback" data-cat="tv"><span class="cov-fb-emoji">📺</span><span class="cov-fb-title">Accused</span></div>
+        <span class="cov-rating">7</span>
+        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
+      </div>
+      <div class="lib-card-title">Accused</div>
+      <div class="lib-card-sub">Netflix · 2 Mar 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="5.0"
+             data-date="2026-03-01">
+      <div class="cov">
+        <div class="cov-fallback" data-cat="tv"><span class="cov-fb-emoji">📺</span><span class="cov-fb-title">Holy Ghost</span></div>
+        <span class="cov-rating">5</span>
+        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
+      </div>
+      <div class="lib-card-title">Holy Ghost</div>
+      <div class="lib-card-sub">Prime · 1 Mar 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="9.0"
+             data-date="2026-02-28">
+      <div class="cov">
+        <div class="cov-fallback" data-cat="tv"><span class="cov-fb-emoji">📺</span><span class="cov-fb-title">Tere Naam</span></div>
+        <span class="cov-rating top">9</span>
+        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
+      </div>
+      <div class="lib-card-title">Tere Naam</div>
+      <div class="lib-card-sub">Zee 5 · 28 Feb 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="2.0"
+             data-date="2026-02-28">
+      <div class="cov">
+        <div class="cov-fallback" data-cat="tv"><span class="cov-fb-emoji">📺</span><span class="cov-fb-title">Isha</span></div>
+        <span class="cov-rating">2</span>
+        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
+      </div>
+      <div class="lib-card-title">Isha</div>
+      <div class="lib-card-sub">Prime · 28 Feb 2026</div>
+    </article>
+    <article class="lib-card" data-cat="games"
+             data-rating="4.0"
+             data-date="2026-02-24">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/games/titan-quest-ii-402007.jpg" alt="Titan Quest II">
+        <span class="cov-rating">4</span>
+        <span class="cov-tag" style="color:var(--amber)">🎮 Played</span>
+      </div>
+      <div class="lib-card-title">Titan Quest II</div>
+      <div class="lib-card-sub">Steam · 24 Feb 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="9.0"
+             data-date="2026-02-21">
+      <div class="cov">
+        <div class="cov-fallback" data-cat="tv"><span class="cov-fb-emoji">📺</span><span class="cov-fb-title">Kennedy</span></div>
+        <span class="cov-rating top">9</span>
+        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
+      </div>
+      <div class="lib-card-title">Kennedy</div>
+      <div class="lib-card-sub">Zee 5 · 21 Feb 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="7.5"
+             data-date="2026-02-15">
+      <div class="cov">
+        <div class="cov-fallback" data-cat="tv"><span class="cov-fb-emoji">📺</span><span class="cov-fb-title">The Platform</span></div>
+        <span class="cov-rating">7.5</span>
+        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
+      </div>
+      <div class="lib-card-title">The Platform</div>
+      <div class="lib-card-sub">Netflix · 15 Feb 2026</div>
+    </article>
+    <article class="lib-card" data-cat="books"
+             data-rating="9.5"
+             data-date="2026-02-11">
+      <div class="cov">
+        <div class="cov-fallback" data-cat="books"><span class="cov-fb-emoji">📚</span><span class="cov-fb-title">Calcutta: Two Years in the City</span></div>
+        <span class="cov-rating top">9.5</span>
+        <span class="cov-tag" style="color:var(--green)">📚 Read</span>
+      </div>
+      <div class="lib-card-title">Calcutta: Two Years in the City</div>
+      <div class="lib-card-sub">Amit Chaudhuri · 11 Feb 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="4.0"
+             data-date="2026-02-08">
+      <div class="cov">
+        <div class="cov-fallback" data-cat="tv"><span class="cov-fb-emoji">📺</span><span class="cov-fb-title">Dhurandhar</span></div>
+        <span class="cov-rating">4</span>
+        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
+      </div>
+      <div class="lib-card-title">Dhurandhar</div>
+      <div class="lib-card-sub">Netflix · 8 Feb 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="1.0"
+             data-date="2026-02-07">
+      <div class="cov">
+        <div class="cov-fallback" data-cat="tv"><span class="cov-fb-emoji">📺</span><span class="cov-fb-title">The 50</span></div>
+        <span class="cov-rating">1</span>
+        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
+      </div>
+      <div class="lib-card-title">The 50</div>
+      <div class="lib-card-sub">JioHotstar · 7 Feb 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="9.5"
+             data-date="2026-02-04">
+      <div class="cov">
+        <div class="cov-fallback" data-cat="tv"><span class="cov-fb-emoji">📺</span><span class="cov-fb-title">Jugnuma: The Fable</span></div>
+        <span class="cov-rating top">9.5</span>
+        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
+      </div>
+      <div class="lib-card-title">Jugnuma: The Fable</div>
+      <div class="lib-card-sub">Prime · 4 Feb 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="8.5"
+             data-date="2026-02-01">
+      <div class="cov">
+        <div class="cov-fallback" data-cat="tv"><span class="cov-fb-emoji">📺</span><span class="cov-fb-title">Daldal</span></div>
+        <span class="cov-rating">8.5</span>
+        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
+      </div>
+      <div class="lib-card-title">Daldal</div>
+      <div class="lib-card-sub">Prime · 1 Feb 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="7.0"
+             data-date="2026-01-29">
+      <div class="cov">
+        <div class="cov-fallback" data-cat="tv"><span class="cov-fb-emoji">📺</span><span class="cov-fb-title">Agatha Christie’s Seven Dials</span></div>
+        <span class="cov-rating">7</span>
+        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
+      </div>
+      <div class="lib-card-title">Agatha Christie’s Seven Dials</div>
+      <div class="lib-card-sub">Netflix · 29 Jan 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="8.0"
+             data-date="2026-01-24">
+      <div class="cov">
+        <div class="cov-fallback" data-cat="tv"><span class="cov-fb-emoji">📺</span><span class="cov-fb-title">Hunting Wives</span></div>
+        <span class="cov-rating">8</span>
+        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
+      </div>
+      <div class="lib-card-title">Hunting Wives</div>
+      <div class="lib-card-sub">Netflix · 24 Jan 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="7.0"
+             data-date="2026-01-22">
+      <div class="cov">
+        <div class="cov-fallback" data-cat="tv"><span class="cov-fb-emoji">📺</span><span class="cov-fb-title">Taskaree</span></div>
+        <span class="cov-rating">7</span>
+        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
+      </div>
+      <div class="lib-card-title">Taskaree</div>
+      <div class="lib-card-sub">Netflix · 22 Jan 2026</div>
+    </article>
+    <article class="lib-card" data-cat="books"
+             data-rating="8.5"
+             data-date="2026-01-21">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/books/wrong-place-wrong-time-185e00.jpg" alt="Wrong Place Wrong Time">
+        <span class="cov-rating">8.5</span>
+        <span class="cov-tag" style="color:var(--green)">📚 Read</span>
+      </div>
+      <div class="lib-card-title">Wrong Place Wrong Time</div>
+      <div class="lib-card-sub">Gillian McAllister · 21 Jan 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="9.0"
+             data-date="2026-01-18">
+      <div class="cov">
+        <div class="cov-fallback" data-cat="tv"><span class="cov-fb-emoji">📺</span><span class="cov-fb-title">Homebound</span></div>
+        <span class="cov-rating top">9</span>
+        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
+      </div>
+      <div class="lib-card-title">Homebound</div>
+      <div class="lib-card-sub">Netflix · 18 Jan 2026</div>
+    </article>
+    <article class="lib-card" data-cat="games"
+             data-rating="9.0"
+             data-date="2026-01-17">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/games/the-first-berserker-khazan-1b4ff6.jpg" alt="The First Berserker: Khazan">
+        <span class="cov-rating top">9</span>
+        <span class="cov-tag" style="color:var(--amber)">🎮 Played</span>
+      </div>
+      <div class="lib-card-title">The First Berserker: Khazan</div>
+      <div class="lib-card-sub">Steam · 17 Jan 2026</div>
+    </article>
+    <article class="lib-card" data-cat="games"
+             data-rating="3.0"
+             data-date="2026-01-16">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/games/path-of-exile-e972d3.jpg" alt="Path of Exile">
+        <span class="cov-rating">3</span>
+        <span class="cov-tag" style="color:var(--amber)">🎮 Played</span>
+      </div>
+      <div class="lib-card-title">Path of Exile</div>
+      <div class="lib-card-sub">Steam · 16 Jan 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="3.0"
+             data-date="2026-01-16">
+      <div class="cov">
+        <div class="cov-fallback" data-cat="tv"><span class="cov-fb-emoji">📺</span><span class="cov-fb-title">Shark Tank India: Season 5</span></div>
+        <span class="cov-rating">3</span>
+        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
+      </div>
+      <div class="lib-card-title">Shark Tank India: Season 5</div>
+      <div class="lib-card-sub">Sony Liv · 16 Jan 2026</div>
+    </article>
+    <article class="lib-card" data-cat="games"
+             data-rating="3.0"
+             data-date="2026-01-15">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/games/where-winds-meet-45867d.jpg" alt="Where Winds Meet">
+        <span class="cov-rating">3</span>
+        <span class="cov-tag" style="color:var(--amber)">🎮 Played</span>
+      </div>
+      <div class="lib-card-title">Where Winds Meet</div>
+      <div class="lib-card-sub">Steam · 15 Jan 2026</div>
+    </article>
+    <article class="lib-card" data-cat="books"
+             data-rating="9.0"
+             data-date="2026-01-06">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/books/the-vegetarian-64a03e.jpg" alt="The Vegetarian">
+        <span class="cov-rating top">9</span>
+        <span class="cov-tag" style="color:var(--green)">📚 Read</span>
+      </div>
+      <div class="lib-card-title">The Vegetarian</div>
+      <div class="lib-card-sub">Han Kang · 6 Jan 2026</div>
+    </article>
+    <article class="lib-card" data-cat="games"
+             data-rating="10.0"
+             data-date="2026-01-04">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/games/ghost-of-tsushima-ac195f.jpg" alt="Ghost of Tsushima">
+        <span class="cov-rating top">10</span>
+        <span class="cov-tag" style="color:var(--amber)">🎮 Played</span>
+      </div>
+      <div class="lib-card-title">Ghost of Tsushima</div>
+      <div class="lib-card-sub">Steam · 4 Jan 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="8.0"
+             data-date="2026-01-04">
+      <div class="cov">
+        <div class="cov-fallback" data-cat="tv"><span class="cov-fb-emoji">📺</span><span class="cov-fb-title">Dark Matter</span></div>
+        <span class="cov-rating">8</span>
+        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
+      </div>
+      <div class="lib-card-title">Dark Matter</div>
+      <div class="lib-card-sub">Apple TV+ · 4 Jan 2026</div>
+    </article>
+    <article class="lib-card" data-cat="games"
+             data-rating="10.0"
+             data-date="2026-01-03">
+      <div class="cov">
+        <div class="cov-fallback" data-cat="games"><span class="cov-fb-emoji">🎮</span><span class="cov-fb-title">Need for Speed Most Wanted 2005</span></div>
+        <span class="cov-rating top">10</span>
+        <span class="cov-tag" style="color:var(--amber)">🎮 Played</span>
+      </div>
+      <div class="lib-card-title">Need for Speed Most Wanted 2005</div>
+      <div class="lib-card-sub">3 Jan 2026</div>
+    </article>
+    <article class="lib-card" data-cat="games"
+             data-rating="3.0"
+             data-date="2025-12-31">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/games/blue-prince-60b233.jpg" alt="Blue Prince">
+        <span class="cov-rating">3</span>
+        <span class="cov-tag" style="color:var(--amber)">🎮 Played</span>
+      </div>
+      <div class="lib-card-title">Blue Prince</div>
+      <div class="lib-card-sub">Steam · 31 Dec 2025</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="8.0"
+             data-date="2025-12-30">
+      <div class="cov">
+        <div class="cov-fallback" data-cat="tv"><span class="cov-fb-emoji">📺</span><span class="cov-fb-title">The Holiday</span></div>
+        <span class="cov-rating">8</span>
+        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
+      </div>
+      <div class="lib-card-title">The Holiday</div>
+      <div class="lib-card-sub">Prime · 30 Dec 2025</div>
+    </article>
+    <article class="lib-card" data-cat="books"
+             data-rating="9.5"
+             data-date="2025-12-30">
+      <div class="cov">
+        <div class="cov-fallback" data-cat="books"><span class="cov-fb-emoji">📚</span><span class="cov-fb-title">The Passengers on the Hankyu Line</span></div>
+        <span class="cov-rating top">9.5</span>
+        <span class="cov-tag" style="color:var(--green)">📚 Read</span>
+      </div>
+      <div class="lib-card-title">The Passengers on the Hankyu Line</div>
+      <div class="lib-card-sub">Hiro Arikawa · 30 Dec 2025</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="6.5"
+             data-date="2025-12-28">
+      <div class="cov">
+        <div class="cov-fallback" data-cat="tv"><span class="cov-fb-emoji">📺</span><span class="cov-fb-title">F1: The Movie</span></div>
+        <span class="cov-rating">6.5</span>
+        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
+      </div>
+      <div class="lib-card-title">F1: The Movie</div>
+      <div class="lib-card-sub">Apple TV+ · 28 Dec 2025</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="9.5"
+             data-date="2025-12-16">
+      <div class="cov">
+        <div class="cov-fallback" data-cat="tv"><span class="cov-fb-emoji">📺</span><span class="cov-fb-title">Pluburis</span></div>
+        <span class="cov-rating top">9.5</span>
+        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
+      </div>
+      <div class="lib-card-title">Pluburis</div>
+      <div class="lib-card-sub">Apple TV+ · 16 Dec 2025</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="6.0"
+             data-date="2025-12-07">
+      <div class="cov">
+        <div class="cov-fallback" data-cat="tv"><span class="cov-fb-emoji">📺</span><span class="cov-fb-title">Dies Irae</span></div>
+        <span class="cov-rating">6</span>
+        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
+      </div>
+      <div class="lib-card-title">Dies Irae</div>
+      <div class="lib-card-sub">JioHotstar · 7 Dec 2025</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="6.0"
+             data-date="2025-12-06">
+      <div class="cov">
+        <div class="cov-fallback" data-cat="tv"><span class="cov-fb-emoji">📺</span><span class="cov-fb-title">Aaryan</span></div>
+        <span class="cov-rating">6</span>
+        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
+      </div>
+      <div class="lib-card-title">Aaryan</div>
+      <div class="lib-card-sub">Netflix · 6 Dec 2025</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="8.0"
+             data-date="2025-11-30">
+      <div class="cov">
+        <div class="cov-fallback" data-cat="tv"><span class="cov-fb-emoji">📺</span><span class="cov-fb-title">Man on the Inside: Season 2</span></div>
+        <span class="cov-rating">8</span>
+        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
+      </div>
+      <div class="lib-card-title">Man on the Inside: Season 2</div>
+      <div class="lib-card-sub">Netflix · 30 Nov 2025</div>
+    </article>
+    <article class="lib-card" data-cat="games"
+             data-rating="8.0"
+             data-date="2025-11-23">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/games/hitman-world-of-assassination-1cf47e.jpg" alt="HITMAN World of Assassination">
+        <span class="cov-rating">8</span>
+        <span class="cov-tag" style="color:var(--amber)">🎮 Played</span>
+      </div>
+      <div class="lib-card-title">HITMAN World of Assassination</div>
+      <div class="lib-card-sub">Steam · 23 Nov 2025</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="7.5"
+             data-date="2025-11-23">
+      <div class="cov">
+        <div class="cov-fallback" data-cat="tv"><span class="cov-fb-emoji">📺</span><span class="cov-fb-title">Baramulla</span></div>
+        <span class="cov-rating">7.5</span>
+        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
+      </div>
+      <div class="lib-card-title">Baramulla</div>
+      <div class="lib-card-sub">Netflix · 23 Nov 2025</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="7.0"
+             data-date="2025-11-22">
+      <div class="cov">
+        <div class="cov-fallback" data-cat="tv"><span class="cov-fb-emoji">📺</span><span class="cov-fb-title">The Fantastic Four: First Steps</span></div>
+        <span class="cov-rating">7</span>
+        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
+      </div>
+      <div class="lib-card-title">The Fantastic Four: First Steps</div>
+      <div class="lib-card-sub">JioHotstar · 22 Nov 2025</div>
+    </article>
+    <article class="lib-card" data-cat="games"
+             data-rating="8.0"
+             data-date="2025-11-18">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/games/cyberpunk-2077-phantom-liberty-701d33.jpg" alt="Cyberpunk 2077: Phantom Liberty">
+        <span class="cov-rating">8</span>
+        <span class="cov-tag" style="color:var(--amber)">🎮 Played</span>
+      </div>
+      <div class="lib-card-title">Cyberpunk 2077: Phantom Liberty</div>
+      <div class="lib-card-sub">Steam · 18 Nov 2025</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="6.0"
+             data-date="2025-11-15">
+      <div class="cov">
+        <div class="cov-fallback" data-cat="tv"><span class="cov-fb-emoji">📺</span><span class="cov-fb-title">Superman</span></div>
+        <span class="cov-rating">6</span>
+        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
+      </div>
+      <div class="lib-card-title">Superman</div>
+      <div class="lib-card-sub">15 Nov 2025</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="8.0"
+             data-date="2025-11-02">
+      <div class="cov">
+        <div class="cov-fallback" data-cat="tv"><span class="cov-fb-emoji">📺</span><span class="cov-fb-title">Barry: Season 1</span></div>
+        <span class="cov-rating">8</span>
+        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
+      </div>
+      <div class="lib-card-title">Barry: Season 1</div>
+      <div class="lib-card-sub">JioHotstar · 2 Nov 2025</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="9.5"
+             data-date="2025-11-01">
+      <div class="cov">
+        <div class="cov-fallback" data-cat="tv"><span class="cov-fb-emoji">📺</span><span class="cov-fb-title">Lokah Chapter 1: Chandra</span></div>
+        <span class="cov-rating top">9.5</span>
+        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
+      </div>
+      <div class="lib-card-title">Lokah Chapter 1: Chandra</div>
+      <div class="lib-card-sub">JioHotstar · 1 Nov 2025</div>
+    </article>
+    <article class="lib-card" data-cat="games"
+             data-rating="8.0"
+             data-date="2025-10-21">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/games/no-man-s-sky-76154b.jpg" alt="No Man’s Sky">
+        <span class="cov-rating">8</span>
+        <span class="cov-tag" style="color:var(--amber)">🎮 Played</span>
+      </div>
+      <div class="lib-card-title">No Man’s Sky</div>
+      <div class="lib-card-sub">Steam · 21 Oct 2025</div>
+    </article>
+    <article class="lib-card" data-cat="books"
+             data-rating="5.0"
+             data-date="2025-10-16">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/books/snow-crash-4dfb8a.jpg" alt="Snow Crash">
+        <span class="cov-rating">5</span>
+        <span class="cov-tag" style="color:var(--green)">📚 Read</span>
+      </div>
+      <div class="lib-card-title">Snow Crash</div>
+      <div class="lib-card-sub">Neal Stephenson · 16 Oct 2025</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="10.0"
+             data-date="2025-09-02">
+      <div class="cov">
+        <div class="cov-fallback" data-cat="tv"><span class="cov-fb-emoji">📺</span><span class="cov-fb-title">Bigg Boss: Season 19</span></div>
+        <span class="cov-rating top">10</span>
+        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
+      </div>
+      <div class="lib-card-title">Bigg Boss: Season 19</div>
+      <div class="lib-card-sub">JioHotstar · 2 Sep 2025</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="7.5"
+             data-date="2025-09-01">
+      <div class="cov">
+        <div class="cov-fallback" data-cat="tv"><span class="cov-fb-emoji">📺</span><span class="cov-fb-title">Moneyball</span></div>
+        <span class="cov-rating">7.5</span>
+        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
+      </div>
+      <div class="lib-card-title">Moneyball</div>
+      <div class="lib-card-sub">1 Sep 2025</div>
+    </article></div>
+</section>
+
+<footer class="lib-foot">
+  <a href="/">&larr; Back home</a>
+  <span>Auto-updated nightly from Notion · 16 May 2026, 11:33 AM IST</span>
+</footer>
+
+<script>
+const cur=document.getElementById('cursor');let mx=0,my=0,cx=0,cy=0;
+addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
+(function loop(){cx+=(mx-cx)*.18;cy+=(my-cy)*.18;
+cur.style.left=cx+'px';cur.style.top=cy+'px';requestAnimationFrame(loop)})();
+document.querySelectorAll('a,button,.lib-card,.hero-card,.filter-group label')
+.forEach(el=>{el.addEventListener('mouseenter',()=>cur.classList.add('big'));
+el.addEventListener('mouseleave',()=>cur.classList.remove('big'))});
+const io=new IntersectionObserver(es=>es.forEach(e=>{
+if(e.isIntersecting)e.target.classList.add('vis')}),{threshold:.1});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+const rm=matchMedia('(prefers-reduced-motion:reduce)').matches;
+const cio=new IntersectionObserver(es=>es.forEach(e=>{
+if(!e.isIntersecting)return;const el=e.target,t=parseFloat(el.dataset.count);
+cio.unobserve(el);if(rm||isNaN(t)){return}
+const dec=(el.dataset.count.indexOf('.')>-1);let s=0,st=performance.now();
+(function tick(n){let p=Math.min((n-st)/900,1);
+let v=t*(1-Math.pow(1-p,3));
+el.textContent=dec?v.toFixed(1):Math.round(v);
+if(p<1)requestAnimationFrame(tick)})(st)},{threshold:.6});
+document.querySelectorAll('.stat-num[data-count]').forEach(el=>cio.observe(el));
+const grid=document.getElementById('all-grid');
+document.querySelectorAll('.sort-btn').forEach(b=>b.addEventListener('click',()=>{
+document.querySelectorAll('.sort-btn').forEach(x=>x.classList.remove('active'));
+b.classList.add('active');const k=b.dataset.sort;
+const cards=[...grid.children];cards.sort((a,z)=>{
+if(k==='rating')return (+z.dataset.rating)-(+a.dataset.rating);
+return (z.dataset.date||'').localeCompare(a.dataset.date||'')});
+cards.forEach(c=>grid.appendChild(c))}));
+let ac=null,ip=false,mg,dr=[];const ab=document.getElementById('audio-btn'),
+al=document.getElementById('audio-label');
+ab.addEventListener('click',()=>{if(!ac){ac=new(AudioContext||webkitAudioContext)();
+mg=ac.createGain();mg.gain.value=0;mg.connect(ac.destination);
+[55,82.5,110,165].forEach((f,i)=>{const o=ac.createOscillator(),
+g=ac.createGain();o.type=i%2?'triangle':'sine';o.frequency.value=f;
+g.gain.value=i?0.07:0.28;o.connect(g);g.connect(mg);o.start();dr.push(o)})}
+if(!ip){ac.resume&&ac.resume();mg.gain.linearRampToValueAtTime(.5,ac.currentTime+2);
+ip=true;ab.classList.add('playing');al.textContent='On'}
+else{mg.gain.linearRampToValueAtTime(0,ac.currentTime+1.4);ip=false;
+ab.classList.remove('playing');al.textContent='Ambient'}});
+</script>
+</body>
+</html>
