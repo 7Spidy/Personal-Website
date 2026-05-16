@@ -161,6 +161,27 @@ def page_cover(page: dict) -> str:
     return ""
 
 
+def page_poster(page: dict) -> str:
+    """Return the URL from a 'Poster' property (files, url, or rich_text types)."""
+    p = page.get("properties", {}).get("Poster")
+    if not p:
+        return ""
+    t = p.get("type")
+    if t == "files":
+        for f in p.get("files", []):
+            ft = f.get("type")
+            if ft == "external":
+                return f.get("external", {}).get("url", "")
+            if ft == "file":
+                return f.get("file", {}).get("url", "")
+    if t == "url":
+        return p.get("url") or ""
+    if t == "rich_text":
+        rt = p.get("rich_text", [])
+        return rt[0].get("plain_text", "") if rt else ""
+    return ""
+
+
 def fmt_date(iso: str, fmt: str = "%-d %b") -> str:
     if not iso:
         return ""

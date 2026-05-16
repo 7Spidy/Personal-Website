@@ -23,7 +23,7 @@ from notion_lib import (
     DB_MOVIES_TV, DB_BOOKS, DB_GAMES, IST,
     get_in_progress, get_done_all,
     page_title, page_rating, page_start_date, page_end_date,
-    page_type, page_field, page_cover, fmt_date, days_since,
+    page_type, page_field, page_poster, fmt_date, days_since,
 )
 
 ROOT       = pathlib.Path(__file__).resolve().parent.parent
@@ -127,7 +127,7 @@ def shape(page: dict, cat: str) -> dict:
         "hours": page_field(page, "Hours Played") if cat == "games" else None,
         "days": page_field(page, "Days Spent"),
         "year": yr,
-        "notion_cover_url": page_cover(page),
+        "notion_cover_url": page_poster(page),
         "cover": "",
     }
 
