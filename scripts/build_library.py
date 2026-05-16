@@ -477,9 +477,9 @@ overflow-x:hidden;cursor:none}
 a{color:inherit}
 #cursor{width:12px;height:12px;background:var(--amber);border-radius:50%;
 position:fixed;top:0;left:0;pointer-events:none;z-index:9999;
-mix-blend-mode:difference;transition:transform .15s ease,width .2s,height .2s;
+transition:transform .15s ease,width .2s,height .2s,opacity .2s;
 transform:translate(-50%,-50%)}
-#cursor.big{width:46px;height:46px;opacity:.4}
+#cursor.big{width:40px;height:40px;opacity:.35;background:var(--amber)}
 body::before{content:'';position:fixed;inset:0;z-index:1000;pointer-events:none;
 opacity:.035;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 animation:grain .5s steps(1) infinite}
@@ -610,9 +610,9 @@ border-radius:7px;background:rgba(11,10,9,.78);backdrop-filter:blur(4px)}
 display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;
 font-family:'Space Mono',monospace;font-size:12px;color:var(--fg-dim)}
 .lib-foot a{text-decoration:none}.lib-foot a:hover{color:var(--amber)}
-.reveal{opacity:0;transform:translateY(30px);
-transition:opacity .8s ease,transform .8s cubic-bezier(.16,1,.3,1)}
-.reveal.vis{opacity:1;transform:translateY(0)}
+.reveal{transform:translateY(22px);
+transition:transform .8s cubic-bezier(.16,1,.3,1)}
+.reveal.vis{transform:translateY(0)}
 body:has(#f-tv:checked) .lib-card:not([data-cat=tv]),
 body:has(#f-books:checked) .lib-card:not([data-cat=books]),
 body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
@@ -623,7 +623,7 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
 .lib-sec{padding:64px 22px}.card-grid{grid-template-columns:repeat(2,1fr)}
 .stat-grid{grid-template-columns:repeat(2,1fr)}.nav-mid{display:none}}
 @media(max-width:460px){.card-grid{grid-template-columns:1fr}}
-@media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){.reveal{transform:none}
 *{animation:none!important}}
 """
 
