@@ -242,21 +242,52 @@ def media_card(it: dict) -> str:
 def hero_card(it: dict) -> str:
     meta = CAT_META[it["cat"]]
     d = days_since(it["start"])
-    day_txt = f"Day {d}" if d > 0 else "Just started"
-    bg = (f'background-image:linear-gradient(180deg,rgba(11,10,9,0.15),'
-          f'rgba(11,10,9,0.92)),url({esc(it["cover"])});'
-          if it["cover"] else
-          'background:linear-gradient(160deg,rgba(255,255,255,0.05),'
-          'rgba(255,255,255,0.01));')
-    inner_fb = "" if it["cover"] else f'<span class="hero-fb">{meta["emoji"]}</span>'
+    day_txt = f"Day {d}" if d and d > 0 else "Just started"
+    started = fmt_date(it["start"]) if it["start"] else ""
+
+    facts = []
+    if it["cat"] == "games":
+        if it["system"]:
+            facts.append(esc(str(it["system"])))
+        if isinstance(it["hours"], (int, float)) and it["hours"]:
+            facts.append(f'{int(it["hours"])}h in')
+    elif it["cat"] == "tv":
+        if it["type"]:
+            facts.append(esc(str(it["type"])))
+        if it["where"]:
+            facts.append(esc(str(it["where"])))
+    elif it["cat"] == "books":
+        if it["author"]:
+            facts.append(esc(str(it["author"])))
+    facts_html = (f'<span class="hero-facts">{" · ".join(facts)}</span>'
+                  if facts else "")
+
+    prog = day_txt + (f" · since {started}" if started else "")
+    rate_html = (f'<span class="hero-rate">★ {esc(it["rating_str"])}</span>'
+                 if it["rating_str"] else "")
+
+    if it["cover"]:
+        cover_layer = (f'<img class="hero-cover" src="{esc(it["cover"])}" '
+                       f'alt="{esc(it["title"])}" loading="lazy">')
+        scrim = ('linear-gradient(180deg,rgba(11,10,9,.10),'
+                 'rgba(11,10,9,.55) 45%,rgba(11,10,9,.96))')
+    else:
+        cover_layer = f'<span class="hero-fb">{meta["emoji"]}</span>'
+        scrim = ('linear-gradient(160deg,rgba(255,255,255,.05),'
+                 'rgba(255,255,255,.01))')
+    label = (meta['label'].replace('Played', 'Playing')
+             .replace('Watched', 'Watching').replace('Read', 'Reading'))
     return f'''
-      <a class="hero-card" data-cat="{it['cat']}" style="{bg}">
-        {inner_fb}
+      <a class="hero-card" data-cat="{it['cat']}">
+        {cover_layer}
+        <div class="hero-scrim" style="background:{scrim}"></div>
+        {rate_html}
         <div class="hero-card-body">
           <span class="hero-card-kicker" style="color:{meta['accent']}">
-            {meta['emoji']} {meta['label'].replace('Played','Playing').replace('Watched','Watching').replace('Read','Reading')}</span>
+            {meta['emoji']} {label}</span>
           <span class="hero-card-title">{esc(it['title'])}</span>
-          <span class="hero-card-meta">{day_txt}</span>
+          {facts_html}
+          <span class="hero-card-meta">{prog}</span>
         </div>
       </a>'''
 
@@ -288,12 +319,10 @@ def winner_card(it: dict, cat_label: str) -> str:
 
 
 def build_page(in_prog: list, done: list) -> str:
-    # In progress hero
-    hero_items = []
-    for cat in ("games", "tv", "books"):
-        first = next((x for x in in_prog if x["cat"] == cat), None)
-        if first:
-            hero_items.append(first)
+    # In progress hero — every active item, ordered games → shows → books
+    order = {"games": 0, "tv": 1, "books": 2}
+    hero_items = sorted(in_prog, key=lambda x: (order.get(x["cat"], 9),
+                                                -(days_since(x["start"]) or 0)))
     hero_html = "\n".join(hero_card(i) for i in hero_items) or \
         '<p class="empty">Nothing in progress right now. Touch grass achieved.</p>'
 
@@ -301,11 +330,12 @@ def build_page(in_prog: list, done: list) -> str:
     n_tv = sum(1 for x in hero_items if x["cat"] == "tv")
     n_books = sum(1 for x in hero_items if x["cat"] == "books")
     bits = []
-    if n_games: bits.append(f"{n_games} game" + ("s" if n_games > 1 else ""))
-    if n_tv:    bits.append("a show")
-    if n_books: bits.append("a book")
-    hero_sub = ("Right now: " + ", ".join(bits) + "."
-                if bits else "Currently between obsessions.")
+    if n_games: bits.append(f"{n_games} game" + ("s" if n_games != 1 else ""))
+    if n_tv:    bits.append(f"{n_tv} show" + ("s" if n_tv != 1 else ""))
+    if n_books: bits.append(f"{n_books} book" + ("s" if n_books != 1 else ""))
+    right_now = " · ".join(bits) if bits else "Currently between obsessions"
+    hero_sub = (f"Right now: {right_now}. Scroll for {YEAR}'s stats "
+                f"and a {len(done)}-title archive.")
 
     # Year stats
     yr_items = [x for x in done if x["year"] == YEAR]
@@ -383,14 +413,15 @@ def build_page(in_prog: list, done: list) -> str:
 <header class="lib-hero">
   <div class="lib-hero-eyebrow">Media Consumption · Live from Notion</div>
   <h1 class="lib-hero-title">The<br><span>Library.</span></h1>
-  <p class="lib-hero-sub">{esc(hero_sub)} Everything I watch, read, and play —
-     auto-synced every night.</p>
+  <p class="lib-hero-sub">{esc(hero_sub)} Auto-synced from Notion every night.</p>
   <div class="hero-row">
 {hero_html}
   </div>
+  <a class="scroll-cue" href="#sec-01">Explore the archive
+    <span class="arrow">&darr;</span></a>
 </header>
 
-<section class="lib-sec reveal">
+<section class="lib-sec reveal" id="sec-01">
   <div class="sec-head"><span class="sec-num">01</span>
     <h2>{YEAR} So Far</h2>
     <span class="sec-note">a year in media</span>
@@ -469,28 +500,44 @@ font-size:11px;letter-spacing:.1em;padding:6px 14px;border-radius:100px;cursor:n
 .audio-dot{width:6px;height:6px;background:currentColor;border-radius:50%}
 #audio-btn.playing .audio-dot{animation:pulse 1.2s ease infinite}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.6)}}
-.lib-hero{min-height:92vh;display:flex;flex-direction:column;justify-content:center;
-padding:140px 48px 80px;position:relative}
+.lib-hero{min-height:auto;display:flex;flex-direction:column;justify-content:center;
+padding:140px 48px 64px;position:relative}
 .lib-hero-eyebrow{font-family:'Space Mono',monospace;font-size:12px;
 letter-spacing:.2em;text-transform:uppercase;color:var(--amber);margin-bottom:24px}
 .lib-hero-title{font-size:clamp(56px,11vw,150px);font-weight:700;line-height:.9;
 letter-spacing:-.04em;margin-bottom:28px}
 .lib-hero-title span{color:var(--amber)}
-.lib-hero-sub{font-size:clamp(15px,1.6vw,18px);color:var(--fg-dim);max-width:540px;
-line-height:1.6;margin-bottom:56px}
-.hero-row{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;max-width:1100px}
-.hero-card{position:relative;min-height:340px;border-radius:18px;overflow:hidden;
-border:1px solid rgba(255,255,255,.08);background-size:cover;background-position:center;
+.lib-hero-sub{font-size:clamp(15px,1.6vw,18px);color:var(--fg-dim);max-width:560px;
+line-height:1.6;margin-bottom:52px}
+.hero-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));
+gap:18px;max-width:1240px}
+.hero-card{position:relative;min-height:360px;border-radius:18px;overflow:hidden;
+border:1px solid rgba(255,255,255,.08);background:var(--bg2);
 display:flex;align-items:flex-end;text-decoration:none;cursor:none;
 transition:transform .4s cubic-bezier(.16,1,.3,1),border-color .3s}
 .hero-card:hover{transform:translateY(-8px);border-color:rgba(255,255,255,.2)}
+.hero-cover{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.hero-scrim{position:absolute;inset:0}
 .hero-fb{position:absolute;inset:0;display:flex;align-items:center;
-justify-content:center;font-size:80px;opacity:.25}
-.hero-card-body{position:relative;padding:28px;display:flex;flex-direction:column;gap:8px}
+justify-content:center;font-size:80px;opacity:.22}
+.hero-rate{position:absolute;top:16px;right:16px;z-index:2;
+font-family:'Space Mono',monospace;font-size:12px;font-weight:700;
+padding:6px 12px;border-radius:100px;background:rgba(11,10,9,.7);
+color:var(--amber);border:1px solid rgba(255,255,255,.12)}
+.hero-card-body{position:relative;z-index:2;padding:26px;display:flex;
+flex-direction:column;gap:7px}
 .hero-card-kicker{font-family:'Space Mono',monospace;font-size:11px;
 letter-spacing:.16em;text-transform:uppercase}
-.hero-card-title{font-size:24px;font-weight:700;line-height:1.15;letter-spacing:-.02em}
+.hero-card-title{font-size:23px;font-weight:700;line-height:1.15;letter-spacing:-.02em}
+.hero-facts{font-size:13px;color:var(--fg);opacity:.85}
 .hero-card-meta{font-family:'Space Mono',monospace;font-size:12px;color:var(--fg-dim)}
+.scroll-cue{margin-top:46px;display:inline-flex;align-items:center;gap:10px;
+font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.2em;
+text-transform:uppercase;color:var(--fg-dim);text-decoration:none;width:max-content;
+cursor:none;transition:color .25s}
+.scroll-cue:hover{color:var(--amber)}
+.scroll-cue .arrow{display:inline-block;animation:bob 1.6s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(5px)}}
 .lib-sec{padding:90px 48px;max-width:1400px;margin:0 auto}
 .sec-head{display:flex;align-items:baseline;gap:18px;margin-bottom:48px;
 border-bottom:1px solid rgba(255,255,255,.07);padding-bottom:20px}

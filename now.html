@@ -41,8 +41,15 @@ font-size:11px;letter-spacing:.1em;padding:6px 14px;border-radius:100px;cursor:n
 .audio-dot{width:6px;height:6px;background:currentColor;border-radius:50%}
 #audio-btn.playing .audio-dot{animation:pulse 1.2s ease infinite}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.6)}}
-.lib-hero{min-height:92vh;display:flex;flex-direction:column;justify-content:center;
-padding:140px 48px 80px;position:relative}
+.lib-hero{min-height:auto;display:flex;flex-direction:column;justify-content:center;
+padding:140px 48px 64px;position:relative}
+.scroll-cue{margin-top:46px;display:inline-flex;align-items:center;gap:10px;
+font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.2em;
+text-transform:uppercase;color:var(--fg-dim);text-decoration:none;width:max-content;
+cursor:none;transition:color .25s}
+.scroll-cue:hover{color:var(--amber)}
+.scroll-cue .arrow{display:inline-block;animation:bob 1.6s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(5px)}}
 .lib-hero-eyebrow{font-family:'Space Mono',monospace;font-size:12px;
 letter-spacing:.2em;text-transform:uppercase;color:var(--amber);margin-bottom:24px}
 .lib-hero-title{font-size:clamp(56px,11vw,150px);font-weight:700;line-height:.9;
@@ -50,7 +57,7 @@ letter-spacing:-.04em;margin-bottom:28px}
 .lib-hero-title span{color:var(--amber)}
 .lib-hero-sub{font-size:clamp(15px,1.6vw,18px);color:var(--fg-dim);max-width:540px;
 line-height:1.6;margin-bottom:56px}
-.hero-row{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;max-width:1100px}
+.hero-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:18px;max-width:1240px}
 .hero-card{position:relative;min-height:340px;border-radius:18px;overflow:hidden;
 border:1px solid rgba(255,255,255,.08);background-size:cover;background-position:center;
 display:flex;align-items:flex-end;text-decoration:none;cursor:none;
@@ -164,8 +171,8 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
 <header class="lib-hero">
   <div class="lib-hero-eyebrow">Media Consumption · Live from Notion</div>
   <h1 class="lib-hero-title">The<br><span>Library.</span></h1>
-  <p class="lib-hero-sub">Right now: 1 game, a show, a book. Everything I watch, read, and play —
-     auto-synced every night.</p>
+  <p class="lib-hero-sub">Right now: 1 game · 1 show · 1 book. Scroll for 2026's stats
+     and a 77-title archive. Auto-synced from Notion every night.</p>
   <div class="hero-row">
 
       <a class="hero-card" data-cat="games" style="background:linear-gradient(160deg,rgba(255,255,255,0.05),rgba(255,255,255,0.01));">
@@ -198,9 +205,11 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
         </div>
       </a>
   </div>
+  <a class="scroll-cue" href="#sec-01">Explore the archive
+    <span class="arrow">&darr;</span></a>
 </header>
 
-<section class="lib-sec reveal">
+<section class="lib-sec reveal" id="sec-01">
   <div class="sec-head"><span class="sec-num">01</span>
     <h2>2026 So Far</h2>
     <span class="sec-note">a year in media</span>
