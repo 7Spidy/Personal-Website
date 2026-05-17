@@ -397,11 +397,14 @@ def build_page(in_prog: list, done: list) -> str:
         + winner_card(best("games"), "Game")
     )
 
-    # This month — everything in progress + everything finished this month
+    # This month — everything in progress + everything finished this month.
+    # Use end date when present, else start date (Done items may lack an end).
     now = datetime.now(IST)
-    month_done = [x for x in done if x["end"]
-                  and x["end"][:7] == f"{now.year}-{now.month:02d}"]
-    month_done.sort(key=lambda x: x["end"], reverse=True)
+    def eff_date(x):
+        return x["end"] or x["start"] or ""
+    cur_month = f"{now.year}-{now.month:02d}"
+    month_done = [x for x in done if eff_date(x)[:7] == cur_month]
+    month_done.sort(key=eff_date, reverse=True)
     month_items = hero_items + month_done   # in-progress first, then finished
     month_html = "".join(media_card(i) for i in month_items)
     n_wip = len(hero_items)
@@ -435,7 +438,7 @@ def build_page(in_prog: list, done: list) -> str:
   </section>'''
 
     # All time
-    all_sorted = sorted(done, key=lambda x: (x["end"] or ""), reverse=True)
+    all_sorted = sorted(done, key=eff_date, reverse=True)
     all_html = "".join(media_card(i) for i in all_sorted)
 
     updated = now.strftime("%-d %b %Y, %-I:%M %p IST")
