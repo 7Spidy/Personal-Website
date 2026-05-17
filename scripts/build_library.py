@@ -692,23 +692,12 @@ def main():
     overrides = load_overrides()
 
     in_prog, done = [], []
-    _date_debug_done = False
     for db, cat in ((DB_GAMES, "games"), (DB_MOVIES_TV, "tv"), (DB_BOOKS, "books")):
         for p in get_in_progress(db):
             it = shape(p, cat)
             it["status"] = "wip"
             in_prog.append(it)
-        raw_done_pages = get_done_all(db)
-        if not _date_debug_done:
-            print(f"  [DATE DEBUG] cat={cat} raw_done_pages count={len(raw_done_pages)}")
-            if raw_done_pages:
-                raw = raw_done_pages[0].get("properties", {})
-                print(f"  [DATE DEBUG] property names: {list(raw.keys())}")
-                for k, v in raw.items():
-                    if isinstance(v, dict) and "date" in v.get("type", ""):
-                        print(f"  [DATE DEBUG]   {k!r} ({v.get('type')}): {v.get('date')}")
-            _date_debug_done = True
-        for p in raw_done_pages:
+        for p in get_done_all(db):
             it = shape(p, cat)
             it["status"] = "done"
             done.append(it)
