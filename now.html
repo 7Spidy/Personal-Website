@@ -45,9 +45,9 @@ letter-spacing:-.04em;margin-bottom:28px}
 .lib-hero-title span{color:var(--amber)}
 .lib-hero-sub{font-size:clamp(15px,1.6vw,18px);color:var(--fg-dim);max-width:560px;
 line-height:1.6;margin-bottom:52px}
-.hero-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));
+.hero-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));
 gap:18px;max-width:1240px}
-.hero-card{position:relative;min-height:360px;border-radius:18px;overflow:hidden;
+.hero-card{position:relative;aspect-ratio:16/9;border-radius:18px;overflow:hidden;
 border:1px solid rgba(255,255,255,.08);background:var(--bg2);
 display:flex;align-items:flex-end;text-decoration:none;
 transition:transform .4s cubic-bezier(.16,1,.3,1),border-color .3s}
@@ -174,7 +174,7 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
 .lib-card-title{font-size:13px}.lib-card-sub{font-size:10px}
 .lib-controls{margin-bottom:24px}
 .filter-group label{padding:8px 13px;font-size:10px;margin-right:6px}
-.hero-card{min-height:210px}.hero-card-title{font-size:19px}}
+.hero-card-title{font-size:19px}}
 @media(max-width:430px){.card-grid{gap:10px}
 .cov-tag{font-size:8px;padding:4px 6px}
 .cov-rating{font-size:10px;padding:4px 7px}
@@ -194,7 +194,7 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
 <header class="lib-hero">
   <div class="lib-hero-eyebrow">Media Consumption · Live from Notion</div>
   <h1 class="lib-hero-title">The<br><span>Library.</span></h1>
-  <p class="lib-hero-sub">Right now: 2 games · 1 show · 1 book. Scroll for 2026&#x27;s stats and a 74-title archive. Auto-synced from Notion every night.</p>
+  <p class="lib-hero-sub">Right now: 2 games · 1 show · 1 book. Scroll for 2026&#x27;s stats and a 55-title archive. Auto-synced from Notion every night.</p>
   <div class="hero-row">
 
       <a class="hero-card" data-cat="games">
@@ -315,7 +315,7 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <span class="cov-tag" style="color:var(--amber)">🎮 Played</span>
       </div>
       <div class="lib-card-title">Death Stranding 2</div>
-      <div class="lib-card-sub">Steam · In progress</div>
+      <div class="lib-card-sub">Steam · Started 20 Mar 2026</div>
     </article>
     <article class="lib-card" data-cat="games"
              data-rating="0"
@@ -327,7 +327,7 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <span class="cov-tag" style="color:var(--amber)">🎮 Played</span>
       </div>
       <div class="lib-card-title">Pragmata</div>
-      <div class="lib-card-sub">Steam · In progress</div>
+      <div class="lib-card-sub">Steam · Started 16 May 2026</div>
     </article>
     <article class="lib-card" data-cat="tv"
              data-rating="0"
@@ -339,7 +339,7 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">From: Season 4</div>
-      <div class="lib-card-sub">Prime · In progress</div>
+      <div class="lib-card-sub">Prime · Started 26 Apr 2026</div>
     </article>
     <article class="lib-card" data-cat="books"
              data-rating="0"
@@ -351,7 +351,7 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <span class="cov-tag" style="color:var(--green)">📚 Read</span>
       </div>
       <div class="lib-card-title">Underground</div>
-      <div class="lib-card-sub">Haruki Murakami · In progress</div>
+      <div class="lib-card-sub">Haruki Murakami · Started 13 May 2026</div>
     </article>
     <article class="lib-card" data-cat="games"
              data-rating="4.0"
@@ -406,7 +406,7 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
 <section class="lib-sec reveal">
   <div class="sec-head"><span class="sec-num">03</span>
     <h2>All Time</h2>
-    <span class="sec-note">74 logged</span>
+    <span class="sec-note">55 logged</span>
   </div>
   <div class="filter-wrap" id="all-wrap">
     <div class="lib-controls">
@@ -1085,241 +1085,13 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
       </div>
       <div class="lib-card-title">Need for Speed Most Wanted 2005</div>
       <div class="lib-card-sub">3 Jan 2026</div>
-    </article>
-    <article class="lib-card" data-cat="games"
-             data-rating="3.0"
-             data-date="2025-12-31">
-      <div class="cov">
-        <img class="cov-img" loading="lazy" src="/assets/covers/games/blue-prince-60b233.jpg" alt="Blue Prince">
-        <span class="cov-rating">3</span>
-        
-        <span class="cov-tag" style="color:var(--amber)">🎮 Played</span>
-      </div>
-      <div class="lib-card-title">Blue Prince</div>
-      <div class="lib-card-sub">Steam · 31 Dec 2025</div>
-    </article>
-    <article class="lib-card" data-cat="tv"
-             data-rating="8.0"
-             data-date="2025-12-30">
-      <div class="cov">
-        <img class="cov-img" loading="lazy" src="/assets/covers/tv/the-holiday-f9bc1d.jpg" alt="The Holiday">
-        <span class="cov-rating">8</span>
-        
-        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
-      </div>
-      <div class="lib-card-title">The Holiday</div>
-      <div class="lib-card-sub">Prime · 30 Dec 2025</div>
-    </article>
-    <article class="lib-card" data-cat="books"
-             data-rating="9.5"
-             data-date="2025-12-30">
-      <div class="cov">
-        <img class="cov-img" loading="lazy" src="/assets/covers/books/the-passengers-on-the-hankyu-line-23e0d7.jpg" alt="The Passengers on the Hankyu Line">
-        <span class="cov-rating top">9.5</span>
-        
-        <span class="cov-tag" style="color:var(--green)">📚 Read</span>
-      </div>
-      <div class="lib-card-title">The Passengers on the Hankyu Line</div>
-      <div class="lib-card-sub">Hiro Arikawa · 30 Dec 2025</div>
-    </article>
-    <article class="lib-card" data-cat="tv"
-             data-rating="6.5"
-             data-date="2025-12-28">
-      <div class="cov">
-        <img class="cov-img" loading="lazy" src="/assets/covers/tv/f1-the-movie-fc968a.jpg" alt="F1: The Movie">
-        <span class="cov-rating">6.5</span>
-        
-        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
-      </div>
-      <div class="lib-card-title">F1: The Movie</div>
-      <div class="lib-card-sub">Apple TV+ · 28 Dec 2025</div>
-    </article>
-    <article class="lib-card" data-cat="tv"
-             data-rating="9.5"
-             data-date="2025-12-16">
-      <div class="cov">
-        <img class="cov-img" loading="lazy" src="/assets/covers/tv/pluburis-6b668b.jpg" alt="Pluburis">
-        <span class="cov-rating top">9.5</span>
-        
-        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
-      </div>
-      <div class="lib-card-title">Pluburis</div>
-      <div class="lib-card-sub">Apple TV+ · 16 Dec 2025</div>
-    </article>
-    <article class="lib-card" data-cat="tv"
-             data-rating="6.0"
-             data-date="2025-12-07">
-      <div class="cov">
-        <img class="cov-img" loading="lazy" src="/assets/covers/tv/dies-irae-5ff5ab.jpg" alt="Dies Irae">
-        <span class="cov-rating">6</span>
-        
-        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
-      </div>
-      <div class="lib-card-title">Dies Irae</div>
-      <div class="lib-card-sub">JioHotstar · 7 Dec 2025</div>
-    </article>
-    <article class="lib-card" data-cat="tv"
-             data-rating="6.0"
-             data-date="2025-12-06">
-      <div class="cov">
-        <img class="cov-img" loading="lazy" src="/assets/covers/tv/aaryan-1e4245.jpg" alt="Aaryan">
-        <span class="cov-rating">6</span>
-        
-        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
-      </div>
-      <div class="lib-card-title">Aaryan</div>
-      <div class="lib-card-sub">Netflix · 6 Dec 2025</div>
-    </article>
-    <article class="lib-card" data-cat="tv"
-             data-rating="8.0"
-             data-date="2025-11-30">
-      <div class="cov">
-        <img class="cov-img" loading="lazy" src="/assets/covers/tv/man-on-the-inside-season-2-154968.jpg" alt="Man on the Inside: Season 2">
-        <span class="cov-rating">8</span>
-        
-        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
-      </div>
-      <div class="lib-card-title">Man on the Inside: Season 2</div>
-      <div class="lib-card-sub">Netflix · 30 Nov 2025</div>
-    </article>
-    <article class="lib-card" data-cat="games"
-             data-rating="8.0"
-             data-date="2025-11-23">
-      <div class="cov">
-        <img class="cov-img" loading="lazy" src="/assets/covers/games/hitman-world-of-assassination-1cf47e.jpg" alt="HITMAN World of Assassination">
-        <span class="cov-rating">8</span>
-        
-        <span class="cov-tag" style="color:var(--amber)">🎮 Played</span>
-      </div>
-      <div class="lib-card-title">HITMAN World of Assassination</div>
-      <div class="lib-card-sub">Steam · 23 Nov 2025</div>
-    </article>
-    <article class="lib-card" data-cat="tv"
-             data-rating="7.5"
-             data-date="2025-11-23">
-      <div class="cov">
-        <img class="cov-img" loading="lazy" src="/assets/covers/tv/baramulla-3c2d46.jpg" alt="Baramulla">
-        <span class="cov-rating">7.5</span>
-        
-        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
-      </div>
-      <div class="lib-card-title">Baramulla</div>
-      <div class="lib-card-sub">Netflix · 23 Nov 2025</div>
-    </article>
-    <article class="lib-card" data-cat="tv"
-             data-rating="7.0"
-             data-date="2025-11-22">
-      <div class="cov">
-        <img class="cov-img" loading="lazy" src="/assets/covers/tv/the-fantastic-four-first-steps-14cf68.jpg" alt="The Fantastic Four: First Steps">
-        <span class="cov-rating">7</span>
-        
-        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
-      </div>
-      <div class="lib-card-title">The Fantastic Four: First Steps</div>
-      <div class="lib-card-sub">JioHotstar · 22 Nov 2025</div>
-    </article>
-    <article class="lib-card" data-cat="games"
-             data-rating="8.0"
-             data-date="2025-11-18">
-      <div class="cov">
-        <img class="cov-img" loading="lazy" src="/assets/covers/games/cyberpunk-2077-phantom-liberty-701d33.jpg" alt="Cyberpunk 2077: Phantom Liberty">
-        <span class="cov-rating">8</span>
-        
-        <span class="cov-tag" style="color:var(--amber)">🎮 Played</span>
-      </div>
-      <div class="lib-card-title">Cyberpunk 2077: Phantom Liberty</div>
-      <div class="lib-card-sub">Steam · 18 Nov 2025</div>
-    </article>
-    <article class="lib-card" data-cat="tv"
-             data-rating="6.0"
-             data-date="2025-11-15">
-      <div class="cov">
-        <img class="cov-img" loading="lazy" src="/assets/covers/tv/superman-c09a0a.jpg" alt="Superman">
-        <span class="cov-rating">6</span>
-        
-        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
-      </div>
-      <div class="lib-card-title">Superman</div>
-      <div class="lib-card-sub">15 Nov 2025</div>
-    </article>
-    <article class="lib-card" data-cat="tv"
-             data-rating="8.0"
-             data-date="2025-11-02">
-      <div class="cov">
-        <img class="cov-img" loading="lazy" src="/assets/covers/tv/barry-season-1-6d36f0.jpg" alt="Barry: Season 1">
-        <span class="cov-rating">8</span>
-        
-        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
-      </div>
-      <div class="lib-card-title">Barry: Season 1</div>
-      <div class="lib-card-sub">JioHotstar · 2 Nov 2025</div>
-    </article>
-    <article class="lib-card" data-cat="tv"
-             data-rating="9.5"
-             data-date="2025-11-01">
-      <div class="cov">
-        <img class="cov-img" loading="lazy" src="/assets/covers/tv/lokah-chapter-1-chandra-2cc6c5.jpg" alt="Lokah Chapter 1: Chandra">
-        <span class="cov-rating top">9.5</span>
-        
-        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
-      </div>
-      <div class="lib-card-title">Lokah Chapter 1: Chandra</div>
-      <div class="lib-card-sub">JioHotstar · 1 Nov 2025</div>
-    </article>
-    <article class="lib-card" data-cat="games"
-             data-rating="8.0"
-             data-date="2025-10-21">
-      <div class="cov">
-        <img class="cov-img" loading="lazy" src="/assets/covers/games/no-man-s-sky-76154b.jpg" alt="No Man’s Sky">
-        <span class="cov-rating">8</span>
-        
-        <span class="cov-tag" style="color:var(--amber)">🎮 Played</span>
-      </div>
-      <div class="lib-card-title">No Man’s Sky</div>
-      <div class="lib-card-sub">Steam · 21 Oct 2025</div>
-    </article>
-    <article class="lib-card" data-cat="books"
-             data-rating="5.0"
-             data-date="2025-10-16">
-      <div class="cov">
-        <img class="cov-img" loading="lazy" src="/assets/covers/books/snow-crash-4dfb8a.jpg" alt="Snow Crash">
-        <span class="cov-rating">5</span>
-        
-        <span class="cov-tag" style="color:var(--green)">📚 Read</span>
-      </div>
-      <div class="lib-card-title">Snow Crash</div>
-      <div class="lib-card-sub">Neal Stephenson · 16 Oct 2025</div>
-    </article>
-    <article class="lib-card" data-cat="tv"
-             data-rating="10.0"
-             data-date="2025-09-02">
-      <div class="cov">
-        <img class="cov-img" loading="lazy" src="/assets/covers/tv/bigg-boss-season-19-3723e6.jpg" alt="Bigg Boss: Season 19">
-        <span class="cov-rating top">10</span>
-        
-        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
-      </div>
-      <div class="lib-card-title">Bigg Boss: Season 19</div>
-      <div class="lib-card-sub">JioHotstar · 2 Sep 2025</div>
-    </article>
-    <article class="lib-card" data-cat="tv"
-             data-rating="7.5"
-             data-date="2025-09-01">
-      <div class="cov">
-        <img class="cov-img" loading="lazy" src="/assets/covers/tv/moneyball-2b7a8e.jpg" alt="Moneyball">
-        <span class="cov-rating">7.5</span>
-        
-        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
-      </div>
-      <div class="lib-card-title">Moneyball</div>
-      <div class="lib-card-sub">1 Sep 2025</div>
     </article></div>
   </div>
 </section>
 
 <footer class="lib-foot">
   <a href="/">&larr; Back home</a>
-  <span>Auto-updated nightly from Notion · 17 May 2026, 12:23 PM IST</span>
+  <span>Auto-updated nightly from Notion · 17 May 2026, 12:31 PM IST</span>
 </footer>
 
 <script>
