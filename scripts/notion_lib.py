@@ -162,23 +162,34 @@ def page_cover(page: dict) -> str:
 
 
 def page_poster(page: dict) -> str:
-    """Return the URL from a 'Poster' property (files, url, or rich_text types)."""
-    p = page.get("properties", {}).get("Poster")
-    if not p:
-        return ""
-    t = p.get("type")
-    if t == "files":
-        for f in p.get("files", []):
-            ft = f.get("type")
-            if ft == "external":
-                return f.get("external", {}).get("url", "")
-            if ft == "file":
-                return f.get("file", {}).get("url", "")
-    if t == "url":
-        return p.get("url") or ""
-    if t == "rich_text":
-        rt = p.get("rich_text", [])
-        return rt[0].get("plain_text", "") if rt else ""
+    """Return an image URL from a Poster/Cover/Image property.
+
+    Tries several common property names (Movies/TV & Games use 'Poster',
+    the Books DB uses 'Cover'). Supports files, url and rich_text types.
+    """
+    props = page.get("properties", {})
+    for name in ("Poster", "Cover", "Image", "Art"):
+        p = props.get(name)
+        if not p:
+            continue
+        t = p.get("type")
+        if t == "files":
+            for f in p.get("files", []):
+                ft = f.get("type")
+                if ft == "external":
+                    url = f.get("external", {}).get("url", "")
+                    if url:
+                        return url
+                if ft == "file":
+                    url = f.get("file", {}).get("url", "")
+                    if url:
+                        return url
+        elif t == "url" and p.get("url"):
+            return p["url"]
+        elif t == "rich_text":
+            rt = p.get("rich_text", [])
+            if rt and rt[0].get("plain_text"):
+                return rt[0]["plain_text"]
     return ""
 
 

@@ -173,6 +173,7 @@ def rating_badge(it: dict) -> str:
 
 def media_card(it: dict) -> str:
     meta = CAT_META[it["cat"]]
+    wip = it.get("status") == "wip"
     sub_bits = []
     if it["cat"] == "books" and it["author"]:
         sub_bits.append(esc(it["author"]))
@@ -180,10 +181,15 @@ def media_card(it: dict) -> str:
         sub_bits.append(esc(it["system"]))
     if it["cat"] == "tv" and it["where"]:
         sub_bits.append(esc(it["where"]))
-    when = fmt_date(it["end"], "%-d %b %Y") if it["end"] else ""
-    if when:
-        sub_bits.append(when)
+    if wip:
+        sub_bits.append("In progress")
+    else:
+        when = fmt_date(it["end"], "%-d %b %Y") if it["end"] else ""
+        if when:
+            sub_bits.append(when)
     sub = " · ".join(b for b in sub_bits if b)
+    wip_badge = ('<span class="cov-wip" style="color:'
+                 f'{meta["accent"]}">&#9679; Now</span>') if wip else ""
     return f'''
     <article class="lib-card" data-cat="{it['cat']}"
              data-rating="{it['rating'] if it['rating'] is not None else 0}"
@@ -191,6 +197,7 @@ def media_card(it: dict) -> str:
       <div class="cov">
         {cover_or_fallback(it)}
         {rating_badge(it)}
+        {wip_badge}
         <span class="cov-tag" style="color:{meta['accent']}">{meta['emoji']} {meta['label']}</span>
       </div>
       <div class="lib-card-title">{esc(it['title'])}</div>
@@ -326,19 +333,41 @@ def build_page(in_prog: list, done: list) -> str:
         + winner_card(best("games"), "Game")
     )
 
-    # This month
+    # This month — everything in progress + everything finished this month
     now = datetime.now(IST)
-    month_items = [x for x in done if x["end"]
-                   and x["end"][:7] == f"{now.year}-{now.month:02d}"]
-    month_items.sort(key=lambda x: x["end"], reverse=True)
+    month_done = [x for x in done if x["end"]
+                  and x["end"][:7] == f"{now.year}-{now.month:02d}"]
+    month_done.sort(key=lambda x: x["end"], reverse=True)
+    month_items = hero_items + month_done   # in-progress first, then finished
     month_html = "".join(media_card(i) for i in month_items)
+    n_wip = len(hero_items)
+    note_bits = []
+    if n_wip:
+        note_bits.append(f"{n_wip} in progress")
+    if month_done:
+        note_bits.append(f"{len(month_done)} finished")
+    month_note = f"{now.strftime('%B %Y')} · " + " · ".join(note_bits)
     month_section = "" if not month_items else f'''
   <section class="lib-sec reveal">
     <div class="sec-head"><span class="sec-num">02</span>
       <h2>This Month</h2>
-      <span class="sec-note">{esc(now.strftime('%B %Y'))} · {len(month_items)} finished</span>
+      <span class="sec-note">{esc(month_note)}</span>
     </div>
-    <div class="card-grid">{month_html}</div>
+    <div class="filter-wrap" id="month-wrap">
+      <div class="lib-controls">
+        <div class="filter-group">
+          <input type="radio" name="mfilt" id="mf-all" checked>
+          <label for="mf-all">All</label>
+          <input type="radio" name="mfilt" id="mf-tv">
+          <label for="mf-tv">📺 Watched</label>
+          <input type="radio" name="mfilt" id="mf-books">
+          <label for="mf-books">📚 Read</label>
+          <input type="radio" name="mfilt" id="mf-games">
+          <label for="mf-games">🎮 Played</label>
+        </div>
+      </div>
+      <div class="card-grid">{month_html}</div>
+    </div>
   </section>'''
 
     # All time
@@ -393,23 +422,25 @@ def build_page(in_prog: list, done: list) -> str:
     <h2>All Time</h2>
     <span class="sec-note">{len(done)} logged</span>
   </div>
-  <div class="lib-controls">
-    <div class="filter-group">
-      <input type="radio" name="catf" id="f-all" checked>
-      <label for="f-all">All</label>
-      <input type="radio" name="catf" id="f-tv">
-      <label for="f-tv">📺 Watched</label>
-      <input type="radio" name="catf" id="f-books">
-      <label for="f-books">📚 Read</label>
-      <input type="radio" name="catf" id="f-games">
-      <label for="f-games">🎮 Played</label>
+  <div class="filter-wrap" id="all-wrap">
+    <div class="lib-controls">
+      <div class="filter-group">
+        <input type="radio" name="catf" id="f-all" checked>
+        <label for="f-all">All</label>
+        <input type="radio" name="catf" id="f-tv">
+        <label for="f-tv">📺 Watched</label>
+        <input type="radio" name="catf" id="f-books">
+        <label for="f-books">📚 Read</label>
+        <input type="radio" name="catf" id="f-games">
+        <label for="f-games">🎮 Played</label>
+      </div>
+      <div class="sort-group">
+        <button class="sort-btn active" data-sort="date">Newest</button>
+        <button class="sort-btn" data-sort="rating">Top Rated</button>
+      </div>
     </div>
-    <div class="sort-group">
-      <button class="sort-btn active" data-sort="date">Newest</button>
-      <button class="sort-btn" data-sort="rating">Top Rated</button>
-    </div>
+    <div class="card-grid" id="all-grid">{all_html}</div>
   </div>
-  <div class="card-grid" id="all-grid">{all_html}</div>
 </section>
 
 <footer class="lib-foot">
@@ -509,7 +540,7 @@ text-transform:uppercase;color:var(--fg-dim)}
 .winners{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
 .winner{display:flex;gap:18px;padding:20px;border:1px solid rgba(255,255,255,.07);
 border-radius:14px;background:rgba(255,255,255,.02)}
-.winner-cov{width:78px;height:110px;border-radius:8px;overflow:hidden;flex-shrink:0}
+.winner-cov{width:132px;height:84px;border-radius:8px;overflow:hidden;flex-shrink:0}
 .winner-cov img,.winner-cov .cov-fallback{width:100%;height:100%;object-fit:cover}
 .winner-info{display:flex;flex-direction:column;justify-content:center;gap:8px}
 .winner-kicker{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.14em;
@@ -525,7 +556,9 @@ padding:9px 18px;border:1px solid rgba(255,255,255,.1);border-radius:100px;
 margin-right:8px;transition:all .2s}
 .filter-group label:hover{color:var(--fg);border-color:rgba(255,255,255,.25)}
 #f-all:checked~label[for=f-all],#f-tv:checked~label[for=f-tv],
-#f-books:checked~label[for=f-books],#f-games:checked~label[for=f-games]{
+#f-books:checked~label[for=f-books],#f-games:checked~label[for=f-games],
+#mf-all:checked~label[for=mf-all],#mf-tv:checked~label[for=mf-tv],
+#mf-books:checked~label[for=mf-books],#mf-games:checked~label[for=mf-games]{
 color:var(--bg);background:var(--amber);border-color:var(--amber)}
 .sort-btn{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.12em;
 text-transform:uppercase;color:var(--fg-dim);background:none;
@@ -533,9 +566,10 @@ border:1px solid rgba(255,255,255,.1);border-radius:100px;padding:9px 18px;
 margin-left:8px;transition:all .2s}
 .sort-btn:hover{color:var(--fg)}
 .sort-btn.active{color:var(--amber);border-color:var(--amber)}
-.card-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:22px}
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+gap:20px}
 .lib-card{display:flex;flex-direction:column;gap:10px}
-.cov{position:relative;aspect-ratio:2/3;border-radius:12px;overflow:hidden;
+.cov{position:relative;aspect-ratio:16/9;border-radius:12px;overflow:hidden;
 border:1px solid rgba(255,255,255,.07);background:var(--bg2);
 transition:transform .35s cubic-bezier(.16,1,.3,1),box-shadow .35s}
 .lib-card:hover .cov{transform:scale(1.035);
@@ -556,6 +590,11 @@ background:rgba(11,10,9,.78);color:var(--fg-dim);backdrop-filter:blur(4px)}
 .cov-tag{position:absolute;bottom:10px;left:10px;font-family:'Space Mono',monospace;
 font-size:9px;letter-spacing:.12em;text-transform:uppercase;padding:5px 9px;
 border-radius:7px;background:rgba(11,10,9,.78);backdrop-filter:blur(4px)}
+.cov-wip{position:absolute;top:10px;left:10px;font-family:'Space Mono',monospace;
+font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+padding:5px 9px;border-radius:7px;background:rgba(11,10,9,.82);
+backdrop-filter:blur(4px);animation:wipPulse 2s ease-in-out infinite}
+@keyframes wipPulse{0%,100%{opacity:1}50%{opacity:.55}}
 .lib-card-title{font-size:14px;font-weight:600;line-height:1.3}
 .lib-card-sub{font-family:'Space Mono',monospace;font-size:11px;color:var(--fg-dim)}
 .empty{color:var(--fg-dim);font-size:16px}
@@ -566,16 +605,28 @@ font-family:'Space Mono',monospace;font-size:12px;color:var(--fg-dim)}
 .reveal{transform:translateY(22px);
 transition:transform .8s cubic-bezier(.16,1,.3,1)}
 .reveal.vis{transform:translateY(0)}
-body:has(#f-tv:checked) .lib-card:not([data-cat=tv]),
-body:has(#f-books:checked) .lib-card:not([data-cat=books]),
-body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
+#month-wrap:has(#mf-tv:checked) .lib-card:not([data-cat=tv]),
+#month-wrap:has(#mf-books:checked) .lib-card:not([data-cat=books]),
+#month-wrap:has(#mf-games:checked) .lib-card:not([data-cat=games]),
+#all-wrap:has(#f-tv:checked) .lib-card:not([data-cat=tv]),
+#all-wrap:has(#f-books:checked) .lib-card:not([data-cat=books]),
+#all-wrap:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
 @media(max-width:1100px){.stat-grid{grid-template-columns:repeat(3,1fr)}
-.card-grid{grid-template-columns:repeat(3,1fr)}
 .winners,.hero-row{grid-template-columns:1fr}}
-@media(max-width:760px){nav{padding:20px 22px}.lib-hero{padding:120px 22px 60px}
-.lib-sec{padding:64px 22px}.card-grid{grid-template-columns:repeat(2,1fr)}
-.stat-grid{grid-template-columns:repeat(2,1fr)}.nav-mid{display:none}}
-@media(max-width:460px){.card-grid{grid-template-columns:1fr}}
+@media(max-width:760px){nav{padding:18px 18px}.lib-hero{padding:104px 18px 48px}
+.lib-sec{padding:54px 18px}
+.card-grid{grid-template-columns:repeat(2,1fr);gap:12px}
+.stat-grid{grid-template-columns:repeat(2,1fr)}.nav-mid{display:none}
+.sec-head{margin-bottom:30px;flex-wrap:wrap;gap:8px}
+.sec-note{margin-left:0;flex-basis:100%}
+.lib-card-title{font-size:13px}.lib-card-sub{font-size:10px}
+.lib-controls{margin-bottom:24px}
+.filter-group label{padding:8px 13px;font-size:10px;margin-right:6px}
+.hero-card{min-height:210px}.hero-card-title{font-size:19px}}
+@media(max-width:430px){.card-grid{gap:10px}
+.cov-tag{font-size:8px;padding:4px 6px}
+.cov-rating{font-size:10px;padding:4px 7px}
+.cov-wip{font-size:8px;padding:4px 6px}}
 @media(prefers-reduced-motion:reduce){.reveal{transform:none}
 *{animation:none!important}}
 """
@@ -624,9 +675,13 @@ def main():
     in_prog, done = [], []
     for db, cat in ((DB_GAMES, "games"), (DB_MOVIES_TV, "tv"), (DB_BOOKS, "books")):
         for p in get_in_progress(db):
-            in_prog.append(shape(p, cat))
+            it = shape(p, cat)
+            it["status"] = "wip"
+            in_prog.append(it)
         for p in get_done_all(db):
-            done.append(shape(p, cat))
+            it = shape(p, cat)
+            it["status"] = "done"
+            done.append(it)
 
     print(f"  in-progress: {len(in_prog)} | done: {len(done)}")
 
