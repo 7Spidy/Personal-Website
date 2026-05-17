@@ -19,6 +19,7 @@ import pathlib
 import urllib.request
 import urllib.error
 from concurrent.futures import ThreadPoolExecutor
+import random
 from datetime import datetime
 
 from notion_lib import (
@@ -212,7 +213,7 @@ def media_card(it: dict) -> str:
     return f'''
     <article class="lib-card" data-cat="{it['cat']}"
              data-rating="{it['rating'] if it['rating'] is not None else 0}"
-             data-date="{esc(it['end'])}">
+             data-date="{esc(it['end'] or it['start'])}">
       <div class="cov">
         {cover_or_fallback(it)}
         {rating_badge(it)}
@@ -303,6 +304,49 @@ def winner_card(it: dict, cat_label: str) -> str:
       </div>'''
 
 
+_WITTY = {
+    "games": [
+        "Day {d} of {title}. Still refusing to look up a guide.",
+        "Currently {title}. The 'quick session' was three hours ago.",
+        "{title} — because sleep is overrated and free time is for cowards.",
+        "Stuck in {title}. The boss fight can wait. Probably.",
+        "Playing {title} for research purposes. Definitely research.",
+        "In {title} since day {d}. The respawns are educational.",
+        "{title}: entered with a plan, exited with only screenshots.",
+        "Day {d}. {title} has not finished me yet. Mutual respect.",
+    ],
+    "tv": [
+        "Watching {title}. It was supposed to be background noise.",
+        "{title} promised one episode. It lied beautifully.",
+        "Currently emotionally compromised by {title}.",
+        "Somewhere in {title}, refusing to check how many seasons are left.",
+        "{title} — the show that turned 'five more minutes' into a lifestyle.",
+        "Invested in {title} in ways that cannot be undone.",
+        "Day {d} of {title}. The plot has thickened considerably.",
+    ],
+    "books": [
+        "Somewhere in {title}. The bookmark has moved exactly twice this week.",
+        "Reading {title}. Or thinking about reading it. Same thing.",
+        "{title}: open on the nightstand, judging silently.",
+        "Midway through {title}. The plot thickens. So does the coffee.",
+        "{title} — not going to read itself, but we're negotiating.",
+        "Day {d} with {title}. It's going well. I think.",
+        "Currently: {title}. Sleep is optional, apparently.",
+    ],
+}
+
+
+def witty_line(hero_items: list) -> str:
+    if not hero_items:
+        return "The queue is clear. The backlog is not."
+    rng = random.Random(datetime.now(IST).toordinal())
+    item = rng.choice(hero_items)
+    templates = _WITTY.get(item["cat"], ["{title} — in progress."])
+    tmpl = rng.choice(templates)
+    d = days_since(item["start"]) or 1
+    return tmpl.format(title=item["title"], d=d)
+
+
 def build_page(in_prog: list, done: list) -> str:
     # In progress hero — every active item, ordered games → shows → books
     order = {"games": 0, "tv": 1, "books": 2}
@@ -318,9 +362,10 @@ def build_page(in_prog: list, done: list) -> str:
     if n_games: bits.append(f"{n_games} game" + ("s" if n_games != 1 else ""))
     if n_tv:    bits.append(f"{n_tv} show" + ("s" if n_tv != 1 else ""))
     if n_books: bits.append(f"{n_books} book" + ("s" if n_books != 1 else ""))
-    right_now = " · ".join(bits) if bits else "Currently between obsessions"
-    hero_sub = (f"Right now: {right_now}. Scroll for {YEAR}'s stats "
-                f"and a {len(done)}-title archive.")
+    hero_sub = witty_line(hero_items) + (
+        f" Scroll for {YEAR}'s stats and a {len(done)}-title archive."
+        if hero_items else f" {len(done)} titles logged this year."
+    )
 
     # Year stats
     yr_items = [x for x in done if x["year"] == YEAR]
