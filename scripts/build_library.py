@@ -13,9 +13,11 @@ Usage:
 import re
 import json
 import html
+import ssl
 import hashlib
 import pathlib
 import urllib.request
+import urllib.error
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 
@@ -45,15 +47,20 @@ def slugify(text: str) -> str:
     return s or "untitled"
 
 
-def _get(url: str, headers: dict = None, timeout: int = 12) -> bytes:
-    req = urllib.request.Request(url, headers=headers or {})
-    with urllib.request.urlopen(req, timeout=timeout) as r:
+_SSL_CTX = ssl.create_default_context()
+_HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; AviLibraryBot/1.0)"}
+
+
+def _get(url: str, extra_headers: dict = None, timeout: int = 20) -> bytes:
+    h = {**_HEADERS, **(extra_headers or {})}
+    req = urllib.request.Request(url, headers=h)
+    with urllib.request.urlopen(req, timeout=timeout, context=_SSL_CTX) as r:
         return r.read()
 
 
-def _get_json(url: str, headers: dict = None) -> dict:
+def _get_json(url: str, extra_headers: dict = None) -> dict:
     try:
-        return json.loads(_get(url, headers))
+        return json.loads(_get(url, extra_headers))
     except Exception:
         return {}
 
@@ -84,16 +91,25 @@ def resolve_cover(item: dict, overrides: dict) -> str:
     src = overrides.get(title, "") or item.get("notion_cover_url", "")
 
     if not src:
-        print(f"  ⚠️  no cover set in Notion: [{cat}] {title}")
+        print(f"  ⚠️  no Poster in Notion: [{cat}] {title}")
         return ""
 
-    try:
-        data = _get(src)
-        if data and len(data) > 256:
-            dest.write_bytes(data)
-            return rel
-    except Exception as e:
-        print(f"  ⚠️  download failed: {title} ({e})")
+    # Retry up to 3 times for transient failures
+    for attempt in range(3):
+        try:
+            data = _get(src)
+            if data and len(data) > 1024:
+                dest.write_bytes(data)
+                print(f"  ✓  [{cat}] {title} ({len(data)//1024}KB)")
+                return rel
+            else:
+                print(f"  ⚠️  tiny/empty response ({len(data) if data else 0}B): [{cat}] {title} — url: {src[:80]}")
+                return ""
+        except urllib.error.HTTPError as e:
+            print(f"  ⚠️  HTTP {e.code} attempt {attempt+1}: [{cat}] {title} — {src[:80]}")
+        except Exception as e:
+            print(f"  ⚠️  {type(e).__name__} attempt {attempt+1}: [{cat}] {title} — {e}")
+    print(f"  ✗  gave up after 3 attempts: [{cat}] {title}")
     return ""
 
 # ── DATA SHAPING ──────────────────────────────────────────────────────────────
