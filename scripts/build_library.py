@@ -181,12 +181,17 @@ def media_card(it: dict) -> str:
         sub_bits.append(esc(it["system"]))
     if it["cat"] == "tv" and it["where"]:
         sub_bits.append(esc(it["where"]))
+    s = fmt_date(it["start"], "%-d %b %Y") if it["start"] else ""
+    e = fmt_date(it["end"], "%-d %b %Y") if it["end"] else ""
     if wip:
-        sub_bits.append("In progress")
+        sub_bits.append(f"Started {s}" if s else "In progress")
     else:
-        when = fmt_date(it["end"], "%-d %b %Y") if it["end"] else ""
-        if when:
-            sub_bits.append(when)
+        if s and e and s != e:
+            sub_bits.append(f"{s} → {e}")
+        elif e:
+            sub_bits.append(e)
+        elif s:
+            sub_bits.append(s)
     sub = " · ".join(b for b in sub_bits if b)
     wip_badge = ('<span class="cov-wip" style="color:'
                  f'{meta["accent"]}">&#9679; Now</span>') if wip else ""
@@ -493,9 +498,9 @@ letter-spacing:-.04em;margin-bottom:28px}
 .lib-hero-title span{color:var(--amber)}
 .lib-hero-sub{font-size:clamp(15px,1.6vw,18px);color:var(--fg-dim);max-width:560px;
 line-height:1.6;margin-bottom:52px}
-.hero-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));
+.hero-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));
 gap:18px;max-width:1240px}
-.hero-card{position:relative;min-height:360px;border-radius:18px;overflow:hidden;
+.hero-card{position:relative;aspect-ratio:16/9;border-radius:18px;overflow:hidden;
 border:1px solid rgba(255,255,255,.08);background:var(--bg2);
 display:flex;align-items:flex-end;text-decoration:none;
 transition:transform .4s cubic-bezier(.16,1,.3,1),border-color .3s}
@@ -622,7 +627,7 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
 .lib-card-title{font-size:13px}.lib-card-sub{font-size:10px}
 .lib-controls{margin-bottom:24px}
 .filter-group label{padding:8px 13px;font-size:10px;margin-right:6px}
-.hero-card{min-height:210px}.hero-card-title{font-size:19px}}
+.hero-card-title{font-size:19px}}
 @media(max-width:430px){.card-grid{gap:10px}
 .cov-tag{font-size:8px;padding:4px 6px}
 .cov-rating{font-size:10px;padding:4px 7px}
@@ -683,7 +688,12 @@ def main():
             it["status"] = "done"
             done.append(it)
 
-    print(f"  in-progress: {len(in_prog)} | done: {len(done)}")
+    # Only this year's completions count anywhere on the page; in-progress
+    # items are always kept regardless of when they started.
+    before = len(done)
+    done = [x for x in done if x["year"] == YEAR]
+    print(f"  in-progress: {len(in_prog)} | done {YEAR}: {len(done)} "
+          f"(dropped {before - len(done)} from earlier years)")
 
     targets = in_prog + done
     with ThreadPoolExecutor(max_workers=8) as ex:
