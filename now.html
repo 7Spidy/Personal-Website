@@ -92,7 +92,7 @@ text-transform:uppercase;color:var(--fg-dim)}
 .winners{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
 .winner{display:flex;gap:18px;padding:20px;border:1px solid rgba(255,255,255,.07);
 border-radius:14px;background:rgba(255,255,255,.02)}
-.winner-cov{width:78px;height:110px;border-radius:8px;overflow:hidden;flex-shrink:0}
+.winner-cov{width:132px;height:84px;border-radius:8px;overflow:hidden;flex-shrink:0}
 .winner-cov img,.winner-cov .cov-fallback{width:100%;height:100%;object-fit:cover}
 .winner-info{display:flex;flex-direction:column;justify-content:center;gap:8px}
 .winner-kicker{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.14em;
@@ -108,7 +108,9 @@ padding:9px 18px;border:1px solid rgba(255,255,255,.1);border-radius:100px;
 margin-right:8px;transition:all .2s}
 .filter-group label:hover{color:var(--fg);border-color:rgba(255,255,255,.25)}
 #f-all:checked~label[for=f-all],#f-tv:checked~label[for=f-tv],
-#f-books:checked~label[for=f-books],#f-games:checked~label[for=f-games]{
+#f-books:checked~label[for=f-books],#f-games:checked~label[for=f-games],
+#mf-all:checked~label[for=mf-all],#mf-tv:checked~label[for=mf-tv],
+#mf-books:checked~label[for=mf-books],#mf-games:checked~label[for=mf-games]{
 color:var(--bg);background:var(--amber);border-color:var(--amber)}
 .sort-btn{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.12em;
 text-transform:uppercase;color:var(--fg-dim);background:none;
@@ -116,9 +118,10 @@ border:1px solid rgba(255,255,255,.1);border-radius:100px;padding:9px 18px;
 margin-left:8px;transition:all .2s}
 .sort-btn:hover{color:var(--fg)}
 .sort-btn.active{color:var(--amber);border-color:var(--amber)}
-.card-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:22px}
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+gap:20px}
 .lib-card{display:flex;flex-direction:column;gap:10px}
-.cov{position:relative;aspect-ratio:2/3;border-radius:12px;overflow:hidden;
+.cov{position:relative;aspect-ratio:16/9;border-radius:12px;overflow:hidden;
 border:1px solid rgba(255,255,255,.07);background:var(--bg2);
 transition:transform .35s cubic-bezier(.16,1,.3,1),box-shadow .35s}
 .lib-card:hover .cov{transform:scale(1.035);
@@ -139,6 +142,11 @@ background:rgba(11,10,9,.78);color:var(--fg-dim);backdrop-filter:blur(4px)}
 .cov-tag{position:absolute;bottom:10px;left:10px;font-family:'Space Mono',monospace;
 font-size:9px;letter-spacing:.12em;text-transform:uppercase;padding:5px 9px;
 border-radius:7px;background:rgba(11,10,9,.78);backdrop-filter:blur(4px)}
+.cov-wip{position:absolute;top:10px;left:10px;font-family:'Space Mono',monospace;
+font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+padding:5px 9px;border-radius:7px;background:rgba(11,10,9,.82);
+backdrop-filter:blur(4px);animation:wipPulse 2s ease-in-out infinite}
+@keyframes wipPulse{0%,100%{opacity:1}50%{opacity:.55}}
 .lib-card-title{font-size:14px;font-weight:600;line-height:1.3}
 .lib-card-sub{font-family:'Space Mono',monospace;font-size:11px;color:var(--fg-dim)}
 .empty{color:var(--fg-dim);font-size:16px}
@@ -149,16 +157,28 @@ font-family:'Space Mono',monospace;font-size:12px;color:var(--fg-dim)}
 .reveal{transform:translateY(22px);
 transition:transform .8s cubic-bezier(.16,1,.3,1)}
 .reveal.vis{transform:translateY(0)}
-body:has(#f-tv:checked) .lib-card:not([data-cat=tv]),
-body:has(#f-books:checked) .lib-card:not([data-cat=books]),
-body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
+#month-wrap:has(#mf-tv:checked) .lib-card:not([data-cat=tv]),
+#month-wrap:has(#mf-books:checked) .lib-card:not([data-cat=books]),
+#month-wrap:has(#mf-games:checked) .lib-card:not([data-cat=games]),
+#all-wrap:has(#f-tv:checked) .lib-card:not([data-cat=tv]),
+#all-wrap:has(#f-books:checked) .lib-card:not([data-cat=books]),
+#all-wrap:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
 @media(max-width:1100px){.stat-grid{grid-template-columns:repeat(3,1fr)}
-.card-grid{grid-template-columns:repeat(3,1fr)}
 .winners,.hero-row{grid-template-columns:1fr}}
-@media(max-width:760px){nav{padding:20px 22px}.lib-hero{padding:120px 22px 60px}
-.lib-sec{padding:64px 22px}.card-grid{grid-template-columns:repeat(2,1fr)}
-.stat-grid{grid-template-columns:repeat(2,1fr)}.nav-mid{display:none}}
-@media(max-width:460px){.card-grid{grid-template-columns:1fr}}
+@media(max-width:760px){nav{padding:18px 18px}.lib-hero{padding:104px 18px 48px}
+.lib-sec{padding:54px 18px}
+.card-grid{grid-template-columns:repeat(2,1fr);gap:12px}
+.stat-grid{grid-template-columns:repeat(2,1fr)}.nav-mid{display:none}
+.sec-head{margin-bottom:30px;flex-wrap:wrap;gap:8px}
+.sec-note{margin-left:0;flex-basis:100%}
+.lib-card-title{font-size:13px}.lib-card-sub{font-size:10px}
+.lib-controls{margin-bottom:24px}
+.filter-group label{padding:8px 13px;font-size:10px;margin-right:6px}
+.hero-card{min-height:210px}.hero-card-title{font-size:19px}}
+@media(max-width:430px){.card-grid{gap:10px}
+.cov-tag{font-size:8px;padding:4px 6px}
+.cov-rating{font-size:10px;padding:4px 7px}
+.cov-wip{font-size:8px;padding:4px 6px}}
 @media(prefers-reduced-motion:reduce){.reveal{transform:none}
 *{animation:none!important}}
 </style>
@@ -217,8 +237,8 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
       </a>
 
       <a class="hero-card" data-cat="books">
-        <span class="hero-fb">📚</span>
-        <div class="hero-scrim" style="background:linear-gradient(160deg,rgba(255,255,255,.05),rgba(255,255,255,.01))"></div>
+        <img class="hero-cover" src="/assets/covers/books/underground-c0bf6d.jpg" alt="Underground" loading="lazy">
+        <div class="hero-scrim" style="background:linear-gradient(180deg,rgba(11,10,9,.10),rgba(11,10,9,.55) 45%,rgba(11,10,9,.96))"></div>
         
         <div class="hero-card-body">
           <span class="hero-card-kicker" style="color:var(--green)">
@@ -249,7 +269,7 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
         </div>
       </div>
       <div class="winner">
-        <div class="winner-cov"><div class="cov-fallback" data-cat="books"><span class="cov-fb-emoji">📚</span><span class="cov-fb-title">The Girl in the Glass Case</span></div></div>
+        <div class="winner-cov"><img class="cov-img" loading="lazy" src="/assets/covers/books/the-girl-in-the-glass-case-cc5f42.jpg" alt="The Girl in the Glass Case"></div>
         <div class="winner-info">
           <span class="winner-kicker" style="color:var(--green)">Best Read of 2026</span>
           <span class="winner-title">The Girl in the Glass Case</span>
@@ -269,15 +289,77 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
   <section class="lib-sec reveal">
     <div class="sec-head"><span class="sec-num">02</span>
       <h2>This Month</h2>
-      <span class="sec-note">May 2026 · 4 finished</span>
+      <span class="sec-note">May 2026 · 4 in progress · 4 finished</span>
     </div>
-    <div class="card-grid">
+    <div class="filter-wrap" id="month-wrap">
+      <div class="lib-controls">
+        <div class="filter-group">
+          <input type="radio" name="mfilt" id="mf-all" checked>
+          <label for="mf-all">All</label>
+          <input type="radio" name="mfilt" id="mf-tv">
+          <label for="mf-tv">📺 Watched</label>
+          <input type="radio" name="mfilt" id="mf-books">
+          <label for="mf-books">📚 Read</label>
+          <input type="radio" name="mfilt" id="mf-games">
+          <label for="mf-games">🎮 Played</label>
+        </div>
+      </div>
+      <div class="card-grid">
+    <article class="lib-card" data-cat="games"
+             data-rating="0"
+             data-date="2026-03-20">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/games/death-stranding-2-ffa0aa.jpg" alt="Death Stranding 2">
+        
+        <span class="cov-wip" style="color:var(--amber)">&#9679; Now</span>
+        <span class="cov-tag" style="color:var(--amber)">🎮 Played</span>
+      </div>
+      <div class="lib-card-title">Death Stranding 2</div>
+      <div class="lib-card-sub">Steam · In progress</div>
+    </article>
+    <article class="lib-card" data-cat="games"
+             data-rating="0"
+             data-date="2026-05-16">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/games/pragmata-5a7049.jpg" alt="Pragmata">
+        
+        <span class="cov-wip" style="color:var(--amber)">&#9679; Now</span>
+        <span class="cov-tag" style="color:var(--amber)">🎮 Played</span>
+      </div>
+      <div class="lib-card-title">Pragmata</div>
+      <div class="lib-card-sub">Steam · In progress</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="0"
+             data-date="2026-04-26">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/tv/from-season-4-f45927.jpg" alt="From: Season 4">
+        
+        <span class="cov-wip" style="color:var(--teal)">&#9679; Now</span>
+        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
+      </div>
+      <div class="lib-card-title">From: Season 4</div>
+      <div class="lib-card-sub">Prime · In progress</div>
+    </article>
+    <article class="lib-card" data-cat="books"
+             data-rating="0"
+             data-date="2026-05-13">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/books/underground-c0bf6d.jpg" alt="Underground">
+        
+        <span class="cov-wip" style="color:var(--green)">&#9679; Now</span>
+        <span class="cov-tag" style="color:var(--green)">📚 Read</span>
+      </div>
+      <div class="lib-card-title">Underground</div>
+      <div class="lib-card-sub">Haruki Murakami · In progress</div>
+    </article>
     <article class="lib-card" data-cat="games"
              data-rating="4.0"
              data-date="2026-05-09">
       <div class="cov">
         <img class="cov-img" loading="lazy" src="/assets/covers/games/wuchang-fallen-feathers-2708de.jpg" alt="Wuchang: Fallen Feathers">
         <span class="cov-rating">4</span>
+        
         <span class="cov-tag" style="color:var(--amber)">🎮 Played</span>
       </div>
       <div class="lib-card-title">Wuchang: Fallen Feathers</div>
@@ -289,6 +371,7 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
       <div class="cov">
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/the-devil-wears-prada-2-5cd62e.jpg" alt="The Devil Wears Prada 2">
         <span class="cov-rating">8</span>
+        
         <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">The Devil Wears Prada 2</div>
@@ -300,6 +383,7 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
       <div class="cov">
         <img class="cov-img" loading="lazy" src="/assets/covers/games/nocturnal-9cebd8.jpg" alt="Nocturnal">
         <span class="cov-rating">4</span>
+        
         <span class="cov-tag" style="color:var(--amber)">🎮 Played</span>
       </div>
       <div class="lib-card-title">Nocturnal</div>
@@ -311,40 +395,44 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
       <div class="cov">
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/fleabag-1fd655.jpg" alt="Fleabag">
         <span class="cov-rating top">9</span>
+        
         <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Fleabag</div>
       <div class="lib-card-sub">Prime · 2 May 2026</div>
     </article></div>
+    </div>
   </section>
 <section class="lib-sec reveal">
   <div class="sec-head"><span class="sec-num">03</span>
     <h2>All Time</h2>
     <span class="sec-note">74 logged</span>
   </div>
-  <div class="lib-controls">
-    <div class="filter-group">
-      <input type="radio" name="catf" id="f-all" checked>
-      <label for="f-all">All</label>
-      <input type="radio" name="catf" id="f-tv">
-      <label for="f-tv">📺 Watched</label>
-      <input type="radio" name="catf" id="f-books">
-      <label for="f-books">📚 Read</label>
-      <input type="radio" name="catf" id="f-games">
-      <label for="f-games">🎮 Played</label>
+  <div class="filter-wrap" id="all-wrap">
+    <div class="lib-controls">
+      <div class="filter-group">
+        <input type="radio" name="catf" id="f-all" checked>
+        <label for="f-all">All</label>
+        <input type="radio" name="catf" id="f-tv">
+        <label for="f-tv">📺 Watched</label>
+        <input type="radio" name="catf" id="f-books">
+        <label for="f-books">📚 Read</label>
+        <input type="radio" name="catf" id="f-games">
+        <label for="f-games">🎮 Played</label>
+      </div>
+      <div class="sort-group">
+        <button class="sort-btn active" data-sort="date">Newest</button>
+        <button class="sort-btn" data-sort="rating">Top Rated</button>
+      </div>
     </div>
-    <div class="sort-group">
-      <button class="sort-btn active" data-sort="date">Newest</button>
-      <button class="sort-btn" data-sort="rating">Top Rated</button>
-    </div>
-  </div>
-  <div class="card-grid" id="all-grid">
+    <div class="card-grid" id="all-grid">
     <article class="lib-card" data-cat="games"
              data-rating="4.0"
              data-date="2026-05-09">
       <div class="cov">
         <img class="cov-img" loading="lazy" src="/assets/covers/games/wuchang-fallen-feathers-2708de.jpg" alt="Wuchang: Fallen Feathers">
         <span class="cov-rating">4</span>
+        
         <span class="cov-tag" style="color:var(--amber)">🎮 Played</span>
       </div>
       <div class="lib-card-title">Wuchang: Fallen Feathers</div>
@@ -356,6 +444,7 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
       <div class="cov">
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/the-devil-wears-prada-2-5cd62e.jpg" alt="The Devil Wears Prada 2">
         <span class="cov-rating">8</span>
+        
         <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">The Devil Wears Prada 2</div>
@@ -367,6 +456,7 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
       <div class="cov">
         <img class="cov-img" loading="lazy" src="/assets/covers/games/nocturnal-9cebd8.jpg" alt="Nocturnal">
         <span class="cov-rating">4</span>
+        
         <span class="cov-tag" style="color:var(--amber)">🎮 Played</span>
       </div>
       <div class="lib-card-title">Nocturnal</div>
@@ -378,6 +468,7 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
       <div class="cov">
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/fleabag-1fd655.jpg" alt="Fleabag">
         <span class="cov-rating top">9</span>
+        
         <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Fleabag</div>
@@ -389,6 +480,7 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
       <div class="cov">
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/the-devil-wears-prada-11c9fc.jpg" alt="The Devil Wears Prada">
         <span class="cov-rating">8.5</span>
+        
         <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">The Devil Wears Prada</div>
@@ -400,6 +492,7 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
       <div class="cov">
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/sambhavam-adhyayam-onnu-23bca2.jpg" alt="Sambhavam Adhyayam Onnu">
         <span class="cov-rating">8.5</span>
+        
         <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Sambhavam Adhyayam Onnu</div>
@@ -411,6 +504,7 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
       <div class="cov">
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/the-perfect-neighbour-5486f5.jpg" alt="The Perfect Neighbour">
         <span class="cov-rating">7.5</span>
+        
         <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">The Perfect Neighbour</div>
@@ -422,6 +516,7 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
       <div class="cov">
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/toaster-7a430a.jpg" alt="Toaster">
         <span class="cov-rating">7</span>
+        
         <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Toaster</div>
@@ -433,6 +528,7 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
       <div class="cov">
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/roommates-1a6833.jpg" alt="Roommates">
         <span class="cov-rating">8</span>
+        
         <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Roommates</div>
@@ -442,8 +538,9 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
              data-rating="5.0"
              data-date="2026-04-18">
       <div class="cov">
-        <div class="cov-fallback" data-cat="books"><span class="cov-fb-emoji">📚</span><span class="cov-fb-title">The Vatican Secret</span></div>
+        <img class="cov-img" loading="lazy" src="/assets/covers/books/the-vatican-secret-fc2131.jpg" alt="The Vatican Secret">
         <span class="cov-rating">5</span>
+        
         <span class="cov-tag" style="color:var(--green)">📚 Read</span>
       </div>
       <div class="lib-card-title">The Vatican Secret</div>
@@ -455,6 +552,7 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
       <div class="cov">
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/project-hail-mary-8db291.jpg" alt="Project Hail Mary">
         <span class="cov-rating">8.5</span>
+        
         <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Project Hail Mary</div>
@@ -466,6 +564,7 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
       <div class="cov">
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/tu-yaa-main-8a5b2f.jpg" alt="Tu Yaa Main">
         <span class="cov-rating">1</span>
+        
         <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Tu Yaa Main</div>
@@ -475,8 +574,9 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
              data-rating="2.0"
              data-date="2026-04-05">
       <div class="cov">
-        <div class="cov-fallback" data-cat="books"><span class="cov-fb-emoji">📚</span><span class="cov-fb-title">The Atlas Six</span></div>
+        <img class="cov-img" loading="lazy" src="/assets/covers/books/the-atlas-six-d62dc5.jpg" alt="The Atlas Six">
         <span class="cov-rating">2</span>
+        
         <span class="cov-tag" style="color:var(--green)">📚 Read</span>
       </div>
       <div class="lib-card-title">The Atlas Six</div>
@@ -488,6 +588,7 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
       <div class="cov">
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/the-attacks-of-26-11-007d9c.jpg" alt="The Attacks of 26/11">
         <span class="cov-rating">6</span>
+        
         <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">The Attacks of 26/11</div>
@@ -499,6 +600,7 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
       <div class="cov">
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/deadloch-season-2-9b7a65.jpg" alt="Deadloch: Season 2">
         <span class="cov-rating">6</span>
+        
         <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Deadloch: Season 2</div>
@@ -508,8 +610,9 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
              data-rating="9.5"
              data-date="2026-03-23">
       <div class="cov">
-        <div class="cov-fallback" data-cat="books"><span class="cov-fb-emoji">📚</span><span class="cov-fb-title">The Girl in the Glass Case</span></div>
+        <img class="cov-img" loading="lazy" src="/assets/covers/books/the-girl-in-the-glass-case-cc5f42.jpg" alt="The Girl in the Glass Case">
         <span class="cov-rating top">9.5</span>
+        
         <span class="cov-tag" style="color:var(--green)">📚 Read</span>
       </div>
       <div class="lib-card-title">The Girl in the Glass Case</div>
@@ -521,6 +624,7 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
       <div class="cov">
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/rahu-ketu-dec44c.jpg" alt="Rahu Ketu">
         <span class="cov-rating">5</span>
+        
         <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Rahu Ketu</div>
@@ -532,6 +636,7 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
       <div class="cov">
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/one-battle-after-another-f3e637.jpg" alt="One Battle After Another">
         <span class="cov-rating top">10</span>
+        
         <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">One Battle After Another</div>
@@ -543,6 +648,7 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
       <div class="cov">
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/bugonia-032126.jpg" alt="Bugonia">
         <span class="cov-rating top">10</span>
+        
         <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Bugonia</div>
@@ -554,6 +660,7 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
       <div class="cov">
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/rooster-02b6ad.jpg" alt="Rooster">
         <span class="cov-rating">8.5</span>
+        
         <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Rooster</div>
@@ -563,8 +670,9 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
              data-rating="9.5"
              data-date="2026-03-13">
       <div class="cov">
-        <div class="cov-fallback" data-cat="books"><span class="cov-fb-emoji">📚</span><span class="cov-fb-title">What You Are Looking for Is in the Library</span></div>
+        <img class="cov-img" loading="lazy" src="/assets/covers/books/what-you-are-looking-for-is-in-the-library-2170b0.jpg" alt="What You Are Looking for Is in the Library">
         <span class="cov-rating top">9.5</span>
+        
         <span class="cov-tag" style="color:var(--green)">📚 Read</span>
       </div>
       <div class="lib-card-title">What You Are Looking for Is in the Library</div>
@@ -576,6 +684,7 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
       <div class="cov">
         <img class="cov-img" loading="lazy" src="/assets/covers/games/sekiro-9cc593.jpg" alt="Sekiro">
         <span class="cov-rating top">10</span>
+        
         <span class="cov-tag" style="color:var(--amber)">🎮 Played</span>
       </div>
       <div class="lib-card-title">Sekiro</div>
@@ -587,6 +696,7 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
       <div class="cov">
         <img class="cov-img" loading="lazy" src="/assets/covers/games/dota-2-b6fbba.jpg" alt="Dota 2">
         <span class="cov-rating">7</span>
+        
         <span class="cov-tag" style="color:var(--amber)">🎮 Played</span>
       </div>
       <div class="lib-card-title">Dota 2</div>
@@ -598,6 +708,7 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
       <div class="cov">
         <img class="cov-img" loading="lazy" src="/assets/covers/games/reanimal-5d1b41.jpg" alt="Reanimal">
         <span class="cov-rating">8.5</span>
+        
         <span class="cov-tag" style="color:var(--amber)">🎮 Played</span>
       </div>
       <div class="lib-card-title">Reanimal</div>
@@ -609,6 +720,7 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
       <div class="cov">
         <img class="cov-img" loading="lazy" src="/assets/covers/games/the-alters-8fe7ab.jpg" alt="The Alters">
         <span class="cov-rating">4</span>
+        
         <span class="cov-tag" style="color:var(--amber)">🎮 Played</span>
       </div>
       <div class="lib-card-title">The Alters</div>
@@ -620,6 +732,7 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
       <div class="cov">
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/wonder-man-171abc.jpg" alt="Wonder Man">
         <span class="cov-rating">7</span>
+        
         <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Wonder Man</div>
@@ -631,6 +744,7 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
       <div class="cov">
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/weapons-7bbc41.jpg" alt="Weapons">
         <span class="cov-rating">8.5</span>
+        
         <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Weapons</div>
@@ -642,6 +756,7 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
       <div class="cov">
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/in-the-blink-of-an-eye-f8c9a0.jpg" alt="In the Blink of an Eye">
         <span class="cov-rating">8</span>
+        
         <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">In the Blink of an Eye</div>
@@ -653,6 +768,7 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
       <div class="cov">
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/shutter-54131d.jpg" alt="Shutter">
         <span class="cov-rating">4</span>
+        
         <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Shutter</div>
@@ -664,6 +780,7 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
       <div class="cov">
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/the-woman-in-cabin-10-3bf823.jpg" alt="The Woman in Cabin 10">
         <span class="cov-rating">8</span>
+        
         <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">The Woman in Cabin 10</div>
@@ -675,6 +792,7 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
       <div class="cov">
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/accused-85d28c.jpg" alt="Accused">
         <span class="cov-rating">7</span>
+        
         <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Accused</div>
@@ -686,6 +804,7 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
       <div class="cov">
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/holy-ghost-afce18.jpg" alt="Holy Ghost">
         <span class="cov-rating">5</span>
+        
         <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Holy Ghost</div>
@@ -697,6 +816,7 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
       <div class="cov">
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/tere-naam-ef27df.jpg" alt="Tere Naam">
         <span class="cov-rating top">9</span>
+        
         <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Tere Naam</div>
@@ -708,6 +828,7 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
       <div class="cov">
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/isha-88843c.jpg" alt="Isha">
         <span class="cov-rating">2</span>
+        
         <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Isha</div>
@@ -719,6 +840,7 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
       <div class="cov">
         <img class="cov-img" loading="lazy" src="/assets/covers/games/titan-quest-ii-402007.jpg" alt="Titan Quest II">
         <span class="cov-rating">4</span>
+        
         <span class="cov-tag" style="color:var(--amber)">🎮 Played</span>
       </div>
       <div class="lib-card-title">Titan Quest II</div>
@@ -730,6 +852,7 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
       <div class="cov">
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/kennedy-d74a66.jpg" alt="Kennedy">
         <span class="cov-rating top">9</span>
+        
         <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Kennedy</div>
@@ -741,6 +864,7 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
       <div class="cov">
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/the-platform-e8f123.jpg" alt="The Platform">
         <span class="cov-rating">7.5</span>
+        
         <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">The Platform</div>
@@ -750,8 +874,9 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
              data-rating="9.5"
              data-date="2026-02-11">
       <div class="cov">
-        <div class="cov-fallback" data-cat="books"><span class="cov-fb-emoji">📚</span><span class="cov-fb-title">Calcutta: Two Years in the City</span></div>
+        <img class="cov-img" loading="lazy" src="/assets/covers/books/calcutta-two-years-in-the-city-2f58fc.jpg" alt="Calcutta: Two Years in the City">
         <span class="cov-rating top">9.5</span>
+        
         <span class="cov-tag" style="color:var(--green)">📚 Read</span>
       </div>
       <div class="lib-card-title">Calcutta: Two Years in the City</div>
@@ -763,6 +888,7 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
       <div class="cov">
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/dhurandhar-7ca43a.jpg" alt="Dhurandhar">
         <span class="cov-rating">4</span>
+        
         <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Dhurandhar</div>
@@ -774,6 +900,7 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
       <div class="cov">
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/the-50-e7deaa.jpg" alt="The 50">
         <span class="cov-rating">1</span>
+        
         <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">The 50</div>
@@ -785,6 +912,7 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
       <div class="cov">
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/jugnuma-the-fable-58fc11.jpg" alt="Jugnuma: The Fable">
         <span class="cov-rating top">9.5</span>
+        
         <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Jugnuma: The Fable</div>
@@ -796,6 +924,7 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
       <div class="cov">
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/daldal-cdde36.jpg" alt="Daldal">
         <span class="cov-rating">8.5</span>
+        
         <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Daldal</div>
@@ -807,6 +936,7 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
       <div class="cov">
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/agatha-christie-s-seven-dials-425b18.jpg" alt="Agatha Christie’s Seven Dials">
         <span class="cov-rating">7</span>
+        
         <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Agatha Christie’s Seven Dials</div>
@@ -818,6 +948,7 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
       <div class="cov">
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/hunting-wives-d9028d.jpg" alt="Hunting Wives">
         <span class="cov-rating">8</span>
+        
         <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Hunting Wives</div>
@@ -829,6 +960,7 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
       <div class="cov">
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/taskaree-306c45.jpg" alt="Taskaree">
         <span class="cov-rating">7</span>
+        
         <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Taskaree</div>
@@ -838,8 +970,9 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
              data-rating="8.5"
              data-date="2026-01-21">
       <div class="cov">
-        <div class="cov-fallback" data-cat="books"><span class="cov-fb-emoji">📚</span><span class="cov-fb-title">Wrong Place Wrong Time</span></div>
+        <img class="cov-img" loading="lazy" src="/assets/covers/books/wrong-place-wrong-time-185e00.jpg" alt="Wrong Place Wrong Time">
         <span class="cov-rating">8.5</span>
+        
         <span class="cov-tag" style="color:var(--green)">📚 Read</span>
       </div>
       <div class="lib-card-title">Wrong Place Wrong Time</div>
@@ -851,6 +984,7 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
       <div class="cov">
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/homebound-3d72d9.jpg" alt="Homebound">
         <span class="cov-rating top">9</span>
+        
         <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Homebound</div>
@@ -862,6 +996,7 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
       <div class="cov">
         <img class="cov-img" loading="lazy" src="/assets/covers/games/the-first-berserker-khazan-1b4ff6.jpg" alt="The First Berserker: Khazan">
         <span class="cov-rating top">9</span>
+        
         <span class="cov-tag" style="color:var(--amber)">🎮 Played</span>
       </div>
       <div class="lib-card-title">The First Berserker: Khazan</div>
@@ -873,6 +1008,7 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
       <div class="cov">
         <img class="cov-img" loading="lazy" src="/assets/covers/games/path-of-exile-e972d3.jpg" alt="Path of Exile">
         <span class="cov-rating">3</span>
+        
         <span class="cov-tag" style="color:var(--amber)">🎮 Played</span>
       </div>
       <div class="lib-card-title">Path of Exile</div>
@@ -884,6 +1020,7 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
       <div class="cov">
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/shark-tank-india-season-5-809fc6.jpg" alt="Shark Tank India: Season 5">
         <span class="cov-rating">3</span>
+        
         <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Shark Tank India: Season 5</div>
@@ -895,6 +1032,7 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
       <div class="cov">
         <img class="cov-img" loading="lazy" src="/assets/covers/games/where-winds-meet-45867d.jpg" alt="Where Winds Meet">
         <span class="cov-rating">3</span>
+        
         <span class="cov-tag" style="color:var(--amber)">🎮 Played</span>
       </div>
       <div class="lib-card-title">Where Winds Meet</div>
@@ -904,8 +1042,9 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
              data-rating="9.0"
              data-date="2026-01-06">
       <div class="cov">
-        <div class="cov-fallback" data-cat="books"><span class="cov-fb-emoji">📚</span><span class="cov-fb-title">The Vegetarian</span></div>
+        <img class="cov-img" loading="lazy" src="/assets/covers/books/the-vegetarian-64a03e.jpg" alt="The Vegetarian">
         <span class="cov-rating top">9</span>
+        
         <span class="cov-tag" style="color:var(--green)">📚 Read</span>
       </div>
       <div class="lib-card-title">The Vegetarian</div>
@@ -917,6 +1056,7 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
       <div class="cov">
         <img class="cov-img" loading="lazy" src="/assets/covers/games/ghost-of-tsushima-ac195f.jpg" alt="Ghost of Tsushima">
         <span class="cov-rating top">10</span>
+        
         <span class="cov-tag" style="color:var(--amber)">🎮 Played</span>
       </div>
       <div class="lib-card-title">Ghost of Tsushima</div>
@@ -928,6 +1068,7 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
       <div class="cov">
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/dark-matter-508f8c.jpg" alt="Dark Matter">
         <span class="cov-rating">8</span>
+        
         <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Dark Matter</div>
@@ -939,6 +1080,7 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
       <div class="cov">
         <img class="cov-img" loading="lazy" src="/assets/covers/games/need-for-speed-most-wanted-2005-4958fd.jpg" alt="Need for Speed Most Wanted 2005">
         <span class="cov-rating top">10</span>
+        
         <span class="cov-tag" style="color:var(--amber)">🎮 Played</span>
       </div>
       <div class="lib-card-title">Need for Speed Most Wanted 2005</div>
@@ -950,6 +1092,7 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
       <div class="cov">
         <img class="cov-img" loading="lazy" src="/assets/covers/games/blue-prince-60b233.jpg" alt="Blue Prince">
         <span class="cov-rating">3</span>
+        
         <span class="cov-tag" style="color:var(--amber)">🎮 Played</span>
       </div>
       <div class="lib-card-title">Blue Prince</div>
@@ -961,6 +1104,7 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
       <div class="cov">
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/the-holiday-f9bc1d.jpg" alt="The Holiday">
         <span class="cov-rating">8</span>
+        
         <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">The Holiday</div>
@@ -970,8 +1114,9 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
              data-rating="9.5"
              data-date="2025-12-30">
       <div class="cov">
-        <div class="cov-fallback" data-cat="books"><span class="cov-fb-emoji">📚</span><span class="cov-fb-title">The Passengers on the Hankyu Line</span></div>
+        <img class="cov-img" loading="lazy" src="/assets/covers/books/the-passengers-on-the-hankyu-line-23e0d7.jpg" alt="The Passengers on the Hankyu Line">
         <span class="cov-rating top">9.5</span>
+        
         <span class="cov-tag" style="color:var(--green)">📚 Read</span>
       </div>
       <div class="lib-card-title">The Passengers on the Hankyu Line</div>
@@ -983,6 +1128,7 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
       <div class="cov">
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/f1-the-movie-fc968a.jpg" alt="F1: The Movie">
         <span class="cov-rating">6.5</span>
+        
         <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">F1: The Movie</div>
@@ -994,6 +1140,7 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
       <div class="cov">
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/pluburis-6b668b.jpg" alt="Pluburis">
         <span class="cov-rating top">9.5</span>
+        
         <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Pluburis</div>
@@ -1005,6 +1152,7 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
       <div class="cov">
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/dies-irae-5ff5ab.jpg" alt="Dies Irae">
         <span class="cov-rating">6</span>
+        
         <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Dies Irae</div>
@@ -1016,6 +1164,7 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
       <div class="cov">
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/aaryan-1e4245.jpg" alt="Aaryan">
         <span class="cov-rating">6</span>
+        
         <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Aaryan</div>
@@ -1027,6 +1176,7 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
       <div class="cov">
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/man-on-the-inside-season-2-154968.jpg" alt="Man on the Inside: Season 2">
         <span class="cov-rating">8</span>
+        
         <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Man on the Inside: Season 2</div>
@@ -1038,6 +1188,7 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
       <div class="cov">
         <img class="cov-img" loading="lazy" src="/assets/covers/games/hitman-world-of-assassination-1cf47e.jpg" alt="HITMAN World of Assassination">
         <span class="cov-rating">8</span>
+        
         <span class="cov-tag" style="color:var(--amber)">🎮 Played</span>
       </div>
       <div class="lib-card-title">HITMAN World of Assassination</div>
@@ -1049,6 +1200,7 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
       <div class="cov">
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/baramulla-3c2d46.jpg" alt="Baramulla">
         <span class="cov-rating">7.5</span>
+        
         <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Baramulla</div>
@@ -1060,6 +1212,7 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
       <div class="cov">
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/the-fantastic-four-first-steps-14cf68.jpg" alt="The Fantastic Four: First Steps">
         <span class="cov-rating">7</span>
+        
         <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">The Fantastic Four: First Steps</div>
@@ -1071,6 +1224,7 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
       <div class="cov">
         <img class="cov-img" loading="lazy" src="/assets/covers/games/cyberpunk-2077-phantom-liberty-701d33.jpg" alt="Cyberpunk 2077: Phantom Liberty">
         <span class="cov-rating">8</span>
+        
         <span class="cov-tag" style="color:var(--amber)">🎮 Played</span>
       </div>
       <div class="lib-card-title">Cyberpunk 2077: Phantom Liberty</div>
@@ -1082,6 +1236,7 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
       <div class="cov">
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/superman-c09a0a.jpg" alt="Superman">
         <span class="cov-rating">6</span>
+        
         <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Superman</div>
@@ -1093,6 +1248,7 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
       <div class="cov">
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/barry-season-1-6d36f0.jpg" alt="Barry: Season 1">
         <span class="cov-rating">8</span>
+        
         <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Barry: Season 1</div>
@@ -1104,6 +1260,7 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
       <div class="cov">
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/lokah-chapter-1-chandra-2cc6c5.jpg" alt="Lokah Chapter 1: Chandra">
         <span class="cov-rating top">9.5</span>
+        
         <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Lokah Chapter 1: Chandra</div>
@@ -1115,6 +1272,7 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
       <div class="cov">
         <img class="cov-img" loading="lazy" src="/assets/covers/games/no-man-s-sky-76154b.jpg" alt="No Man’s Sky">
         <span class="cov-rating">8</span>
+        
         <span class="cov-tag" style="color:var(--amber)">🎮 Played</span>
       </div>
       <div class="lib-card-title">No Man’s Sky</div>
@@ -1124,8 +1282,9 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
              data-rating="5.0"
              data-date="2025-10-16">
       <div class="cov">
-        <div class="cov-fallback" data-cat="books"><span class="cov-fb-emoji">📚</span><span class="cov-fb-title">Snow Crash</span></div>
+        <img class="cov-img" loading="lazy" src="/assets/covers/books/snow-crash-4dfb8a.jpg" alt="Snow Crash">
         <span class="cov-rating">5</span>
+        
         <span class="cov-tag" style="color:var(--green)">📚 Read</span>
       </div>
       <div class="lib-card-title">Snow Crash</div>
@@ -1137,6 +1296,7 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
       <div class="cov">
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/bigg-boss-season-19-3723e6.jpg" alt="Bigg Boss: Season 19">
         <span class="cov-rating top">10</span>
+        
         <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Bigg Boss: Season 19</div>
@@ -1148,16 +1308,18 @@ body:has(#f-games:checked) .lib-card:not([data-cat=games]){display:none}
       <div class="cov">
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/moneyball-2b7a8e.jpg" alt="Moneyball">
         <span class="cov-rating">7.5</span>
+        
         <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Moneyball</div>
       <div class="lib-card-sub">1 Sep 2025</div>
     </article></div>
+  </div>
 </section>
 
 <footer class="lib-foot">
   <a href="/">&larr; Back home</a>
-  <span>Auto-updated nightly from Notion · 17 May 2026, 12:12 PM IST</span>
+  <span>Auto-updated nightly from Notion · 17 May 2026, 12:23 PM IST</span>
 </footer>
 
 <script>
