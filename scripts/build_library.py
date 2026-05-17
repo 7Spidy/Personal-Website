@@ -24,7 +24,7 @@ from datetime import datetime
 from notion_lib import (
     DB_MOVIES_TV, DB_BOOKS, DB_GAMES, IST,
     get_in_progress, get_done_all,
-    page_title, page_rating, page_start_date, page_end_date,
+    page_title, page_rating, page_start_date,
     page_type, page_field, page_poster, fmt_date, days_since,
 )
 
@@ -120,10 +120,24 @@ def shape(page: dict, cat: str) -> dict:
         rating = float(r) if r else None
     except ValueError:
         rating = None
-    end = page_end_date(page)
+    # Resolve end date: try separate "End Date" property first, then the "end"
+    # field of a Notion date-range on the "Date" property (enabled via "Include end date")
+    end = ""
+    end_prop = page.get("properties", {}).get("End Date")
+    if end_prop and end_prop.get("type") == "date":
+        d_obj = end_prop.get("date")
+        if d_obj:
+            end = d_obj.get("start", "") or ""
+    if not end:
+        date_prop = page.get("properties", {}).get("Date")
+        if date_prop and date_prop.get("type") == "date":
+            d_obj = date_prop.get("date")
+            if d_obj:
+                end = d_obj.get("end", "") or ""
+    yr_src = end or page.get("properties", {}).get("Date", {}).get("date", {}).get("start", "")
     yr = None
     try:
-        yr = datetime.fromisoformat(end).year if end else None
+        yr = datetime.fromisoformat(yr_src).year if yr_src else None
     except Exception:
         yr = None
     author = page_field(page, "Author")
@@ -186,7 +200,7 @@ def media_card(it: dict) -> str:
     if wip:
         sub_bits.append(f"Started {s}" if s else "In progress")
     else:
-        if s and e and s != e:
+        if s and e:
             sub_bits.append(f"{s} → {e}")
         elif e:
             sub_bits.append(e)
@@ -678,12 +692,23 @@ def main():
     overrides = load_overrides()
 
     in_prog, done = [], []
+    _date_debug_done = False
     for db, cat in ((DB_GAMES, "games"), (DB_MOVIES_TV, "tv"), (DB_BOOKS, "books")):
         for p in get_in_progress(db):
             it = shape(p, cat)
             it["status"] = "wip"
             in_prog.append(it)
-        for p in get_done_all(db):
+        raw_done_pages = get_done_all(db)
+        if not _date_debug_done:
+            print(f"  [DATE DEBUG] cat={cat} raw_done_pages count={len(raw_done_pages)}")
+            if raw_done_pages:
+                raw = raw_done_pages[0].get("properties", {})
+                print(f"  [DATE DEBUG] property names: {list(raw.keys())}")
+                for k, v in raw.items():
+                    if isinstance(v, dict) and "date" in v.get("type", ""):
+                        print(f"  [DATE DEBUG]   {k!r} ({v.get('type')}): {v.get('date')}")
+            _date_debug_done = True
+        for p in raw_done_pages:
             it = shape(p, cat)
             it["status"] = "done"
             done.append(it)
