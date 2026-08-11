@@ -29,13 +29,6 @@ background:linear-gradient(to bottom,var(--bg),transparent)}
 color:var(--amber);text-decoration:none;text-transform:uppercase}
 .nav-mid{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.3em;
 color:var(--fg-dim);text-transform:uppercase}
-#audio-btn{display:flex;align-items:center;gap:8px;background:none;
-border:1px solid var(--fg-dim);color:var(--fg-dim);font-family:'Space Mono',monospace;
-font-size:11px;letter-spacing:.1em;padding:6px 14px;border-radius:100px}
-#audio-btn:hover,#audio-btn.playing{border-color:var(--amber);color:var(--amber)}
-.audio-dot{width:6px;height:6px;background:currentColor;border-radius:50%}
-#audio-btn.playing .audio-dot{animation:pulse 1.2s ease infinite}
-@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.6)}}
 .lib-hero{min-height:auto;display:flex;flex-direction:column;justify-content:center;
 padding:140px 48px 64px;position:relative}
 .lib-hero-eyebrow{font-family:'Space Mono',monospace;font-size:12px;
@@ -82,7 +75,12 @@ letter-spacing:.2em}
 .sec-head h2{font-size:clamp(28px,4vw,46px);font-weight:700;letter-spacing:-.025em}
 .sec-note{margin-left:auto;font-family:'Space Mono',monospace;font-size:11px;
 letter-spacing:.16em;text-transform:uppercase;color:var(--fg-dim)}
-.stat-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin-bottom:24px}
+.month-select{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.1em;
+text-transform:uppercase;color:var(--fg-dim);background:var(--bg2);
+border:1px solid rgba(255,255,255,.1);border-radius:100px;padding:9px 16px;
+margin-left:12px}
+.month-select:hover{color:var(--fg);border-color:rgba(255,255,255,.25)}
+.stat-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:24px}
 .stat-tile{padding:32px 22px;border:1px solid rgba(255,255,255,.07);
 border-radius:14px;background:rgba(255,255,255,.02)}
 .stat-num{font-size:clamp(28px,3.4vw,46px);font-weight:700;line-height:1;
@@ -90,6 +88,7 @@ letter-spacing:-.03em;margin-bottom:10px}
 .stat-lab{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.14em;
 text-transform:uppercase;color:var(--fg-dim)}
 .winners{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.winner-group{display:flex;flex-direction:column;gap:12px}
 .winner{display:flex;gap:18px;padding:20px;border:1px solid rgba(255,255,255,.07);
 border-radius:14px;background:rgba(255,255,255,.02)}
 .winner-cov{width:132px;height:84px;border-radius:8px;overflow:hidden;flex-shrink:0}
@@ -118,8 +117,9 @@ border:1px solid rgba(255,255,255,.1);border-radius:100px;padding:9px 18px;
 margin-left:8px;transition:all .2s}
 .sort-btn:hover{color:var(--fg)}
 .sort-btn.active{color:var(--amber);border-color:var(--amber)}
-.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+.card-grid,.month-panel.active{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
 gap:20px}
+.month-panel{display:none}
 .lib-card{display:flex;flex-direction:column;gap:10px}
 .cov{position:relative;aspect-ratio:16/9;border-radius:12px;overflow:hidden;
 border:1px solid rgba(255,255,255,.07);background:var(--bg2);
@@ -139,9 +139,9 @@ background:linear-gradient(160deg,rgba(255,255,255,.06),rgba(255,255,255,.01))}
 font-size:12px;font-weight:700;padding:5px 9px;border-radius:8px;
 background:rgba(11,10,9,.78);color:var(--fg-dim);backdrop-filter:blur(4px)}
 .cov-rating.top{color:var(--bg);background:var(--amber)}
-.cov-tag{position:absolute;bottom:10px;left:10px;font-family:'Space Mono',monospace;
-font-size:9px;letter-spacing:.12em;text-transform:uppercase;padding:5px 9px;
-border-radius:7px;background:rgba(11,10,9,.78);backdrop-filter:blur(4px)}
+.lib-card[data-cat=tv] .cov{border-bottom:3px solid var(--teal)}
+.lib-card[data-cat=books] .cov{border-bottom:3px solid var(--green)}
+.lib-card[data-cat=games] .cov{border-bottom:3px solid var(--amber)}
 .cov-wip{position:absolute;top:10px;left:10px;font-family:'Space Mono',monospace;
 font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
 padding:5px 9px;border-radius:7px;background:rgba(11,10,9,.82);
@@ -167,16 +167,16 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
 .winners,.hero-row{grid-template-columns:1fr}}
 @media(max-width:760px){nav{padding:18px 18px}.lib-hero{padding:104px 18px 48px}
 .lib-sec{padding:54px 18px}
-.card-grid{grid-template-columns:repeat(2,1fr);gap:12px}
+.card-grid,.month-panel.active{grid-template-columns:repeat(2,1fr);gap:12px}
 .stat-grid{grid-template-columns:repeat(2,1fr)}.nav-mid{display:none}
 .sec-head{margin-bottom:30px;flex-wrap:wrap;gap:8px}
 .sec-note{margin-left:0;flex-basis:100%}
+.month-select{margin-left:0}
 .lib-card-title{font-size:13px}.lib-card-sub{font-size:10px}
 .lib-controls{margin-bottom:24px}
 .filter-group label{padding:8px 13px;font-size:10px;margin-right:6px}
 .hero-card-title{font-size:19px}}
 @media(max-width:430px){.card-grid{gap:10px}
-.cov-tag{font-size:8px;padding:4px 6px}
 .cov-rating{font-size:10px;padding:4px 7px}
 .cov-wip{font-size:8px;padding:4px 6px}}
 @media(prefers-reduced-motion:reduce){.reveal{transform:none}
@@ -188,13 +188,12 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
 <nav>
   <a href="/" class="nav-logo">&larr; AVI.AI</a>
   <div class="nav-mid">THE LIBRARY</div>
-  <button id="audio-btn"><span class="audio-dot"></span><span id="audio-label">Ambient</span></button>
 </nav>
 
 <header class="lib-hero">
   <div class="lib-hero-eyebrow">Media Consumption · Live from Notion</div>
   <h1 class="lib-hero-title">The<br><span>Library.</span></h1>
-  <p class="lib-hero-sub">Reading Welcome to the Hyunam-Dong Bookshop. Or thinking about reading it. Same thing. Scroll for 2026&#x27;s stats and a 86-title archive. Auto-synced from Notion every night.</p>
+  <p class="lib-hero-sub">House of Dragons: Season 3 promised one episode. It lied beautifully. Scroll for 2026&#x27;s stats and a 86-title archive. Auto-synced from Notion every night.</p>
   <div class="hero-row">
 
       <a class="hero-card" data-cat="games">
@@ -206,7 +205,7 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
             🎮 Playing</span>
           <span class="hero-card-title">Dispatch</span>
           <span class="hero-facts">Steam</span>
-          <span class="hero-card-meta">Day 3 · since 8 Aug</span>
+          <span class="hero-card-meta">Day 4 · since 8 Aug</span>
         </div>
       </a>
 
@@ -219,20 +218,20 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
             📺 Watching</span>
           <span class="hero-card-title">India’s Got Latent: Season 2</span>
           <span class="hero-facts">Movie · Netflix</span>
-          <span class="hero-card-meta">Day 52 · since 20 Jun</span>
+          <span class="hero-card-meta">Day 53 · since 20 Jun</span>
         </div>
       </a>
 
       <a class="hero-card" data-cat="tv">
-        <span class="hero-fb">📺</span>
-        <div class="hero-scrim" style="background:linear-gradient(160deg,rgba(255,255,255,.05),rgba(255,255,255,.01))"></div>
+        <img class="hero-cover" src="/assets/covers/tv/house-of-dragons-season-3-44c23e.jpg" alt="House of Dragons: Season 3" loading="lazy">
+        <div class="hero-scrim" style="background:linear-gradient(180deg,rgba(11,10,9,.10),rgba(11,10,9,.55) 45%,rgba(11,10,9,.96))"></div>
         
         <div class="hero-card-body">
           <span class="hero-card-kicker" style="color:var(--teal)">
             📺 Watching</span>
           <span class="hero-card-title">House of Dragons: Season 3</span>
           <span class="hero-facts">TV Show · JioHotstar</span>
-          <span class="hero-card-meta">Day 1 · since 10 Aug</span>
+          <span class="hero-card-meta">Day 2 · since 10 Aug</span>
         </div>
       </a>
 
@@ -245,7 +244,7 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
             📚 Reading</span>
           <span class="hero-card-title">Welcome to the Hyunam-Dong Bookshop</span>
           <span class="hero-facts">Hwang Bo-Reum</span>
-          <span class="hero-card-meta">Day 29 · since 13 Jul</span>
+          <span class="hero-card-meta">Day 30 · since 13 Jul</span>
         </div>
       </a>
   </div>
@@ -258,38 +257,105 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
     <h2>2026 So Far</h2>
     <span class="sec-note">a year in media</span>
   </div>
-  <div class="stat-grid"><div class="stat-tile"><div class="stat-num" data-count="53" style="color:var(--teal)">53</div><div class="stat-lab">Movies &amp; TV</div></div><div class="stat-tile"><div class="stat-num" data-count="11" style="color:var(--green)">11</div><div class="stat-lab">Books</div></div><div class="stat-tile"><div class="stat-num" data-count="22" style="color:var(--amber)">22</div><div class="stat-lab">Games</div></div><div class="stat-tile"><div class="stat-num" data-count="319" style="color:var(--amber)">319</div><div class="stat-lab">Hours Gamed</div></div><div class="stat-tile"><div class="stat-num" data-count="6.8" style="color:var(--fg)">6.8</div><div class="stat-lab">Avg Rating</div></div><div class="stat-tile"><div class="stat-num" style="color:var(--teal)">Netflix</div><div class="stat-lab">Top Streaming</div></div></div>
-  <div class="winners">
+  <div class="stat-grid"><div class="stat-tile"><div class="stat-num" data-count="53" style="color:var(--teal)">53</div><div class="stat-lab">Movies &amp; TV</div></div><div class="stat-tile"><div class="stat-num" data-count="11" style="color:var(--green)">11</div><div class="stat-lab">Books</div></div><div class="stat-tile"><div class="stat-num" data-count="22" style="color:var(--amber)">22</div><div class="stat-lab">Games</div></div><div class="stat-tile"><div class="stat-num" data-count="319" style="color:var(--amber)">319</div><div class="stat-lab">Hours Gamed</div></div><div class="stat-tile"><div class="stat-num" data-count="6.8" style="color:var(--fg)">6.8</div><div class="stat-lab">Avg Rating</div></div></div>
+  <div class="winners"><div class="winner-group">
       <div class="winner">
         <div class="winner-cov"><img class="cov-img" loading="lazy" src="/assets/covers/tv/the-odessey-30f071.jpg" alt="The Odessey"></div>
         <div class="winner-info">
-          <span class="winner-kicker" style="color:var(--teal)">Best Watch of 2026</span>
+          <span class="winner-kicker" style="color:var(--teal)">Best Watches of 2026</span>
           <span class="winner-title">The Odessey</span>
           <span class="winner-rating">★ 10</span>
         </div>
       </div>
       <div class="winner">
+        <div class="winner-cov"><img class="cov-img" loading="lazy" src="/assets/covers/tv/your-name-961fd5.jpg" alt="Your Name"></div>
+        <div class="winner-info">
+          <span class="winner-kicker" style="color:var(--teal)">Best Watches of 2026</span>
+          <span class="winner-title">Your Name</span>
+          <span class="winner-rating">★ 10</span>
+        </div>
+      </div>
+      <div class="winner">
+        <div class="winner-cov"><img class="cov-img" loading="lazy" src="/assets/covers/tv/one-battle-after-another-f3e637.jpg" alt="One Battle After Another"></div>
+        <div class="winner-info">
+          <span class="winner-kicker" style="color:var(--teal)">Best Watches of 2026</span>
+          <span class="winner-title">One Battle After Another</span>
+          <span class="winner-rating">★ 10</span>
+        </div>
+      </div>
+      <div class="winner">
+        <div class="winner-cov"><img class="cov-img" loading="lazy" src="/assets/covers/tv/bugonia-032126.jpg" alt="Bugonia"></div>
+        <div class="winner-info">
+          <span class="winner-kicker" style="color:var(--teal)">Best Watches of 2026</span>
+          <span class="winner-title">Bugonia</span>
+          <span class="winner-rating">★ 10</span>
+        </div>
+      </div></div><div class="winner-group">
+      <div class="winner">
         <div class="winner-cov"><img class="cov-img" loading="lazy" src="/assets/covers/books/the-girl-in-the-glass-case-cc5f42.jpg" alt="The Girl in the Glass Case"></div>
         <div class="winner-info">
-          <span class="winner-kicker" style="color:var(--green)">Best Read of 2026</span>
+          <span class="winner-kicker" style="color:var(--green)">Best Reads of 2026</span>
           <span class="winner-title">The Girl in the Glass Case</span>
           <span class="winner-rating">★ 9.5</span>
         </div>
       </div>
       <div class="winner">
+        <div class="winner-cov"><img class="cov-img" loading="lazy" src="/assets/covers/books/what-you-are-looking-for-is-in-the-library-2170b0.jpg" alt="What You Are Looking for Is in the Library"></div>
+        <div class="winner-info">
+          <span class="winner-kicker" style="color:var(--green)">Best Reads of 2026</span>
+          <span class="winner-title">What You Are Looking for Is in the Library</span>
+          <span class="winner-rating">★ 9.5</span>
+        </div>
+      </div>
+      <div class="winner">
+        <div class="winner-cov"><img class="cov-img" loading="lazy" src="/assets/covers/books/calcutta-two-years-in-the-city-2f58fc.jpg" alt="Calcutta: Two Years in the City"></div>
+        <div class="winner-info">
+          <span class="winner-kicker" style="color:var(--green)">Best Reads of 2026</span>
+          <span class="winner-title">Calcutta: Two Years in the City</span>
+          <span class="winner-rating">★ 9.5</span>
+        </div>
+      </div>
+      <div class="winner">
+        <div class="winner-cov"><img class="cov-img" loading="lazy" src="/assets/covers/books/the-passengers-on-the-hankyu-line-23e0d7.jpg" alt="The Passengers on the Hankyu Line"></div>
+        <div class="winner-info">
+          <span class="winner-kicker" style="color:var(--green)">Best Reads of 2026</span>
+          <span class="winner-title">The Passengers on the Hankyu Line</span>
+          <span class="winner-rating">★ 9.5</span>
+        </div>
+      </div></div><div class="winner-group">
+      <div class="winner">
         <div class="winner-cov"><img class="cov-img" loading="lazy" src="/assets/covers/games/sekiro-9cc593.jpg" alt="Sekiro"></div>
         <div class="winner-info">
-          <span class="winner-kicker" style="color:var(--amber)">Best Game of 2026</span>
+          <span class="winner-kicker" style="color:var(--amber)">Best Games of 2026</span>
           <span class="winner-title">Sekiro</span>
           <span class="winner-rating">★ 10</span>
         </div>
-      </div></div>
+      </div>
+      <div class="winner">
+        <div class="winner-cov"><img class="cov-img" loading="lazy" src="/assets/covers/games/ghost-of-tsushima-ac195f.jpg" alt="Ghost of Tsushima"></div>
+        <div class="winner-info">
+          <span class="winner-kicker" style="color:var(--amber)">Best Games of 2026</span>
+          <span class="winner-title">Ghost of Tsushima</span>
+          <span class="winner-rating">★ 10</span>
+        </div>
+      </div>
+      <div class="winner">
+        <div class="winner-cov"><img class="cov-img" loading="lazy" src="/assets/covers/games/need-for-speed-most-wanted-2005-4958fd.jpg" alt="Need for Speed Most Wanted 2005"></div>
+        <div class="winner-info">
+          <span class="winner-kicker" style="color:var(--amber)">Best Games of 2026</span>
+          <span class="winner-title">Need for Speed Most Wanted 2005</span>
+          <span class="winner-rating">★ 10</span>
+        </div>
+      </div></div></div>
 </section>
 
   <section class="lib-sec reveal">
     <div class="sec-head"><span class="sec-num">02</span>
-      <h2>This Month</h2>
-      <span class="sec-note">August 2026 · 4 in progress · 7 finished</span>
+      <h2 id="month-heading">August 2026</h2>
+      <span class="sec-note" id="month-note">4 in progress · 7 finished</span>
+      <select id="month-select" class="month-select">
+        <option value="2026-08">August 2026</option><option value="2026-07">July 2026</option><option value="2026-06">June 2026</option><option value="2026-05">May 2026</option><option value="2026-04">April 2026</option><option value="2026-03">March 2026</option><option value="2026-02">February 2026</option><option value="2026-01">January 2026</option>
+      </select>
     </div>
     <div class="filter-wrap" id="month-wrap">
       <div class="lib-controls">
@@ -304,7 +370,7 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
           <label for="mf-games">🎮 Played</label>
         </div>
       </div>
-      <div class="card-grid">
+      <div class="month-panel" data-month="2026-08">
     <article class="lib-card" data-cat="games"
              data-rating="0"
              data-date="2026-08-08">
@@ -312,7 +378,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/games/dispatch-47b5ec.jpg" alt="Dispatch">
         
         <span class="cov-wip" style="color:var(--amber)">&#9679; Now</span>
-        <span class="cov-tag" style="color:var(--amber)">🎮 Played</span>
       </div>
       <div class="lib-card-title">Dispatch</div>
       <div class="lib-card-sub">Steam · Started 8 Aug 2026</div>
@@ -324,7 +389,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/india-s-got-latent-season-2-453a26.jpg" alt="India’s Got Latent: Season 2">
         
         <span class="cov-wip" style="color:var(--teal)">&#9679; Now</span>
-        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">India’s Got Latent: Season 2</div>
       <div class="lib-card-sub">Netflix · Started 20 Jun 2026</div>
@@ -333,10 +397,9 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
              data-rating="0"
              data-date="2026-08-10">
       <div class="cov">
-        <div class="cov-fallback" data-cat="tv"><span class="cov-fb-emoji">📺</span><span class="cov-fb-title">House of Dragons: Season 3</span></div>
+        <img class="cov-img" loading="lazy" src="/assets/covers/tv/house-of-dragons-season-3-44c23e.jpg" alt="House of Dragons: Season 3">
         
         <span class="cov-wip" style="color:var(--teal)">&#9679; Now</span>
-        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">House of Dragons: Season 3</div>
       <div class="lib-card-sub">JioHotstar · Started 10 Aug 2026</div>
@@ -348,7 +411,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/books/welcome-to-the-hyunam-dong-bookshop-4ff8cd.jpg" alt="Welcome to the Hyunam-Dong Bookshop">
         
         <span class="cov-wip" style="color:var(--green)">&#9679; Now</span>
-        <span class="cov-tag" style="color:var(--green)">📚 Read</span>
       </div>
       <div class="lib-card-title">Welcome to the Hyunam-Dong Bookshop</div>
       <div class="lib-card-sub">Hwang Bo-Reum · Started 13 Jul 2026</div>
@@ -360,7 +422,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/operation-safed-sagar-eb98b8.jpg" alt="Operation Safed Sagar">
         <span class="cov-rating">8.5</span>
         
-        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Operation Safed Sagar</div>
       <div class="lib-card-sub">Netflix · 8 Aug 2026</div>
@@ -372,7 +433,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/awarapan-539f7c.jpg" alt="Awarapan">
         <span class="cov-rating">7.5</span>
         
-        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Awarapan</div>
       <div class="lib-card-sub">7 Aug 2026</div>
@@ -384,7 +444,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/wall-e-4370f0.jpg" alt="WALL-E">
         <span class="cov-rating">7.5</span>
         
-        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">WALL-E</div>
       <div class="lib-card-sub">JioHotstar · 7 Aug 2026</div>
@@ -396,7 +455,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/gram-chikitsalay-season-2-e1e562.jpg" alt="Gram Chikitsalay: Season 2">
         <span class="cov-rating">6</span>
         
-        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Gram Chikitsalay: Season 2</div>
       <div class="lib-card-sub">Prime · 5 Aug 2026 → 6 Aug 2026</div>
@@ -408,7 +466,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/games/skate-story-demo-76ad37.jpg" alt="Skate Story: Demo">
         <span class="cov-rating">8</span>
         
-        <span class="cov-tag" style="color:var(--amber)">🎮 Played</span>
       </div>
       <div class="lib-card-title">Skate Story: Demo</div>
       <div class="lib-card-sub">Steam · 1 Aug 2026 → 3 Aug 2026</div>
@@ -420,7 +477,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/adarsh-baal-vidyalaya-44e689.jpg" alt="Adarsh Baal Vidyalaya">
         <span class="cov-rating">8</span>
         
-        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Adarsh Baal Vidyalaya</div>
       <div class="lib-card-sub">Prime · 26 Jul 2026 → 2 Aug 2026</div>
@@ -432,12 +488,881 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/games/replaced-797312.jpg" alt="Replaced">
         <span class="cov-rating">4</span>
         
-        <span class="cov-tag" style="color:var(--amber)">🎮 Played</span>
       </div>
       <div class="lib-card-title">Replaced</div>
       <div class="lib-card-sub">Steam · 26 Jul 2026 → 1 Aug 2026</div>
+    </article></div><div class="month-panel" data-month="2026-07">
+    <article class="lib-card" data-cat="tv"
+             data-rating="1.0"
+             data-date="2026-07-30">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/tv/shesha-2016-719090.jpg" alt="Shesha 2016">
+        <span class="cov-rating">1</span>
+        
+      </div>
+      <div class="lib-card-title">Shesha 2016</div>
+      <div class="lib-card-sub">Prime · 30 Jul 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="3.0"
+             data-date="2026-07-30">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/tv/vadakkan-a35a06.jpg" alt="Vadakkan">
+        <span class="cov-rating">3</span>
+        
+      </div>
+      <div class="lib-card-title">Vadakkan</div>
+      <div class="lib-card-sub">Prime · 30 Jul 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="8.0"
+             data-date="2026-07-26">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/tv/everyone-loves-sourabh-handa-9e008c.jpg" alt="Everyone loves Sourabh Handa">
+        <span class="cov-rating">8</span>
+        
+      </div>
+      <div class="lib-card-title">Everyone loves Sourabh Handa</div>
+      <div class="lib-card-sub">Zee 5 · 24 Jul 2026 → 26 Jul 2026</div>
+    </article>
+    <article class="lib-card" data-cat="games"
+             data-rating="7.0"
+             data-date="2026-07-25">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/games/forza-horizon-6-24018b.jpg" alt="Forza Horizon 6">
+        <span class="cov-rating">7</span>
+        
+      </div>
+      <div class="lib-card-title">Forza Horizon 6</div>
+      <div class="lib-card-sub">Steam · 19 Jul 2026 → 25 Jul 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="4.0"
+             data-date="2026-07-25">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/tv/your-friends-neighbors-season-2-951512.jpg" alt="Your Friends &amp; Neighbors: Season 2">
+        <span class="cov-rating">4</span>
+        
+      </div>
+      <div class="lib-card-title">Your Friends &amp; Neighbors: Season 2</div>
+      <div class="lib-card-sub">Apple TV+ · 14 Jun 2026 → 25 Jul 2026</div>
+    </article>
+    <article class="lib-card" data-cat="games"
+             data-rating="3.0"
+             data-date="2026-07-19">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/games/fc-26-948402.jpg" alt="FC 26">
+        <span class="cov-rating">3</span>
+        
+      </div>
+      <div class="lib-card-title">FC 26</div>
+      <div class="lib-card-sub">Steam · 14 Jul 2026 → 19 Jul 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="3.0"
+             data-date="2026-07-18">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/tv/chand-mera-dil-884473.jpg" alt="Chand Mera Dil">
+        <span class="cov-rating">3</span>
+        
+      </div>
+      <div class="lib-card-title">Chand Mera Dil</div>
+      <div class="lib-card-sub">Prime · 18 Jul 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="10.0"
+             data-date="2026-07-18">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/tv/the-odessey-30f071.jpg" alt="The Odessey">
+        <span class="cov-rating top">10</span>
+        
+      </div>
+      <div class="lib-card-title">The Odessey</div>
+      <div class="lib-card-sub">IMAX · 18 Jul 2026</div>
+    </article>
+    <article class="lib-card" data-cat="games"
+             data-rating="6.5"
+             data-date="2026-07-13">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/games/crimson-desert-3ef13b.jpg" alt="Crimson Desert">
+        <span class="cov-rating">6.5</span>
+        
+      </div>
+      <div class="lib-card-title">Crimson Desert</div>
+      <div class="lib-card-sub">Steam · 20 May 2026 → 13 Jul 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="9.5"
+             data-date="2026-07-12">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/tv/jury-duty-season-2-fc957e.jpg" alt="Jury Duty: Season 2">
+        <span class="cov-rating top">9.5</span>
+        
+      </div>
+      <div class="lib-card-title">Jury Duty: Season 2</div>
+      <div class="lib-card-sub">Prime · 10 Jul 2026 → 12 Jul 2026</div>
+    </article>
+    <article class="lib-card" data-cat="books"
+             data-rating="7.5"
+             data-date="2026-07-12">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/books/ashramed-588481.jpg" alt="Ashramed">
+        <span class="cov-rating">7.5</span>
+        
+      </div>
+      <div class="lib-card-title">Ashramed</div>
+      <div class="lib-card-sub">Dahlia Sen Oberoi · 15 Jun 2026 → 12 Jul 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="6.0"
+             data-date="2026-07-03">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/tv/from-season-4-f45927.jpg" alt="From: Season 4">
+        <span class="cov-rating">6</span>
+        
+      </div>
+      <div class="lib-card-title">From: Season 4</div>
+      <div class="lib-card-sub">Prime · 26 Apr 2026 → 3 Jul 2026</div>
+    </article></div><div class="month-panel" data-month="2026-06">
+    <article class="lib-card" data-cat="books"
+             data-rating="8.5"
+             data-date="2026-06-14">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/books/the-lost-bookshop-3b422f.jpg" alt="The Lost Bookshop">
+        <span class="cov-rating">8.5</span>
+        
+      </div>
+      <div class="lib-card-title">The Lost Bookshop</div>
+      <div class="lib-card-sub">Evie Woods · 18 May 2026 → 14 Jun 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="6.0"
+             data-date="2026-06-13">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/tv/bhoot-bangla-759805.jpg" alt="Bhoot Bangla">
+        <span class="cov-rating">6</span>
+        
+      </div>
+      <div class="lib-card-title">Bhoot Bangla</div>
+      <div class="lib-card-sub">Netflix · 13 Jun 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="8.0"
+             data-date="2026-06-13">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/tv/your-friends-neighbors-944bd5.jpg" alt="Your Friends &amp; Neighbors">
+        <span class="cov-rating">8</span>
+        
+      </div>
+      <div class="lib-card-title">Your Friends &amp; Neighbors</div>
+      <div class="lib-card-sub">Prime · 16 May 2026 → 13 Jun 2026</div>
+    </article>
+    <article class="lib-card" data-cat="games"
+             data-rating="9.5"
+             data-date="2026-06-12">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/games/death-stranding-2-ffa0aa.jpg" alt="Death Stranding 2">
+        <span class="cov-rating top">9.5</span>
+        
+      </div>
+      <div class="lib-card-title">Death Stranding 2</div>
+      <div class="lib-card-sub">Steam · 20 Mar 2026 → 12 Jun 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="9.0"
+             data-date="2026-06-06">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/tv/obsession-e44e04.jpg" alt="Obsession">
+        <span class="cov-rating top">9</span>
+        
+      </div>
+      <div class="lib-card-title">Obsession</div>
+      <div class="lib-card-sub">INOX · 6 Jun 2026</div>
+    </article></div><div class="month-panel" data-month="2026-05">
+    <article class="lib-card" data-cat="tv"
+             data-rating="10.0"
+             data-date="2026-05-30">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/tv/your-name-961fd5.jpg" alt="Your Name">
+        <span class="cov-rating top">10</span>
+        
+      </div>
+      <div class="lib-card-title">Your Name</div>
+      <div class="lib-card-sub">CrunchyRoll · 30 May 2026</div>
+    </article>
+    <article class="lib-card" data-cat="games"
+             data-rating="4.0"
+             data-date="2026-05-17">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/games/pragmata-5a7049.jpg" alt="Pragmata">
+        <span class="cov-rating">4</span>
+        
+      </div>
+      <div class="lib-card-title">Pragmata</div>
+      <div class="lib-card-sub">Steam · 16 May 2026 → 17 May 2026</div>
+    </article>
+    <article class="lib-card" data-cat="books"
+             data-rating="4.0"
+             data-date="2026-05-17">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/books/underground-c0bf6d.jpg" alt="Underground">
+        <span class="cov-rating">4</span>
+        
+      </div>
+      <div class="lib-card-title">Underground</div>
+      <div class="lib-card-sub">Haruki Murakami · 13 May 2026 → 17 May 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="8.5"
+             data-date="2026-05-15">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/tv/rooster-02b6ad.jpg" alt="Rooster">
+        <span class="cov-rating">8.5</span>
+        
+      </div>
+      <div class="lib-card-title">Rooster</div>
+      <div class="lib-card-sub">JioHotstar · 13 Mar 2026 → 15 May 2026</div>
+    </article>
+    <article class="lib-card" data-cat="games"
+             data-rating="4.0"
+             data-date="2026-05-12">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/games/wuchang-fallen-feathers-2708de.jpg" alt="Wuchang: Fallen Feathers">
+        <span class="cov-rating">4</span>
+        
+      </div>
+      <div class="lib-card-title">Wuchang: Fallen Feathers</div>
+      <div class="lib-card-sub">Steam · 9 May 2026 → 12 May 2026</div>
+    </article>
+    <article class="lib-card" data-cat="books"
+             data-rating="5.0"
+             data-date="2026-05-12">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/books/the-vatican-secret-fc2131.jpg" alt="The Vatican Secret">
+        <span class="cov-rating">5</span>
+        
+      </div>
+      <div class="lib-card-title">The Vatican Secret</div>
+      <div class="lib-card-sub">David Leadbeater · 18 Apr 2026 → 12 May 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="8.0"
+             data-date="2026-05-08">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/tv/the-devil-wears-prada-2-5cd62e.jpg" alt="The Devil Wears Prada 2">
+        <span class="cov-rating">8</span>
+        
+      </div>
+      <div class="lib-card-title">The Devil Wears Prada 2</div>
+      <div class="lib-card-sub">INOX · 8 May 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="9.0"
+             data-date="2026-05-06">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/tv/fleabag-1fd655.jpg" alt="Fleabag">
+        <span class="cov-rating top">9</span>
+        
+      </div>
+      <div class="lib-card-title">Fleabag</div>
+      <div class="lib-card-sub">Prime · 2 May 2026 → 6 May 2026</div>
+    </article>
+    <article class="lib-card" data-cat="games"
+             data-rating="4.0"
+             data-date="2026-05-03">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/games/nocturnal-9cebd8.jpg" alt="Nocturnal">
+        <span class="cov-rating">4</span>
+        
+      </div>
+      <div class="lib-card-title">Nocturnal</div>
+      <div class="lib-card-sub">Steam · 2 May 2026 → 3 May 2026</div>
+    </article></div><div class="month-panel" data-month="2026-04">
+    <article class="lib-card" data-cat="tv"
+             data-rating="8.5"
+             data-date="2026-04-30">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/tv/the-devil-wears-prada-11c9fc.jpg" alt="The Devil Wears Prada">
+        <span class="cov-rating">8.5</span>
+        
+      </div>
+      <div class="lib-card-title">The Devil Wears Prada</div>
+      <div class="lib-card-sub">JioHotstar · 30 Apr 2026</div>
+    </article>
+    <article class="lib-card" data-cat="games"
+             data-rating="10.0"
+             data-date="2026-04-29">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/games/sekiro-9cc593.jpg" alt="Sekiro">
+        <span class="cov-rating top">10</span>
+        
+      </div>
+      <div class="lib-card-title">Sekiro</div>
+      <div class="lib-card-sub">Steam · 9 Mar 2026 → 29 Apr 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="8.5"
+             data-date="2026-04-19">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/tv/sambhavam-adhyayam-onnu-23bca2.jpg" alt="Sambhavam Adhyayam Onnu">
+        <span class="cov-rating">8.5</span>
+        
+      </div>
+      <div class="lib-card-title">Sambhavam Adhyayam Onnu</div>
+      <div class="lib-card-sub">JioHotstar · 19 Apr 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="7.5"
+             data-date="2026-04-18">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/tv/the-perfect-neighbour-5486f5.jpg" alt="The Perfect Neighbour">
+        <span class="cov-rating">7.5</span>
+        
+      </div>
+      <div class="lib-card-title">The Perfect Neighbour</div>
+      <div class="lib-card-sub">Netflix · 18 Apr 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="7.0"
+             data-date="2026-04-18">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/tv/toaster-7a430a.jpg" alt="Toaster">
+        <span class="cov-rating">7</span>
+        
+      </div>
+      <div class="lib-card-title">Toaster</div>
+      <div class="lib-card-sub">Netflix · 18 Apr 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="8.0"
+             data-date="2026-04-18">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/tv/roommates-1a6833.jpg" alt="Roommates">
+        <span class="cov-rating">8</span>
+        
+      </div>
+      <div class="lib-card-title">Roommates</div>
+      <div class="lib-card-sub">Netflix · 18 Apr 2026</div>
+    </article>
+    <article class="lib-card" data-cat="books"
+             data-rating="2.0"
+             data-date="2026-04-17">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/books/the-atlas-six-d62dc5.jpg" alt="The Atlas Six">
+        <span class="cov-rating">2</span>
+        
+      </div>
+      <div class="lib-card-title">The Atlas Six</div>
+      <div class="lib-card-sub">Olivie Blake · 5 Apr 2026 → 17 Apr 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="8.5"
+             data-date="2026-04-14">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/tv/project-hail-mary-8db291.jpg" alt="Project Hail Mary">
+        <span class="cov-rating">8.5</span>
+        
+      </div>
+      <div class="lib-card-title">Project Hail Mary</div>
+      <div class="lib-card-sub">IMAX · 14 Apr 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="1.0"
+             data-date="2026-04-14">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/tv/tu-yaa-main-8a5b2f.jpg" alt="Tu Yaa Main">
+        <span class="cov-rating">1</span>
+        
+      </div>
+      <div class="lib-card-title">Tu Yaa Main</div>
+      <div class="lib-card-sub">Netflix · 12 Apr 2026 → 14 Apr 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="6.0"
+             data-date="2026-04-04">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/tv/the-attacks-of-26-11-007d9c.jpg" alt="The Attacks of 26/11">
+        <span class="cov-rating">6</span>
+        
+      </div>
+      <div class="lib-card-title">The Attacks of 26/11</div>
+      <div class="lib-card-sub">Prime · 4 Apr 2026</div>
+    </article>
+    <article class="lib-card" data-cat="books"
+             data-rating="9.5"
+             data-date="2026-04-04">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/books/the-girl-in-the-glass-case-cc5f42.jpg" alt="The Girl in the Glass Case">
+        <span class="cov-rating top">9.5</span>
+        
+      </div>
+      <div class="lib-card-title">The Girl in the Glass Case</div>
+      <div class="lib-card-sub">Devashish Sardana · 23 Mar 2026 → 4 Apr 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="6.0"
+             data-date="2026-04-03">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/tv/deadloch-season-2-9b7a65.jpg" alt="Deadloch: Season 2">
+        <span class="cov-rating">6</span>
+        
+      </div>
+      <div class="lib-card-title">Deadloch: Season 2</div>
+      <div class="lib-card-sub">Prime · 23 Mar 2026 → 3 Apr 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="10.0"
+             data-date="2026-04-02">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/tv/one-battle-after-another-f3e637.jpg" alt="One Battle After Another">
+        <span class="cov-rating top">10</span>
+        
+      </div>
+      <div class="lib-card-title">One Battle After Another</div>
+      <div class="lib-card-sub">JioHotstar · 20 Mar 2026 → 2 Apr 2026</div>
+    </article></div><div class="month-panel" data-month="2026-03">
+    <article class="lib-card" data-cat="tv"
+             data-rating="5.0"
+             data-date="2026-03-22">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/tv/rahu-ketu-dec44c.jpg" alt="Rahu Ketu">
+        <span class="cov-rating">5</span>
+        
+      </div>
+      <div class="lib-card-title">Rahu Ketu</div>
+      <div class="lib-card-sub">Prime · 22 Mar 2026</div>
+    </article>
+    <article class="lib-card" data-cat="books"
+             data-rating="9.5"
+             data-date="2026-03-22">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/books/what-you-are-looking-for-is-in-the-library-2170b0.jpg" alt="What You Are Looking for Is in the Library">
+        <span class="cov-rating top">9.5</span>
+        
+      </div>
+      <div class="lib-card-title">What You Are Looking for Is in the Library</div>
+      <div class="lib-card-sub">Michiko Aoyama · 13 Mar 2026 → 22 Mar 2026</div>
+    </article>
+    <article class="lib-card" data-cat="games"
+             data-rating="8.5"
+             data-date="2026-03-19">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/games/reanimal-5d1b41.jpg" alt="Reanimal">
+        <span class="cov-rating">8.5</span>
+        
+      </div>
+      <div class="lib-card-title">Reanimal</div>
+      <div class="lib-card-sub">Steam · 8 Mar 2026 → 19 Mar 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="10.0"
+             data-date="2026-03-15">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/tv/bugonia-032126.jpg" alt="Bugonia">
+        <span class="cov-rating top">10</span>
+        
+      </div>
+      <div class="lib-card-title">Bugonia</div>
+      <div class="lib-card-sub">JioHotstar · 14 Mar 2026 → 15 Mar 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="7.0"
+             data-date="2026-03-13">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/tv/wonder-man-171abc.jpg" alt="Wonder Man">
+        <span class="cov-rating">7</span>
+        
+      </div>
+      <div class="lib-card-title">Wonder Man</div>
+      <div class="lib-card-sub">JioHotstar · 5 Mar 2026 → 13 Mar 2026</div>
+    </article>
+    <article class="lib-card" data-cat="books"
+             data-rating="9.5"
+             data-date="2026-03-12">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/books/calcutta-two-years-in-the-city-2f58fc.jpg" alt="Calcutta: Two Years in the City">
+        <span class="cov-rating top">9.5</span>
+        
+      </div>
+      <div class="lib-card-title">Calcutta: Two Years in the City</div>
+      <div class="lib-card-sub">Amit Chaudhuri · 11 Feb 2026 → 12 Mar 2026</div>
+    </article>
+    <article class="lib-card" data-cat="games"
+             data-rating="7.0"
+             data-date="2026-03-08">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/games/dota-2-b6fbba.jpg" alt="Dota 2">
+        <span class="cov-rating">7</span>
+        
+      </div>
+      <div class="lib-card-title">Dota 2</div>
+      <div class="lib-card-sub">Steam · 8 Mar 2026</div>
+    </article>
+    <article class="lib-card" data-cat="games"
+             data-rating="4.0"
+             data-date="2026-03-08">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/games/the-alters-8fe7ab.jpg" alt="The Alters">
+        <span class="cov-rating">4</span>
+        
+      </div>
+      <div class="lib-card-title">The Alters</div>
+      <div class="lib-card-sub">Steam · 8 Mar 2026</div>
+    </article>
+    <article class="lib-card" data-cat="games"
+             data-rating="4.0"
+             data-date="2026-03-07">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/games/titan-quest-ii-402007.jpg" alt="Titan Quest II">
+        <span class="cov-rating">4</span>
+        
+      </div>
+      <div class="lib-card-title">Titan Quest II</div>
+      <div class="lib-card-sub">Steam · 24 Feb 2026 → 7 Mar 2026</div>
+    </article>
+    <article class="lib-card" data-cat="games"
+             data-rating="10.0"
+             data-date="2026-03-05">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/games/ghost-of-tsushima-ac195f.jpg" alt="Ghost of Tsushima">
+        <span class="cov-rating top">10</span>
+        
+      </div>
+      <div class="lib-card-title">Ghost of Tsushima</div>
+      <div class="lib-card-sub">Steam · 4 Jan 2026 → 5 Mar 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="8.5"
+             data-date="2026-03-03">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/tv/weapons-7bbc41.jpg" alt="Weapons">
+        <span class="cov-rating">8.5</span>
+        
+      </div>
+      <div class="lib-card-title">Weapons</div>
+      <div class="lib-card-sub">JioHotstar · 3 Mar 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="8.0"
+             data-date="2026-03-03">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/tv/in-the-blink-of-an-eye-f8c9a0.jpg" alt="In the Blink of an Eye">
+        <span class="cov-rating">8</span>
+        
+      </div>
+      <div class="lib-card-title">In the Blink of an Eye</div>
+      <div class="lib-card-sub">Netflix · 3 Mar 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="4.0"
+             data-date="2026-03-03">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/tv/shutter-54131d.jpg" alt="Shutter">
+        <span class="cov-rating">4</span>
+        
+      </div>
+      <div class="lib-card-title">Shutter</div>
+      <div class="lib-card-sub">Netflix · 3 Mar 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="8.0"
+             data-date="2026-03-02">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/tv/the-woman-in-cabin-10-3bf823.jpg" alt="The Woman in Cabin 10">
+        <span class="cov-rating">8</span>
+        
+      </div>
+      <div class="lib-card-title">The Woman in Cabin 10</div>
+      <div class="lib-card-sub">Netflix · 2 Mar 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="7.0"
+             data-date="2026-03-02">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/tv/accused-85d28c.jpg" alt="Accused">
+        <span class="cov-rating">7</span>
+        
+      </div>
+      <div class="lib-card-title">Accused</div>
+      <div class="lib-card-sub">Netflix · 2 Mar 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="5.0"
+             data-date="2026-03-01">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/tv/holy-ghost-afce18.jpg" alt="Holy Ghost">
+        <span class="cov-rating">5</span>
+        
+      </div>
+      <div class="lib-card-title">Holy Ghost</div>
+      <div class="lib-card-sub">Prime · 1 Mar 2026</div>
+    </article></div><div class="month-panel" data-month="2026-02">
+    <article class="lib-card" data-cat="tv"
+             data-rating="9.0"
+             data-date="2026-02-28">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/tv/tere-naam-ef27df.jpg" alt="Tere Naam">
+        <span class="cov-rating top">9</span>
+        
+      </div>
+      <div class="lib-card-title">Tere Naam</div>
+      <div class="lib-card-sub">Zee 5 · 28 Feb 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="2.0"
+             data-date="2026-02-28">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/tv/isha-88843c.jpg" alt="Isha">
+        <span class="cov-rating">2</span>
+        
+      </div>
+      <div class="lib-card-title">Isha</div>
+      <div class="lib-card-sub">Prime · 28 Feb 2026</div>
+    </article>
+    <article class="lib-card" data-cat="games"
+             data-rating="9.0"
+             data-date="2026-02-22">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/games/the-first-berserker-khazan-1b4ff6.jpg" alt="The First Berserker: Khazan">
+        <span class="cov-rating top">9</span>
+        
+      </div>
+      <div class="lib-card-title">The First Berserker: Khazan</div>
+      <div class="lib-card-sub">Steam · 17 Jan 2026 → 22 Feb 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="9.0"
+             data-date="2026-02-21">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/tv/kennedy-d74a66.jpg" alt="Kennedy">
+        <span class="cov-rating top">9</span>
+        
+      </div>
+      <div class="lib-card-title">Kennedy</div>
+      <div class="lib-card-sub">Zee 5 · 21 Feb 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="7.5"
+             data-date="2026-02-18">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/tv/the-platform-e8f123.jpg" alt="The Platform">
+        <span class="cov-rating">7.5</span>
+        
+      </div>
+      <div class="lib-card-title">The Platform</div>
+      <div class="lib-card-sub">Netflix · 15 Feb 2026 → 18 Feb 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="4.0"
+             data-date="2026-02-10">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/tv/dhurandhar-7ca43a.jpg" alt="Dhurandhar">
+        <span class="cov-rating">4</span>
+        
+      </div>
+      <div class="lib-card-title">Dhurandhar</div>
+      <div class="lib-card-sub">Netflix · 8 Feb 2026 → 10 Feb 2026</div>
+    </article>
+    <article class="lib-card" data-cat="books"
+             data-rating="8.5"
+             data-date="2026-02-10">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/books/wrong-place-wrong-time-185e00.jpg" alt="Wrong Place Wrong Time">
+        <span class="cov-rating">8.5</span>
+        
+      </div>
+      <div class="lib-card-title">Wrong Place Wrong Time</div>
+      <div class="lib-card-sub">Gillian McAllister · 21 Jan 2026 → 10 Feb 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="1.0"
+             data-date="2026-02-09">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/tv/the-50-e7deaa.jpg" alt="The 50">
+        <span class="cov-rating">1</span>
+        
+      </div>
+      <div class="lib-card-title">The 50</div>
+      <div class="lib-card-sub">JioHotstar · 7 Feb 2026 → 9 Feb 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="9.5"
+             data-date="2026-02-07">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/tv/jugnuma-the-fable-58fc11.jpg" alt="Jugnuma: The Fable">
+        <span class="cov-rating top">9.5</span>
+        
+      </div>
+      <div class="lib-card-title">Jugnuma: The Fable</div>
+      <div class="lib-card-sub">Prime · 4 Feb 2026 → 7 Feb 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="8.5"
+             data-date="2026-02-01">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/tv/daldal-cdde36.jpg" alt="Daldal">
+        <span class="cov-rating">8.5</span>
+        
+      </div>
+      <div class="lib-card-title">Daldal</div>
+      <div class="lib-card-sub">Prime · 1 Feb 2026</div>
+    </article></div><div class="month-panel" data-month="2026-01">
+    <article class="lib-card" data-cat="tv"
+             data-rating="7.0"
+             data-date="2026-01-31">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/tv/agatha-christie-s-seven-dials-425b18.jpg" alt="Agatha Christie’s Seven Dials">
+        <span class="cov-rating">7</span>
+        
+      </div>
+      <div class="lib-card-title">Agatha Christie’s Seven Dials</div>
+      <div class="lib-card-sub">Netflix · 29 Jan 2026 → 31 Jan 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="3.0"
+             data-date="2026-01-27">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/tv/shark-tank-india-season-5-809fc6.jpg" alt="Shark Tank India: Season 5">
+        <span class="cov-rating">3</span>
+        
+      </div>
+      <div class="lib-card-title">Shark Tank India: Season 5</div>
+      <div class="lib-card-sub">Sony Liv · 16 Jan 2026 → 27 Jan 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="7.0"
+             data-date="2026-01-26">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/tv/taskaree-306c45.jpg" alt="Taskaree">
+        <span class="cov-rating">7</span>
+        
+      </div>
+      <div class="lib-card-title">Taskaree</div>
+      <div class="lib-card-sub">Netflix · 22 Jan 2026 → 26 Jan 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="8.0"
+             data-date="2026-01-24">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/tv/hunting-wives-d9028d.jpg" alt="Hunting Wives">
+        <span class="cov-rating">8</span>
+        
+      </div>
+      <div class="lib-card-title">Hunting Wives</div>
+      <div class="lib-card-sub">Netflix · 24 Jan 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="9.0"
+             data-date="2026-01-21">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/tv/homebound-3d72d9.jpg" alt="Homebound">
+        <span class="cov-rating top">9</span>
+        
+      </div>
+      <div class="lib-card-title">Homebound</div>
+      <div class="lib-card-sub">Netflix · 18 Jan 2026 → 21 Jan 2026</div>
+    </article>
+    <article class="lib-card" data-cat="books"
+             data-rating="9.0"
+             data-date="2026-01-20">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/books/the-vegetarian-64a03e.jpg" alt="The Vegetarian">
+        <span class="cov-rating top">9</span>
+        
+      </div>
+      <div class="lib-card-title">The Vegetarian</div>
+      <div class="lib-card-sub">Han Kang · 6 Jan 2026 → 20 Jan 2026</div>
+    </article>
+    <article class="lib-card" data-cat="games"
+             data-rating="3.0"
+             data-date="2026-01-17">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/games/path-of-exile-e972d3.jpg" alt="Path of Exile">
+        <span class="cov-rating">3</span>
+        
+      </div>
+      <div class="lib-card-title">Path of Exile</div>
+      <div class="lib-card-sub">Steam · 16 Jan 2026 → 17 Jan 2026</div>
+    </article>
+    <article class="lib-card" data-cat="tv"
+             data-rating="8.0"
+             data-date="2026-01-17">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/tv/dark-matter-508f8c.jpg" alt="Dark Matter">
+        <span class="cov-rating">8</span>
+        
+      </div>
+      <div class="lib-card-title">Dark Matter</div>
+      <div class="lib-card-sub">Apple TV+ · 4 Jan 2026 → 17 Jan 2026</div>
+    </article>
+    <article class="lib-card" data-cat="games"
+             data-rating="3.0"
+             data-date="2026-01-16">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/games/where-winds-meet-45867d.jpg" alt="Where Winds Meet">
+        <span class="cov-rating">3</span>
+        
+      </div>
+      <div class="lib-card-title">Where Winds Meet</div>
+      <div class="lib-card-sub">Steam · 15 Jan 2026 → 16 Jan 2026</div>
+    </article>
+    <article class="lib-card" data-cat="games"
+             data-rating="10.0"
+             data-date="2026-01-15">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/games/need-for-speed-most-wanted-2005-4958fd.jpg" alt="Need for Speed Most Wanted 2005">
+        <span class="cov-rating top">10</span>
+        
+      </div>
+      <div class="lib-card-title">Need for Speed Most Wanted 2005</div>
+      <div class="lib-card-sub">3 Jan 2026 → 15 Jan 2026</div>
+    </article>
+    <article class="lib-card" data-cat="books"
+             data-rating="9.5"
+             data-date="2026-01-05">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/books/the-passengers-on-the-hankyu-line-23e0d7.jpg" alt="The Passengers on the Hankyu Line">
+        <span class="cov-rating top">9.5</span>
+        
+      </div>
+      <div class="lib-card-title">The Passengers on the Hankyu Line</div>
+      <div class="lib-card-sub">Hiro Arikawa · 30 Dec 2025 → 5 Jan 2026</div>
+    </article>
+    <article class="lib-card" data-cat="games"
+             data-rating="3.0"
+             data-date="2026-01-03">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/games/blue-prince-60b233.jpg" alt="Blue Prince">
+        <span class="cov-rating">3</span>
+        
+      </div>
+      <div class="lib-card-title">Blue Prince</div>
+      <div class="lib-card-sub">Steam · 31 Dec 2025 → 3 Jan 2026</div>
+    </article>
+    <article class="lib-card" data-cat="games"
+             data-rating="8.0"
+             data-date="2026-01-03">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/games/cyberpunk-2077-phantom-liberty-701d33.jpg" alt="Cyberpunk 2077: Phantom Liberty">
+        <span class="cov-rating">8</span>
+        
+      </div>
+      <div class="lib-card-title">Cyberpunk 2077: Phantom Liberty</div>
+      <div class="lib-card-sub">Steam · 18 Nov 2025 → 3 Jan 2026</div>
+    </article>
+    <article class="lib-card" data-cat="games"
+             data-rating="8.0"
+             data-date="2026-01-02">
+      <div class="cov">
+        <img class="cov-img" loading="lazy" src="/assets/covers/games/hitman-world-of-assassination-1cf47e.jpg" alt="HITMAN World of Assassination">
+        <span class="cov-rating">8</span>
+        
+      </div>
+      <div class="lib-card-title">HITMAN World of Assassination</div>
+      <div class="lib-card-sub">Steam · 23 Nov 2025 → 2 Jan 2026</div>
     </article></div>
     </div>
+    <script id="month-data" type="application/json">{"2026-08": {"label": "August 2026", "note": "4 in progress \u00b7 7 finished"}, "2026-07": {"label": "July 2026", "note": "12 finished"}, "2026-06": {"label": "June 2026", "note": "5 finished"}, "2026-05": {"label": "May 2026", "note": "9 finished"}, "2026-04": {"label": "April 2026", "note": "13 finished"}, "2026-03": {"label": "March 2026", "note": "16 finished"}, "2026-02": {"label": "February 2026", "note": "10 finished"}, "2026-01": {"label": "January 2026", "note": "14 finished"}, "_current": "2026-08"}</script>
   </section>
 <section class="lib-sec reveal">
   <div class="sec-head"><span class="sec-num">03</span>
@@ -469,7 +1394,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/operation-safed-sagar-eb98b8.jpg" alt="Operation Safed Sagar">
         <span class="cov-rating">8.5</span>
         
-        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Operation Safed Sagar</div>
       <div class="lib-card-sub">Netflix · 8 Aug 2026</div>
@@ -481,7 +1405,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/awarapan-539f7c.jpg" alt="Awarapan">
         <span class="cov-rating">7.5</span>
         
-        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Awarapan</div>
       <div class="lib-card-sub">7 Aug 2026</div>
@@ -493,7 +1416,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/wall-e-4370f0.jpg" alt="WALL-E">
         <span class="cov-rating">7.5</span>
         
-        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">WALL-E</div>
       <div class="lib-card-sub">JioHotstar · 7 Aug 2026</div>
@@ -505,7 +1427,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/gram-chikitsalay-season-2-e1e562.jpg" alt="Gram Chikitsalay: Season 2">
         <span class="cov-rating">6</span>
         
-        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Gram Chikitsalay: Season 2</div>
       <div class="lib-card-sub">Prime · 5 Aug 2026 → 6 Aug 2026</div>
@@ -517,7 +1438,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/games/skate-story-demo-76ad37.jpg" alt="Skate Story: Demo">
         <span class="cov-rating">8</span>
         
-        <span class="cov-tag" style="color:var(--amber)">🎮 Played</span>
       </div>
       <div class="lib-card-title">Skate Story: Demo</div>
       <div class="lib-card-sub">Steam · 1 Aug 2026 → 3 Aug 2026</div>
@@ -529,7 +1449,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/adarsh-baal-vidyalaya-44e689.jpg" alt="Adarsh Baal Vidyalaya">
         <span class="cov-rating">8</span>
         
-        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Adarsh Baal Vidyalaya</div>
       <div class="lib-card-sub">Prime · 26 Jul 2026 → 2 Aug 2026</div>
@@ -541,7 +1460,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/games/replaced-797312.jpg" alt="Replaced">
         <span class="cov-rating">4</span>
         
-        <span class="cov-tag" style="color:var(--amber)">🎮 Played</span>
       </div>
       <div class="lib-card-title">Replaced</div>
       <div class="lib-card-sub">Steam · 26 Jul 2026 → 1 Aug 2026</div>
@@ -553,7 +1471,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/shesha-2016-719090.jpg" alt="Shesha 2016">
         <span class="cov-rating">1</span>
         
-        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Shesha 2016</div>
       <div class="lib-card-sub">Prime · 30 Jul 2026</div>
@@ -565,7 +1482,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/vadakkan-a35a06.jpg" alt="Vadakkan">
         <span class="cov-rating">3</span>
         
-        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Vadakkan</div>
       <div class="lib-card-sub">Prime · 30 Jul 2026</div>
@@ -577,7 +1493,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/everyone-loves-sourabh-handa-9e008c.jpg" alt="Everyone loves Sourabh Handa">
         <span class="cov-rating">8</span>
         
-        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Everyone loves Sourabh Handa</div>
       <div class="lib-card-sub">Zee 5 · 24 Jul 2026 → 26 Jul 2026</div>
@@ -589,7 +1504,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/games/forza-horizon-6-24018b.jpg" alt="Forza Horizon 6">
         <span class="cov-rating">7</span>
         
-        <span class="cov-tag" style="color:var(--amber)">🎮 Played</span>
       </div>
       <div class="lib-card-title">Forza Horizon 6</div>
       <div class="lib-card-sub">Steam · 19 Jul 2026 → 25 Jul 2026</div>
@@ -601,7 +1515,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/your-friends-neighbors-season-2-951512.jpg" alt="Your Friends &amp; Neighbors: Season 2">
         <span class="cov-rating">4</span>
         
-        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Your Friends &amp; Neighbors: Season 2</div>
       <div class="lib-card-sub">Apple TV+ · 14 Jun 2026 → 25 Jul 2026</div>
@@ -613,7 +1526,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/games/fc-26-948402.jpg" alt="FC 26">
         <span class="cov-rating">3</span>
         
-        <span class="cov-tag" style="color:var(--amber)">🎮 Played</span>
       </div>
       <div class="lib-card-title">FC 26</div>
       <div class="lib-card-sub">Steam · 14 Jul 2026 → 19 Jul 2026</div>
@@ -625,7 +1537,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/chand-mera-dil-884473.jpg" alt="Chand Mera Dil">
         <span class="cov-rating">3</span>
         
-        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Chand Mera Dil</div>
       <div class="lib-card-sub">Prime · 18 Jul 2026</div>
@@ -637,7 +1548,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/the-odessey-30f071.jpg" alt="The Odessey">
         <span class="cov-rating top">10</span>
         
-        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">The Odessey</div>
       <div class="lib-card-sub">IMAX · 18 Jul 2026</div>
@@ -649,7 +1559,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/games/crimson-desert-3ef13b.jpg" alt="Crimson Desert">
         <span class="cov-rating">6.5</span>
         
-        <span class="cov-tag" style="color:var(--amber)">🎮 Played</span>
       </div>
       <div class="lib-card-title">Crimson Desert</div>
       <div class="lib-card-sub">Steam · 20 May 2026 → 13 Jul 2026</div>
@@ -661,7 +1570,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/jury-duty-season-2-fc957e.jpg" alt="Jury Duty: Season 2">
         <span class="cov-rating top">9.5</span>
         
-        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Jury Duty: Season 2</div>
       <div class="lib-card-sub">Prime · 10 Jul 2026 → 12 Jul 2026</div>
@@ -673,7 +1581,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/books/ashramed-588481.jpg" alt="Ashramed">
         <span class="cov-rating">7.5</span>
         
-        <span class="cov-tag" style="color:var(--green)">📚 Read</span>
       </div>
       <div class="lib-card-title">Ashramed</div>
       <div class="lib-card-sub">Dahlia Sen Oberoi · 15 Jun 2026 → 12 Jul 2026</div>
@@ -685,7 +1592,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/from-season-4-f45927.jpg" alt="From: Season 4">
         <span class="cov-rating">6</span>
         
-        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">From: Season 4</div>
       <div class="lib-card-sub">Prime · 26 Apr 2026 → 3 Jul 2026</div>
@@ -697,7 +1603,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/books/the-lost-bookshop-3b422f.jpg" alt="The Lost Bookshop">
         <span class="cov-rating">8.5</span>
         
-        <span class="cov-tag" style="color:var(--green)">📚 Read</span>
       </div>
       <div class="lib-card-title">The Lost Bookshop</div>
       <div class="lib-card-sub">Evie Woods · 18 May 2026 → 14 Jun 2026</div>
@@ -709,7 +1614,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/bhoot-bangla-759805.jpg" alt="Bhoot Bangla">
         <span class="cov-rating">6</span>
         
-        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Bhoot Bangla</div>
       <div class="lib-card-sub">Netflix · 13 Jun 2026</div>
@@ -721,7 +1625,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/your-friends-neighbors-944bd5.jpg" alt="Your Friends &amp; Neighbors">
         <span class="cov-rating">8</span>
         
-        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Your Friends &amp; Neighbors</div>
       <div class="lib-card-sub">Prime · 16 May 2026 → 13 Jun 2026</div>
@@ -733,7 +1636,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/games/death-stranding-2-ffa0aa.jpg" alt="Death Stranding 2">
         <span class="cov-rating top">9.5</span>
         
-        <span class="cov-tag" style="color:var(--amber)">🎮 Played</span>
       </div>
       <div class="lib-card-title">Death Stranding 2</div>
       <div class="lib-card-sub">Steam · 20 Mar 2026 → 12 Jun 2026</div>
@@ -745,7 +1647,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/obsession-e44e04.jpg" alt="Obsession">
         <span class="cov-rating top">9</span>
         
-        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Obsession</div>
       <div class="lib-card-sub">INOX · 6 Jun 2026</div>
@@ -757,7 +1658,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/your-name-961fd5.jpg" alt="Your Name">
         <span class="cov-rating top">10</span>
         
-        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Your Name</div>
       <div class="lib-card-sub">CrunchyRoll · 30 May 2026</div>
@@ -769,7 +1669,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/games/pragmata-5a7049.jpg" alt="Pragmata">
         <span class="cov-rating">4</span>
         
-        <span class="cov-tag" style="color:var(--amber)">🎮 Played</span>
       </div>
       <div class="lib-card-title">Pragmata</div>
       <div class="lib-card-sub">Steam · 16 May 2026 → 17 May 2026</div>
@@ -781,7 +1680,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/books/underground-c0bf6d.jpg" alt="Underground">
         <span class="cov-rating">4</span>
         
-        <span class="cov-tag" style="color:var(--green)">📚 Read</span>
       </div>
       <div class="lib-card-title">Underground</div>
       <div class="lib-card-sub">Haruki Murakami · 13 May 2026 → 17 May 2026</div>
@@ -793,7 +1691,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/rooster-02b6ad.jpg" alt="Rooster">
         <span class="cov-rating">8.5</span>
         
-        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Rooster</div>
       <div class="lib-card-sub">JioHotstar · 13 Mar 2026 → 15 May 2026</div>
@@ -805,7 +1702,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/games/wuchang-fallen-feathers-2708de.jpg" alt="Wuchang: Fallen Feathers">
         <span class="cov-rating">4</span>
         
-        <span class="cov-tag" style="color:var(--amber)">🎮 Played</span>
       </div>
       <div class="lib-card-title">Wuchang: Fallen Feathers</div>
       <div class="lib-card-sub">Steam · 9 May 2026 → 12 May 2026</div>
@@ -817,7 +1713,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/books/the-vatican-secret-fc2131.jpg" alt="The Vatican Secret">
         <span class="cov-rating">5</span>
         
-        <span class="cov-tag" style="color:var(--green)">📚 Read</span>
       </div>
       <div class="lib-card-title">The Vatican Secret</div>
       <div class="lib-card-sub">David Leadbeater · 18 Apr 2026 → 12 May 2026</div>
@@ -829,7 +1724,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/the-devil-wears-prada-2-5cd62e.jpg" alt="The Devil Wears Prada 2">
         <span class="cov-rating">8</span>
         
-        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">The Devil Wears Prada 2</div>
       <div class="lib-card-sub">INOX · 8 May 2026</div>
@@ -841,7 +1735,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/fleabag-1fd655.jpg" alt="Fleabag">
         <span class="cov-rating top">9</span>
         
-        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Fleabag</div>
       <div class="lib-card-sub">Prime · 2 May 2026 → 6 May 2026</div>
@@ -853,7 +1746,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/games/nocturnal-9cebd8.jpg" alt="Nocturnal">
         <span class="cov-rating">4</span>
         
-        <span class="cov-tag" style="color:var(--amber)">🎮 Played</span>
       </div>
       <div class="lib-card-title">Nocturnal</div>
       <div class="lib-card-sub">Steam · 2 May 2026 → 3 May 2026</div>
@@ -865,7 +1757,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/the-devil-wears-prada-11c9fc.jpg" alt="The Devil Wears Prada">
         <span class="cov-rating">8.5</span>
         
-        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">The Devil Wears Prada</div>
       <div class="lib-card-sub">JioHotstar · 30 Apr 2026</div>
@@ -877,7 +1768,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/games/sekiro-9cc593.jpg" alt="Sekiro">
         <span class="cov-rating top">10</span>
         
-        <span class="cov-tag" style="color:var(--amber)">🎮 Played</span>
       </div>
       <div class="lib-card-title">Sekiro</div>
       <div class="lib-card-sub">Steam · 9 Mar 2026 → 29 Apr 2026</div>
@@ -889,7 +1779,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/sambhavam-adhyayam-onnu-23bca2.jpg" alt="Sambhavam Adhyayam Onnu">
         <span class="cov-rating">8.5</span>
         
-        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Sambhavam Adhyayam Onnu</div>
       <div class="lib-card-sub">JioHotstar · 19 Apr 2026</div>
@@ -901,7 +1790,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/the-perfect-neighbour-5486f5.jpg" alt="The Perfect Neighbour">
         <span class="cov-rating">7.5</span>
         
-        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">The Perfect Neighbour</div>
       <div class="lib-card-sub">Netflix · 18 Apr 2026</div>
@@ -913,7 +1801,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/toaster-7a430a.jpg" alt="Toaster">
         <span class="cov-rating">7</span>
         
-        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Toaster</div>
       <div class="lib-card-sub">Netflix · 18 Apr 2026</div>
@@ -925,7 +1812,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/roommates-1a6833.jpg" alt="Roommates">
         <span class="cov-rating">8</span>
         
-        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Roommates</div>
       <div class="lib-card-sub">Netflix · 18 Apr 2026</div>
@@ -937,7 +1823,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/books/the-atlas-six-d62dc5.jpg" alt="The Atlas Six">
         <span class="cov-rating">2</span>
         
-        <span class="cov-tag" style="color:var(--green)">📚 Read</span>
       </div>
       <div class="lib-card-title">The Atlas Six</div>
       <div class="lib-card-sub">Olivie Blake · 5 Apr 2026 → 17 Apr 2026</div>
@@ -949,7 +1834,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/project-hail-mary-8db291.jpg" alt="Project Hail Mary">
         <span class="cov-rating">8.5</span>
         
-        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Project Hail Mary</div>
       <div class="lib-card-sub">IMAX · 14 Apr 2026</div>
@@ -961,7 +1845,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/tu-yaa-main-8a5b2f.jpg" alt="Tu Yaa Main">
         <span class="cov-rating">1</span>
         
-        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Tu Yaa Main</div>
       <div class="lib-card-sub">Netflix · 12 Apr 2026 → 14 Apr 2026</div>
@@ -973,7 +1856,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/the-attacks-of-26-11-007d9c.jpg" alt="The Attacks of 26/11">
         <span class="cov-rating">6</span>
         
-        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">The Attacks of 26/11</div>
       <div class="lib-card-sub">Prime · 4 Apr 2026</div>
@@ -985,7 +1867,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/books/the-girl-in-the-glass-case-cc5f42.jpg" alt="The Girl in the Glass Case">
         <span class="cov-rating top">9.5</span>
         
-        <span class="cov-tag" style="color:var(--green)">📚 Read</span>
       </div>
       <div class="lib-card-title">The Girl in the Glass Case</div>
       <div class="lib-card-sub">Devashish Sardana · 23 Mar 2026 → 4 Apr 2026</div>
@@ -997,7 +1878,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/deadloch-season-2-9b7a65.jpg" alt="Deadloch: Season 2">
         <span class="cov-rating">6</span>
         
-        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Deadloch: Season 2</div>
       <div class="lib-card-sub">Prime · 23 Mar 2026 → 3 Apr 2026</div>
@@ -1009,7 +1889,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/one-battle-after-another-f3e637.jpg" alt="One Battle After Another">
         <span class="cov-rating top">10</span>
         
-        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">One Battle After Another</div>
       <div class="lib-card-sub">JioHotstar · 20 Mar 2026 → 2 Apr 2026</div>
@@ -1021,7 +1900,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/rahu-ketu-dec44c.jpg" alt="Rahu Ketu">
         <span class="cov-rating">5</span>
         
-        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Rahu Ketu</div>
       <div class="lib-card-sub">Prime · 22 Mar 2026</div>
@@ -1033,7 +1911,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/books/what-you-are-looking-for-is-in-the-library-2170b0.jpg" alt="What You Are Looking for Is in the Library">
         <span class="cov-rating top">9.5</span>
         
-        <span class="cov-tag" style="color:var(--green)">📚 Read</span>
       </div>
       <div class="lib-card-title">What You Are Looking for Is in the Library</div>
       <div class="lib-card-sub">Michiko Aoyama · 13 Mar 2026 → 22 Mar 2026</div>
@@ -1045,7 +1922,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/games/reanimal-5d1b41.jpg" alt="Reanimal">
         <span class="cov-rating">8.5</span>
         
-        <span class="cov-tag" style="color:var(--amber)">🎮 Played</span>
       </div>
       <div class="lib-card-title">Reanimal</div>
       <div class="lib-card-sub">Steam · 8 Mar 2026 → 19 Mar 2026</div>
@@ -1057,7 +1933,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/bugonia-032126.jpg" alt="Bugonia">
         <span class="cov-rating top">10</span>
         
-        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Bugonia</div>
       <div class="lib-card-sub">JioHotstar · 14 Mar 2026 → 15 Mar 2026</div>
@@ -1069,7 +1944,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/wonder-man-171abc.jpg" alt="Wonder Man">
         <span class="cov-rating">7</span>
         
-        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Wonder Man</div>
       <div class="lib-card-sub">JioHotstar · 5 Mar 2026 → 13 Mar 2026</div>
@@ -1081,7 +1955,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/books/calcutta-two-years-in-the-city-2f58fc.jpg" alt="Calcutta: Two Years in the City">
         <span class="cov-rating top">9.5</span>
         
-        <span class="cov-tag" style="color:var(--green)">📚 Read</span>
       </div>
       <div class="lib-card-title">Calcutta: Two Years in the City</div>
       <div class="lib-card-sub">Amit Chaudhuri · 11 Feb 2026 → 12 Mar 2026</div>
@@ -1093,7 +1966,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/games/dota-2-b6fbba.jpg" alt="Dota 2">
         <span class="cov-rating">7</span>
         
-        <span class="cov-tag" style="color:var(--amber)">🎮 Played</span>
       </div>
       <div class="lib-card-title">Dota 2</div>
       <div class="lib-card-sub">Steam · 8 Mar 2026</div>
@@ -1105,7 +1977,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/games/the-alters-8fe7ab.jpg" alt="The Alters">
         <span class="cov-rating">4</span>
         
-        <span class="cov-tag" style="color:var(--amber)">🎮 Played</span>
       </div>
       <div class="lib-card-title">The Alters</div>
       <div class="lib-card-sub">Steam · 8 Mar 2026</div>
@@ -1117,7 +1988,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/games/titan-quest-ii-402007.jpg" alt="Titan Quest II">
         <span class="cov-rating">4</span>
         
-        <span class="cov-tag" style="color:var(--amber)">🎮 Played</span>
       </div>
       <div class="lib-card-title">Titan Quest II</div>
       <div class="lib-card-sub">Steam · 24 Feb 2026 → 7 Mar 2026</div>
@@ -1129,7 +1999,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/games/ghost-of-tsushima-ac195f.jpg" alt="Ghost of Tsushima">
         <span class="cov-rating top">10</span>
         
-        <span class="cov-tag" style="color:var(--amber)">🎮 Played</span>
       </div>
       <div class="lib-card-title">Ghost of Tsushima</div>
       <div class="lib-card-sub">Steam · 4 Jan 2026 → 5 Mar 2026</div>
@@ -1141,7 +2010,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/weapons-7bbc41.jpg" alt="Weapons">
         <span class="cov-rating">8.5</span>
         
-        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Weapons</div>
       <div class="lib-card-sub">JioHotstar · 3 Mar 2026</div>
@@ -1153,7 +2021,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/in-the-blink-of-an-eye-f8c9a0.jpg" alt="In the Blink of an Eye">
         <span class="cov-rating">8</span>
         
-        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">In the Blink of an Eye</div>
       <div class="lib-card-sub">Netflix · 3 Mar 2026</div>
@@ -1165,7 +2032,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/shutter-54131d.jpg" alt="Shutter">
         <span class="cov-rating">4</span>
         
-        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Shutter</div>
       <div class="lib-card-sub">Netflix · 3 Mar 2026</div>
@@ -1177,7 +2043,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/the-woman-in-cabin-10-3bf823.jpg" alt="The Woman in Cabin 10">
         <span class="cov-rating">8</span>
         
-        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">The Woman in Cabin 10</div>
       <div class="lib-card-sub">Netflix · 2 Mar 2026</div>
@@ -1189,7 +2054,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/accused-85d28c.jpg" alt="Accused">
         <span class="cov-rating">7</span>
         
-        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Accused</div>
       <div class="lib-card-sub">Netflix · 2 Mar 2026</div>
@@ -1201,7 +2065,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/holy-ghost-afce18.jpg" alt="Holy Ghost">
         <span class="cov-rating">5</span>
         
-        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Holy Ghost</div>
       <div class="lib-card-sub">Prime · 1 Mar 2026</div>
@@ -1213,7 +2076,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/tere-naam-ef27df.jpg" alt="Tere Naam">
         <span class="cov-rating top">9</span>
         
-        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Tere Naam</div>
       <div class="lib-card-sub">Zee 5 · 28 Feb 2026</div>
@@ -1225,7 +2087,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/isha-88843c.jpg" alt="Isha">
         <span class="cov-rating">2</span>
         
-        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Isha</div>
       <div class="lib-card-sub">Prime · 28 Feb 2026</div>
@@ -1237,7 +2098,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/games/the-first-berserker-khazan-1b4ff6.jpg" alt="The First Berserker: Khazan">
         <span class="cov-rating top">9</span>
         
-        <span class="cov-tag" style="color:var(--amber)">🎮 Played</span>
       </div>
       <div class="lib-card-title">The First Berserker: Khazan</div>
       <div class="lib-card-sub">Steam · 17 Jan 2026 → 22 Feb 2026</div>
@@ -1249,7 +2109,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/kennedy-d74a66.jpg" alt="Kennedy">
         <span class="cov-rating top">9</span>
         
-        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Kennedy</div>
       <div class="lib-card-sub">Zee 5 · 21 Feb 2026</div>
@@ -1261,7 +2120,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/the-platform-e8f123.jpg" alt="The Platform">
         <span class="cov-rating">7.5</span>
         
-        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">The Platform</div>
       <div class="lib-card-sub">Netflix · 15 Feb 2026 → 18 Feb 2026</div>
@@ -1273,7 +2131,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/dhurandhar-7ca43a.jpg" alt="Dhurandhar">
         <span class="cov-rating">4</span>
         
-        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Dhurandhar</div>
       <div class="lib-card-sub">Netflix · 8 Feb 2026 → 10 Feb 2026</div>
@@ -1285,7 +2142,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/books/wrong-place-wrong-time-185e00.jpg" alt="Wrong Place Wrong Time">
         <span class="cov-rating">8.5</span>
         
-        <span class="cov-tag" style="color:var(--green)">📚 Read</span>
       </div>
       <div class="lib-card-title">Wrong Place Wrong Time</div>
       <div class="lib-card-sub">Gillian McAllister · 21 Jan 2026 → 10 Feb 2026</div>
@@ -1297,7 +2153,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/the-50-e7deaa.jpg" alt="The 50">
         <span class="cov-rating">1</span>
         
-        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">The 50</div>
       <div class="lib-card-sub">JioHotstar · 7 Feb 2026 → 9 Feb 2026</div>
@@ -1309,7 +2164,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/jugnuma-the-fable-58fc11.jpg" alt="Jugnuma: The Fable">
         <span class="cov-rating top">9.5</span>
         
-        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Jugnuma: The Fable</div>
       <div class="lib-card-sub">Prime · 4 Feb 2026 → 7 Feb 2026</div>
@@ -1321,7 +2175,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/daldal-cdde36.jpg" alt="Daldal">
         <span class="cov-rating">8.5</span>
         
-        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Daldal</div>
       <div class="lib-card-sub">Prime · 1 Feb 2026</div>
@@ -1333,7 +2186,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/agatha-christie-s-seven-dials-425b18.jpg" alt="Agatha Christie’s Seven Dials">
         <span class="cov-rating">7</span>
         
-        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Agatha Christie’s Seven Dials</div>
       <div class="lib-card-sub">Netflix · 29 Jan 2026 → 31 Jan 2026</div>
@@ -1345,7 +2197,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/shark-tank-india-season-5-809fc6.jpg" alt="Shark Tank India: Season 5">
         <span class="cov-rating">3</span>
         
-        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Shark Tank India: Season 5</div>
       <div class="lib-card-sub">Sony Liv · 16 Jan 2026 → 27 Jan 2026</div>
@@ -1357,7 +2208,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/taskaree-306c45.jpg" alt="Taskaree">
         <span class="cov-rating">7</span>
         
-        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Taskaree</div>
       <div class="lib-card-sub">Netflix · 22 Jan 2026 → 26 Jan 2026</div>
@@ -1369,7 +2219,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/hunting-wives-d9028d.jpg" alt="Hunting Wives">
         <span class="cov-rating">8</span>
         
-        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Hunting Wives</div>
       <div class="lib-card-sub">Netflix · 24 Jan 2026</div>
@@ -1381,7 +2230,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/homebound-3d72d9.jpg" alt="Homebound">
         <span class="cov-rating top">9</span>
         
-        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Homebound</div>
       <div class="lib-card-sub">Netflix · 18 Jan 2026 → 21 Jan 2026</div>
@@ -1393,7 +2241,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/books/the-vegetarian-64a03e.jpg" alt="The Vegetarian">
         <span class="cov-rating top">9</span>
         
-        <span class="cov-tag" style="color:var(--green)">📚 Read</span>
       </div>
       <div class="lib-card-title">The Vegetarian</div>
       <div class="lib-card-sub">Han Kang · 6 Jan 2026 → 20 Jan 2026</div>
@@ -1405,7 +2252,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/games/path-of-exile-e972d3.jpg" alt="Path of Exile">
         <span class="cov-rating">3</span>
         
-        <span class="cov-tag" style="color:var(--amber)">🎮 Played</span>
       </div>
       <div class="lib-card-title">Path of Exile</div>
       <div class="lib-card-sub">Steam · 16 Jan 2026 → 17 Jan 2026</div>
@@ -1417,7 +2263,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/tv/dark-matter-508f8c.jpg" alt="Dark Matter">
         <span class="cov-rating">8</span>
         
-        <span class="cov-tag" style="color:var(--teal)">📺 Watched</span>
       </div>
       <div class="lib-card-title">Dark Matter</div>
       <div class="lib-card-sub">Apple TV+ · 4 Jan 2026 → 17 Jan 2026</div>
@@ -1429,7 +2274,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/games/where-winds-meet-45867d.jpg" alt="Where Winds Meet">
         <span class="cov-rating">3</span>
         
-        <span class="cov-tag" style="color:var(--amber)">🎮 Played</span>
       </div>
       <div class="lib-card-title">Where Winds Meet</div>
       <div class="lib-card-sub">Steam · 15 Jan 2026 → 16 Jan 2026</div>
@@ -1441,7 +2285,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/games/need-for-speed-most-wanted-2005-4958fd.jpg" alt="Need for Speed Most Wanted 2005">
         <span class="cov-rating top">10</span>
         
-        <span class="cov-tag" style="color:var(--amber)">🎮 Played</span>
       </div>
       <div class="lib-card-title">Need for Speed Most Wanted 2005</div>
       <div class="lib-card-sub">3 Jan 2026 → 15 Jan 2026</div>
@@ -1453,7 +2296,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/books/the-passengers-on-the-hankyu-line-23e0d7.jpg" alt="The Passengers on the Hankyu Line">
         <span class="cov-rating top">9.5</span>
         
-        <span class="cov-tag" style="color:var(--green)">📚 Read</span>
       </div>
       <div class="lib-card-title">The Passengers on the Hankyu Line</div>
       <div class="lib-card-sub">Hiro Arikawa · 30 Dec 2025 → 5 Jan 2026</div>
@@ -1465,7 +2307,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/games/blue-prince-60b233.jpg" alt="Blue Prince">
         <span class="cov-rating">3</span>
         
-        <span class="cov-tag" style="color:var(--amber)">🎮 Played</span>
       </div>
       <div class="lib-card-title">Blue Prince</div>
       <div class="lib-card-sub">Steam · 31 Dec 2025 → 3 Jan 2026</div>
@@ -1477,7 +2318,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/games/cyberpunk-2077-phantom-liberty-701d33.jpg" alt="Cyberpunk 2077: Phantom Liberty">
         <span class="cov-rating">8</span>
         
-        <span class="cov-tag" style="color:var(--amber)">🎮 Played</span>
       </div>
       <div class="lib-card-title">Cyberpunk 2077: Phantom Liberty</div>
       <div class="lib-card-sub">Steam · 18 Nov 2025 → 3 Jan 2026</div>
@@ -1489,7 +2329,6 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <img class="cov-img" loading="lazy" src="/assets/covers/games/hitman-world-of-assassination-1cf47e.jpg" alt="HITMAN World of Assassination">
         <span class="cov-rating">8</span>
         
-        <span class="cov-tag" style="color:var(--amber)">🎮 Played</span>
       </div>
       <div class="lib-card-title">HITMAN World of Assassination</div>
       <div class="lib-card-sub">Steam · 23 Nov 2025 → 2 Jan 2026</div>
@@ -1499,7 +2338,7 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
 
 <footer class="lib-foot">
   <a href="/">&larr; Back home</a>
-  <span>Auto-updated nightly from Notion · 11 Aug 2026, 1:36 AM IST</span>
+  <span>Auto-updated nightly from Notion · 12 Aug 2026, 1:38 AM IST</span>
 </footer>
 
 <script>
@@ -1524,17 +2363,27 @@ const cards=[...grid.children];cards.sort((a,z)=>{
 if(k==='rating')return (+z.dataset.rating)-(+a.dataset.rating);
 return (z.dataset.date||'').localeCompare(a.dataset.date||'')});
 cards.forEach(c=>grid.appendChild(c))}));
-let ac=null,ip=false,mg,dr=[];const ab=document.getElementById('audio-btn'),
-al=document.getElementById('audio-label');
-ab.addEventListener('click',()=>{if(!ac){ac=new(AudioContext||webkitAudioContext)();
-mg=ac.createGain();mg.gain.value=0;mg.connect(ac.destination);
-[55,82.5,110,165].forEach((f,i)=>{const o=ac.createOscillator(),
-g=ac.createGain();o.type=i%2?'triangle':'sine';o.frequency.value=f;
-g.gain.value=i?0.07:0.28;o.connect(g);g.connect(mg);o.start();dr.push(o)})}
-if(!ip){ac.resume&&ac.resume();mg.gain.linearRampToValueAtTime(.5,ac.currentTime+2);
-ip=true;ab.classList.add('playing');al.textContent='On'}
-else{mg.gain.linearRampToValueAtTime(0,ac.currentTime+1.4);ip=false;
-ab.classList.remove('playing');al.textContent='Ambient'}});
+(function(){
+const dataEl=document.getElementById('month-data');
+if(!dataEl)return;
+const meta=JSON.parse(dataEl.textContent);
+const cur=meta._current;
+const keys=Object.keys(meta).filter(k=>k!=='_current');
+const panels=document.querySelectorAll('.month-panel');
+const sel=document.getElementById('month-select');
+const heading=document.getElementById('month-heading');
+const note=document.getElementById('month-note');
+function show(key){
+if(!meta[key]||key==='_current')key=keys[0];
+panels.forEach(p=>p.classList.toggle('active',p.dataset.month===key));
+heading.textContent=meta[key].label;
+note.textContent=meta[key].note;
+sel.value=key;
+history.replaceState(null,'','#month='+key)}
+sel.addEventListener('change',()=>show(sel.value));
+const hashMatch=location.hash.match(/month=([\d-]+)/);
+const initial=(hashMatch&&meta[hashMatch[1]])?hashMatch[1]:(meta[cur]?cur:keys[0]);
+show(initial)})();
 </script>
 </body>
 </html>
