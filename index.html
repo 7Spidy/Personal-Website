@@ -81,29 +81,6 @@
   }
   .nav-links a:hover { color: var(--fg); }
 
-  /* ── AUDIO BTN ── */
-  #audio-btn {
-    display: flex; align-items: center; gap: 8px;
-    background: none; border: 1px solid var(--fg-dim);
-    color: var(--fg-dim);
-    font-family: 'Space Mono', monospace;
-    font-size: 11px; letter-spacing: 0.1em;
-    padding: 6px 14px; border-radius: 100px;
-    transition: all 0.2s;
-  }
-  #audio-btn:hover { border-color: var(--amber); color: var(--amber); }
-  #audio-btn.playing { border-color: var(--amber); color: var(--amber); }
-  .audio-dot {
-    width: 6px; height: 6px;
-    background: currentColor;
-    border-radius: 50%;
-  }
-  #audio-btn.playing .audio-dot { animation: pulse-dot 1.2s ease infinite; }
-  @keyframes pulse-dot {
-    0%,100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.4; transform: scale(0.6); }
-  }
-
   /* ── HERO ── */
   #hero {
     min-height: 100vh;
@@ -665,10 +642,6 @@
     <a href="#travels">Places</a>
     <a href="/now">Library</a>
     <a href="#contact">Contact</a>
-    <button id="audio-btn">
-      <span class="audio-dot"></span>
-      <span id="audio-label">Ambient</span>
-    </button>
   </div>
 </nav>
 
@@ -1230,77 +1203,6 @@ const revealObs = new IntersectionObserver((entries) => {
   entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
 }, { threshold: 0.12 });
 revealEls.forEach(el => revealObs.observe(el));
-
-// ── AMBIENT AUDIO ──
-let audioCtx = null, isPlaying = false;
-let masterGain, drones = [], noiseNode;
-
-function buildAudio() {
-  if (audioCtx) return;
-  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  masterGain = audioCtx.createGain();
-  masterGain.gain.setValueAtTime(0, audioCtx.currentTime);
-  masterGain.connect(audioCtx.destination);
-
-  // Warm low drone
-  const freqs = [55, 82.5, 110, 165];
-  freqs.forEach((f, i) => {
-    const osc = audioCtx.createOscillator();
-    const g = audioCtx.createGain();
-    const lfo = audioCtx.createOscillator();
-    const lfoGain = audioCtx.createGain();
-
-    osc.type = i % 2 === 0 ? 'sine' : 'triangle';
-    osc.frequency.value = f;
-    g.gain.value = i === 0 ? 0.3 : 0.08;
-
-    lfo.frequency.value = 0.1 + i * 0.07;
-    lfoGain.gain.value = 0.02;
-    lfo.connect(lfoGain);
-    lfoGain.connect(osc.frequency);
-    lfo.start();
-
-    osc.connect(g);
-    g.connect(masterGain);
-    osc.start();
-    drones.push(osc);
-  });
-
-  // Subtle noise pad
-  const bufSize = audioCtx.sampleRate * 4;
-  const buf = audioCtx.createBuffer(1, bufSize, audioCtx.sampleRate);
-  const data = buf.getChannelData(0);
-  for (let i = 0; i < bufSize; i++) data[i] = (Math.random() * 2 - 1) * 0.004;
-  noiseNode = audioCtx.createBufferSource();
-  noiseNode.buffer = buf;
-  noiseNode.loop = true;
-  const lpf = audioCtx.createBiquadFilter();
-  lpf.type = 'lowpass'; lpf.frequency.value = 300;
-  noiseNode.connect(lpf);
-  lpf.connect(masterGain);
-  noiseNode.start();
-}
-
-const audioBtn = document.getElementById('audio-btn');
-const audioLabel = document.getElementById('audio-label');
-
-audioBtn.addEventListener('click', () => {
-  buildAudio();
-  if (!isPlaying) {
-    if (audioCtx.state === 'suspended') audioCtx.resume();
-    masterGain.gain.cancelScheduledValues(audioCtx.currentTime);
-    masterGain.gain.linearRampToValueAtTime(0.55, audioCtx.currentTime + 2);
-    isPlaying = true;
-    audioBtn.classList.add('playing');
-    audioLabel.textContent = 'On';
-  } else {
-    masterGain.gain.cancelScheduledValues(audioCtx.currentTime);
-    masterGain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 1.5);
-    isPlaying = false;
-    audioBtn.classList.remove('playing');
-    audioLabel.textContent = 'Ambient';
-  }
-});
 
 // ── PARALLAX HERO BG TEXT ──
 const bgText = document.querySelector('.hero-bg-text');

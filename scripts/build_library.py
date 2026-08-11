@@ -19,6 +19,7 @@ import pathlib
 import urllib.request
 import urllib.error
 from concurrent.futures import ThreadPoolExecutor
+from collections import defaultdict
 import random
 from datetime import datetime
 
@@ -218,7 +219,6 @@ def media_card(it: dict) -> str:
         {cover_or_fallback(it)}
         {rating_badge(it)}
         {wip_badge}
-        <span class="cov-tag" style="color:{meta['accent']}">{meta['emoji']} {meta['label']}</span>
       </div>
       <div class="lib-card-title">{esc(it['title'])}</div>
       <div class="lib-card-sub">{sub}</div>
@@ -289,19 +289,29 @@ def stat_tile(value: str, label: str, accent: str = "var(--amber)") -> str:
             f'<div class="stat-lab">{esc(label)}</div></div>')
 
 
-def winner_card(it: dict, cat_label: str) -> str:
-    if not it:
+WINNER_LABELS = {
+    "tv":    ("Watch", "Watches"),
+    "books": ("Read",  "Reads"),
+    "games": ("Game",  "Games"),
+}
+
+
+def winner_group(items: list, cat: str) -> str:
+    if not items:
         return ""
-    meta = CAT_META[it["cat"]]
-    return f'''
+    meta = CAT_META[cat]
+    singular, plural = WINNER_LABELS[cat]
+    label = singular if len(items) == 1 else plural
+    cards = "".join(f'''
       <div class="winner">
         <div class="winner-cov">{cover_or_fallback(it)}</div>
         <div class="winner-info">
-          <span class="winner-kicker" style="color:{meta['accent']}">Best {cat_label} of {YEAR}</span>
+          <span class="winner-kicker" style="color:{meta['accent']}">Best {label} of {YEAR}</span>
           <span class="winner-title">{esc(it['title'])}</span>
           <span class="winner-rating">★ {esc(it['rating_str'] or '—')}</span>
         </div>
-      </div>'''
+      </div>''' for it in items)
+    return f'<div class="winner-group">{cards}</div>'
 
 
 _WITTY = {
@@ -376,12 +386,14 @@ def build_page(in_prog: list, done: list) -> str:
     cnt = {c: sum(1 for x in yr_items if x["cat"] == c)
            for c in ("tv", "books", "games")}
 
-    wheres = [x["where"] for x in yr_items if x["cat"] == "tv" and x["where"]]
-    top_where = max(set(wheres), key=wheres.count) if wheres else "—"
-
-    def best(cat):
+    def bests(cat):
         pool = [x for x in yr_items if x["cat"] == cat and x["rating"] is not None]
-        return max(pool, key=lambda x: x["rating"]) if pool else None
+        if not pool:
+            return []
+        top_rating = max(x["rating"] for x in pool)
+        tied = [x for x in pool if x["rating"] == top_rating]  # exact equality — 9.5 != 10
+        tied.sort(key=lambda x: (x["end"] or x["start"] or ""), reverse=True)  # most recent first
+        return tied
 
     stats_html = "".join([
         stat_tile(str(cnt["tv"]), "Movies & TV", "var(--teal)"),
@@ -389,36 +401,68 @@ def build_page(in_prog: list, done: list) -> str:
         stat_tile(str(cnt["games"]), "Games", "var(--amber)"),
         stat_tile(f"{int(g_hours)}", "Hours Gamed", "var(--amber)"),
         stat_tile(str(avg), "Avg Rating", "var(--fg)"),
-        stat_tile(esc(top_where), "Top Streaming", "var(--teal)"),
     ])
     winners_html = (
-        winner_card(best("tv"), "Watch")
-        + winner_card(best("books"), "Read")
-        + winner_card(best("games"), "Game")
+        winner_group(bests("tv"), "tv")
+        + winner_group(bests("books"), "books")
+        + winner_group(bests("games"), "games")
     )
 
-    # This month — everything in progress + everything finished this month.
+    # This month — per-month panels (current year only), switchable via dropdown.
     # Use end date when present, else start date (Done items may lack an end).
     now = datetime.now(IST)
     def eff_date(x):
         return x["end"] or x["start"] or ""
     cur_month = f"{now.year}-{now.month:02d}"
-    month_done = [x for x in done if eff_date(x)[:7] == cur_month]
-    month_done.sort(key=eff_date, reverse=True)
-    month_items = hero_items + month_done   # in-progress first, then finished
-    month_html = "".join(media_card(i) for i in month_items)
-    n_wip = len(hero_items)
-    note_bits = []
-    if n_wip:
-        note_bits.append(f"{n_wip} in progress")
-    if month_done:
-        note_bits.append(f"{len(month_done)} finished")
-    month_note = f"{now.strftime('%B %Y')} · " + " · ".join(note_bits)
-    month_section = "" if not month_items else f'''
+
+    month_map = defaultdict(list)
+    for x in done:
+        key = eff_date(x)[:7]
+        if key:
+            month_map[key].append(x)
+    for items in month_map.values():
+        items.sort(key=eff_date, reverse=True)
+
+    month_keys = sorted(month_map.keys(), reverse=True)  # omits empty months automatically
+
+    def month_panel_items(key):
+        # In-progress items only surface under the current month.
+        return [*hero_items, *month_map[key]] if key == cur_month else month_map[key]
+
+    def month_panel_html(key):
+        cards = "".join(media_card(i) for i in month_panel_items(key))
+        return f'<div class="month-panel" data-month="{esc(key)}">{cards}</div>'
+
+    month_panels = "".join(month_panel_html(k) for k in month_keys)
+
+    def month_label(key):
+        return datetime.strptime(key, "%Y-%m").strftime("%B %Y")
+
+    def month_note(key):
+        items = month_panel_items(key)
+        wip_ct = sum(1 for i in items if i.get("status") == "wip")
+        done_ct = len(items) - wip_ct
+        bits = []
+        if wip_ct: bits.append(f"{wip_ct} in progress")
+        if done_ct: bits.append(f"{done_ct} finished")
+        return " · ".join(bits) if bits else "nothing logged"
+
+    month_meta = {k: {"label": month_label(k), "note": month_note(k)} for k in month_keys}
+    month_meta["_current"] = cur_month
+    month_meta_json = json.dumps(month_meta)
+
+    initial_key = cur_month if cur_month in month_map else (month_keys[0] if month_keys else None)
+    initial_label = month_label(initial_key) if initial_key else ""
+    initial_note = month_note(initial_key) if initial_key else "nothing logged"
+
+    month_section = "" if not month_keys else f'''
   <section class="lib-sec reveal">
     <div class="sec-head"><span class="sec-num">02</span>
-      <h2>This Month</h2>
-      <span class="sec-note">{esc(month_note)}</span>
+      <h2 id="month-heading">{esc(initial_label)}</h2>
+      <span class="sec-note" id="month-note">{esc(initial_note)}</span>
+      <select id="month-select" class="month-select">
+        {"".join(f'<option value="{esc(k)}">{esc(month_meta[k]["label"])}</option>' for k in month_keys)}
+      </select>
     </div>
     <div class="filter-wrap" id="month-wrap">
       <div class="lib-controls">
@@ -433,8 +477,9 @@ def build_page(in_prog: list, done: list) -> str:
           <label for="mf-games">🎮 Played</label>
         </div>
       </div>
-      <div class="card-grid">{month_html}</div>
+      {month_panels}
     </div>
+    <script id="month-data" type="application/json">{month_meta_json}</script>
   </section>'''
 
     # All time
@@ -461,7 +506,6 @@ def build_page(in_prog: list, done: list) -> str:
 <nav>
   <a href="/" class="nav-logo">&larr; AVI.AI</a>
   <div class="nav-mid">THE LIBRARY</div>
-  <button id="audio-btn"><span class="audio-dot"></span><span id="audio-label">Ambient</span></button>
 </nav>
 
 <header class="lib-hero">
@@ -485,7 +529,7 @@ def build_page(in_prog: list, done: list) -> str:
 </section>
 {month_section}
 <section class="lib-sec reveal">
-  <div class="sec-head"><span class="sec-num">{'03' if month_items else '02'}</span>
+  <div class="sec-head"><span class="sec-num">{'03' if month_keys else '02'}</span>
     <h2>All Time</h2>
     <span class="sec-note">{len(done)} logged</span>
   </div>
@@ -544,13 +588,6 @@ background:linear-gradient(to bottom,var(--bg),transparent)}
 color:var(--amber);text-decoration:none;text-transform:uppercase}
 .nav-mid{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.3em;
 color:var(--fg-dim);text-transform:uppercase}
-#audio-btn{display:flex;align-items:center;gap:8px;background:none;
-border:1px solid var(--fg-dim);color:var(--fg-dim);font-family:'Space Mono',monospace;
-font-size:11px;letter-spacing:.1em;padding:6px 14px;border-radius:100px}
-#audio-btn:hover,#audio-btn.playing{border-color:var(--amber);color:var(--amber)}
-.audio-dot{width:6px;height:6px;background:currentColor;border-radius:50%}
-#audio-btn.playing .audio-dot{animation:pulse 1.2s ease infinite}
-@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.6)}}
 .lib-hero{min-height:auto;display:flex;flex-direction:column;justify-content:center;
 padding:140px 48px 64px;position:relative}
 .lib-hero-eyebrow{font-family:'Space Mono',monospace;font-size:12px;
@@ -597,7 +634,12 @@ letter-spacing:.2em}
 .sec-head h2{font-size:clamp(28px,4vw,46px);font-weight:700;letter-spacing:-.025em}
 .sec-note{margin-left:auto;font-family:'Space Mono',monospace;font-size:11px;
 letter-spacing:.16em;text-transform:uppercase;color:var(--fg-dim)}
-.stat-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin-bottom:24px}
+.month-select{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.1em;
+text-transform:uppercase;color:var(--fg-dim);background:var(--bg2);
+border:1px solid rgba(255,255,255,.1);border-radius:100px;padding:9px 16px;
+margin-left:12px}
+.month-select:hover{color:var(--fg);border-color:rgba(255,255,255,.25)}
+.stat-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:24px}
 .stat-tile{padding:32px 22px;border:1px solid rgba(255,255,255,.07);
 border-radius:14px;background:rgba(255,255,255,.02)}
 .stat-num{font-size:clamp(28px,3.4vw,46px);font-weight:700;line-height:1;
@@ -605,6 +647,7 @@ letter-spacing:-.03em;margin-bottom:10px}
 .stat-lab{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.14em;
 text-transform:uppercase;color:var(--fg-dim)}
 .winners{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.winner-group{display:flex;flex-direction:column;gap:12px}
 .winner{display:flex;gap:18px;padding:20px;border:1px solid rgba(255,255,255,.07);
 border-radius:14px;background:rgba(255,255,255,.02)}
 .winner-cov{width:132px;height:84px;border-radius:8px;overflow:hidden;flex-shrink:0}
@@ -633,8 +676,9 @@ border:1px solid rgba(255,255,255,.1);border-radius:100px;padding:9px 18px;
 margin-left:8px;transition:all .2s}
 .sort-btn:hover{color:var(--fg)}
 .sort-btn.active{color:var(--amber);border-color:var(--amber)}
-.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+.card-grid,.month-panel.active{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
 gap:20px}
+.month-panel{display:none}
 .lib-card{display:flex;flex-direction:column;gap:10px}
 .cov{position:relative;aspect-ratio:16/9;border-radius:12px;overflow:hidden;
 border:1px solid rgba(255,255,255,.07);background:var(--bg2);
@@ -654,9 +698,9 @@ background:linear-gradient(160deg,rgba(255,255,255,.06),rgba(255,255,255,.01))}
 font-size:12px;font-weight:700;padding:5px 9px;border-radius:8px;
 background:rgba(11,10,9,.78);color:var(--fg-dim);backdrop-filter:blur(4px)}
 .cov-rating.top{color:var(--bg);background:var(--amber)}
-.cov-tag{position:absolute;bottom:10px;left:10px;font-family:'Space Mono',monospace;
-font-size:9px;letter-spacing:.12em;text-transform:uppercase;padding:5px 9px;
-border-radius:7px;background:rgba(11,10,9,.78);backdrop-filter:blur(4px)}
+.lib-card[data-cat=tv] .cov{border-bottom:3px solid var(--teal)}
+.lib-card[data-cat=books] .cov{border-bottom:3px solid var(--green)}
+.lib-card[data-cat=games] .cov{border-bottom:3px solid var(--amber)}
 .cov-wip{position:absolute;top:10px;left:10px;font-family:'Space Mono',monospace;
 font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
 padding:5px 9px;border-radius:7px;background:rgba(11,10,9,.82);
@@ -682,16 +726,16 @@ transition:transform .8s cubic-bezier(.16,1,.3,1)}
 .winners,.hero-row{grid-template-columns:1fr}}
 @media(max-width:760px){nav{padding:18px 18px}.lib-hero{padding:104px 18px 48px}
 .lib-sec{padding:54px 18px}
-.card-grid{grid-template-columns:repeat(2,1fr);gap:12px}
+.card-grid,.month-panel.active{grid-template-columns:repeat(2,1fr);gap:12px}
 .stat-grid{grid-template-columns:repeat(2,1fr)}.nav-mid{display:none}
 .sec-head{margin-bottom:30px;flex-wrap:wrap;gap:8px}
 .sec-note{margin-left:0;flex-basis:100%}
+.month-select{margin-left:0}
 .lib-card-title{font-size:13px}.lib-card-sub{font-size:10px}
 .lib-controls{margin-bottom:24px}
 .filter-group label{padding:8px 13px;font-size:10px;margin-right:6px}
 .hero-card-title{font-size:19px}}
 @media(max-width:430px){.card-grid{gap:10px}
-.cov-tag{font-size:8px;padding:4px 6px}
 .cov-rating{font-size:10px;padding:4px 7px}
 .cov-wip{font-size:8px;padding:4px 6px}}
 @media(prefers-reduced-motion:reduce){.reveal{transform:none}
@@ -720,17 +764,27 @@ const cards=[...grid.children];cards.sort((a,z)=>{
 if(k==='rating')return (+z.dataset.rating)-(+a.dataset.rating);
 return (z.dataset.date||'').localeCompare(a.dataset.date||'')});
 cards.forEach(c=>grid.appendChild(c))}));
-let ac=null,ip=false,mg,dr=[];const ab=document.getElementById('audio-btn'),
-al=document.getElementById('audio-label');
-ab.addEventListener('click',()=>{if(!ac){ac=new(AudioContext||webkitAudioContext)();
-mg=ac.createGain();mg.gain.value=0;mg.connect(ac.destination);
-[55,82.5,110,165].forEach((f,i)=>{const o=ac.createOscillator(),
-g=ac.createGain();o.type=i%2?'triangle':'sine';o.frequency.value=f;
-g.gain.value=i?0.07:0.28;o.connect(g);g.connect(mg);o.start();dr.push(o)})}
-if(!ip){ac.resume&&ac.resume();mg.gain.linearRampToValueAtTime(.5,ac.currentTime+2);
-ip=true;ab.classList.add('playing');al.textContent='On'}
-else{mg.gain.linearRampToValueAtTime(0,ac.currentTime+1.4);ip=false;
-ab.classList.remove('playing');al.textContent='Ambient'}});
+(function(){
+const dataEl=document.getElementById('month-data');
+if(!dataEl)return;
+const meta=JSON.parse(dataEl.textContent);
+const cur=meta._current;
+const keys=Object.keys(meta).filter(k=>k!=='_current');
+const panels=document.querySelectorAll('.month-panel');
+const sel=document.getElementById('month-select');
+const heading=document.getElementById('month-heading');
+const note=document.getElementById('month-note');
+function show(key){
+if(!meta[key]||key==='_current')key=keys[0];
+panels.forEach(p=>p.classList.toggle('active',p.dataset.month===key));
+heading.textContent=meta[key].label;
+note.textContent=meta[key].note;
+sel.value=key;
+history.replaceState(null,'','#month='+key)}
+sel.addEventListener('change',()=>show(sel.value));
+const hashMatch=location.hash.match(/month=([\\d-]+)/);
+const initial=(hashMatch&&meta[hashMatch[1]])?hashMatch[1]:(meta[cur]?cur:keys[0]);
+show(initial)})();
 """
 
 # ── MAIN ──────────────────────────────────────────────────────────────────────
